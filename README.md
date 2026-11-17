@@ -19,12 +19,13 @@ packages the components are built on, `@ui-sdk/core` and `@ui-sdk/react`,
 install from npm along with them:
 
 ```sh
-npx shadcn@latest registry add @cyberspec=https://cyberspec.vercel.app/r/{name}.json
+npx shadcn@latest registry add @cyberspec=https://cyberspec-mocha.vercel.app/r/{name}.json
 npx shadcn@latest add @cyberspec/slider @cyberspec/panel
 ```
 
-(`https://cyberspec.vercel.app` is the registry's default address; build it
-for wherever you host it with `REGISTRY_URL=https://your.domain bun run
+(`https://cyberspec-mocha.vercel.app` is the kit's site and the registry's
+default address. A Vercel build uses its project's production domain on its
+own; for another host, build with `REGISTRY_URL=https://your.domain bun run
 registry:build`.)
 
 Every item depends on `cyber`, which sets the project up for the kit: the

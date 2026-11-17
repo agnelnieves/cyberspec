@@ -4,7 +4,7 @@
 // the site to serve.
 //
 //   bun run registry:build                     # also runs as part of `bun run build`
-//   REGISTRY_URL=https://example.com bun run registry:build
+//   REGISTRY_URL=https://example.com bun run registry:build   # another host
 //
 // Items:
 // - cyber: sets a project up for the kit: the <Cyber> root, the foundation
@@ -21,7 +21,14 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs"
 import { join, relative } from "node:path"
 
 const root = new URL("..", import.meta.url).pathname
-const base = (process.env.REGISTRY_URL || "https://cyberspec.vercel.app").replace(/\/$/, "")
+// Where the registry is served: REGISTRY_URL if set; on Vercel, the
+// project's production domain, which Vercel provides to the build; otherwise
+// the kit's own site.
+const base = (
+  process.env.REGISTRY_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+  "https://cyberspec-mocha.vercel.app"
+).replace(/\/$/, "")
 const reg = "registry/cyber"
 const prefix = `@/${reg}/`
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))

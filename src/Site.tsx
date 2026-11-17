@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Volume2, VolumeX } from "lucide-react"
+import { Check, Copy, Volume2, VolumeX } from "lucide-react"
 import { CatalogGrid, Preview } from "./catalog/Catalog"
 import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
@@ -12,6 +12,7 @@ import { Button } from "@/registry/cyber/ui/button"
 import { CodeBlock } from "@/registry/cyber/ui/code-block"
 import { Ruler } from "@/registry/cyber/ui/micro"
 import { Panel } from "@/registry/cyber/ui/panel"
+import { Popover } from "@/registry/cyber/ui/popover"
 import { Readout } from "@/registry/cyber/ui/readout"
 import { Toasts, notify } from "@/registry/cyber/ui/toaster"
 
@@ -54,13 +55,12 @@ function Screen({ name }: { name: string }) {
 
 // What to tell a coding agent to install the kit: the registry, the root
 // everything sits in, and where the rules are.
-const agentPrompt = (origin: string) => `Install components from the CYBERSPEC shadcn registry,
-${origin}/r/registry.json
-Read ${origin}/llms.txt first.
-Wrap the app in <Cyber> from components/ui/cyber.`
+const agentPrompt = (origin: string) =>
+  `Install components from the CYBERSPEC shadcn registry, ${origin}/r/registry.json. Read ${origin}/llms.txt first. They are built on UI SDK (@ui-sdk/react); wrap the app in <Cyber> from components/ui/cyber.`
 
-function Masthead() {
-  const origin = typeof location === "undefined" ? "" : location.origin
+// The prompt, shown in full in a popover from the install panel, with a key
+// that copies it.
+function InstallPrompt({ origin }: { origin: string }) {
   const [copied, setCopied] = React.useState(false)
   const copy = () => {
     navigator.clipboard.writeText(agentPrompt(origin)).then(
@@ -72,6 +72,31 @@ function Masthead() {
       () => notify("Couldn't copy", { tone: "error", description: "The clipboard wasn't available." }),
     )
   }
+  return (
+    <Popover
+      trigger="Installation prompt"
+      triggerTone="primary"
+      title="Prompt for a coding agent"
+      side="bottom"
+      align="end"
+      code="PROMPT // REGISTRY + LLMS.TXT"
+    >
+      <p data-install-prompt="">
+        {agentPrompt(origin)}
+        <span data-install-caret="" aria-hidden />
+      </p>
+      <div data-kit="actions">
+        <Button tone="flag" onClick={copy} data-sfx="none">
+          {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      </div>
+    </Popover>
+  )
+}
+
+function Masthead() {
+  const origin = typeof location === "undefined" ? "" : location.origin
   return (
     <header data-kit="masthead">
       <div data-masthead-lead="">
@@ -108,9 +133,7 @@ function Masthead() {
           <a href="/daemon" data-kit="button" data-frame="notch br" data-press-flash="" data-tone="signal">
             Watch an agent
           </a>
-          <Button tone="primary" onClick={copy}>
-            {copied ? "Copied" : "Copy agent prompt"}
-          </Button>
+          <InstallPrompt origin={origin} />
         </div>
       </Panel>
     </header>

@@ -3,3 +3,4 @@ dist
 public/r
 .DS_Store
 shots
+.vercel
