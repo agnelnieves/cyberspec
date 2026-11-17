@@ -5,7 +5,7 @@
    and reduced-motion rules still sit above it. */
 @layer cyber.blocks {
   [data-site] {
-    --bar-h: 52px;
+    --bar-h: 60px;
     --gutter: clamp(16px, 4vw, 56px);
 
     min-height: 100dvh;
@@ -54,15 +54,29 @@
 
   [data-site-brand] {
     flex: none;
-    font-size: var(--cy-text-lg);
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: 164px;
     color: var(--cy-ink);
     text-decoration: none;
+  }
 
-    & span {
-      color: var(--cy-signal);
-    }
+  [data-site-brand-full] {
+    width: 100%;
+  }
+
+  [data-site-brand-compact] {
+    display: none;
+    width: 32px;
+  }
+
+  [data-site-logo] {
+    display: block;
+    width: 100%;
+    height: auto;
+    flex: none;
+    pointer-events: none;
   }
 
   [data-site-nav] {
@@ -187,12 +201,11 @@
     }
 
     & h1 {
-      font-size: clamp(48px, 10.5vw, 148px);
-      font-weight: 700;
-      line-height: 0.86;
-      letter-spacing: 0.02em;
+      width: 100%;
+      max-width: 720px;
+      margin: 0;
+      line-height: 1;
       color: var(--cy-ink);
-      margin-inline-start: -0.04em;
     }
 
     & [data-masthead-lead] {
@@ -516,6 +529,18 @@
     }
     [data-site-tools] {
       margin-inline-start: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    [data-site-brand] {
+      width: 44px;
+    }
+    [data-site-brand-full] {
+      display: none;
+    }
+    [data-site-brand-compact] {
+      display: block;
     }
   }
 }

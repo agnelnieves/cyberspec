@@ -4,7 +4,7 @@ import { CatalogGrid, Preview } from "./catalog/Catalog"
 import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
 import { onSoundChange, setSoundEnabled, sfx, soundEnabled } from "@/registry/cyber/lib/sound"
-import { GlitchText } from "@/registry/cyber/ui/glitch-text"
+import { Brand } from "./Brand"
 import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
 import { Examples, examples } from "./Examples"
 import { AgentPrompt } from "@/registry/cyber/blocks/daemon/agent-prompt"
@@ -103,9 +103,10 @@ function Masthead() {
         <span data-micro aria-hidden>
           CS-00 // INTERFACE KIT // BUILT ON UI-SDK
         </span>
-        <GlitchText as="h1" decode="mount">
-          CYBERSPEC
-        </GlitchText>
+        <h1>
+          <span data-sr-only>CYBERSPEC</span>
+          <Brand />
+        </h1>
         <Ruler aria-hidden />
         <p>
           A cyberpunk theme for{" "}
@@ -263,7 +264,8 @@ function Site({ route }: { route: string }) {
       </a>
       <header data-site-bar>
         <a href="/" data-site-brand aria-label="Cyberspec, home">
-          <span aria-hidden>◤</span> CYBERSPEC
+          <span data-site-brand-full><Brand /></span>
+          <span data-site-brand-compact><Brand markOnly /></span>
         </a>
         <nav aria-label="Sections" data-site-nav>
           {sections.map((entry) => (
