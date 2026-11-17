@@ -178,7 +178,7 @@ function createAdjustmentSound() {
       gain = ctx.createGain()
       source.buffer = sampleBuffer("adjust")
       source.loop = true
-      gain.gain.value = 0.065
+      gain.gain.value = 0.195
       source.connect(gain).connect(master)
       source.start(ctx.currentTime + 0.001)
       adjustments.add(stop)
@@ -247,12 +247,12 @@ function hiss(at: number, { freq, q = 2, length, level }: { freq: number; q?: nu
 
 // One small recorded tick for lightweight interactions. Keep semantic voice
 // names so a future recording can replace one interaction independently.
-const tick = (at: number) => sample("hover", at, 0.14)
+const tick = (at: number) => sample("hover", at, 0.42)
 
 const voices: Record<Voice, (at: number, owner?: Element) => void> = {
   hover: tick,
-  increment: (at) => sample("increment", at, 0.14),
-  decrement: (at) => sample("decrement", at, 0.14),
+  increment: (at) => sample("increment", at, 0.42),
+  decrement: (at) => sample("decrement", at, 0.42),
   "modal-open": (at, owner) => sample(modalSample(owner, true), at, 0.1, owner),
   "modal-close": (at, owner) => sample(modalSample(owner, false), at, 0.1, owner),
   press: (at) => sample("press", at, 0.14),
@@ -285,6 +285,7 @@ const voices: Record<Voice, (at: number, owner?: Element) => void> = {
 const tickVoices = new Set<Voice>(["hover", "select", "tick", "open", "close", "type", "glitch", "agent"])
 let lastAt = 0
 let lastFamily: Voice | null = null
+let playbackSequence = 0
 
 function sfx(voice: Voice, owner?: Element) {
   if (!enabled) return
@@ -297,6 +298,7 @@ function sfx(voice: Voice, owner?: Element) {
   if (family === lastFamily && now - lastAt < 25) return
   lastAt = now
   lastFamily = family
+  playbackSequence++
   voices[voice](ctx.currentTime + 0.001, owner)
 }
 
@@ -305,6 +307,34 @@ const typing =
   'textarea, [contenteditable="true"], input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"], input[type="number"]'
 const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"], [role="treeitem"], [role="gridcell"]'
 const hoverable = `${pressable}, [role="slider"], [role="separator"][aria-valuenow], input:not([type="hidden"]), textarea, select, summary`
+const keyboardCollection = '[role="menu"], [role="menubar"], [role="listbox"], [role="combobox"], [role="tablist"], [role="radiogroup"], [role="tree"], [role="grid"], [role="toolbar"], [data-slot="toggle-group"]'
+const navigationKeys = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"])
+
+// Most collections move real focus. Comboboxes keep focus in the input and
+// expose the active option through ARIA instead. Include values for calendar
+// cells whose DOM node can be reused, and labels for closed Select typeahead.
+function keyboardSelection(tree: Element | null, carousel: Element | null) {
+  const focused = document.activeElement
+  if (!focused?.closest('[data-skin="cyber"]') || (!focused.closest(keyboardCollection) && !carousel?.contains(focused))) return null
+  const descendant = focused.getAttribute("aria-activedescendant")
+  const item = (descendant && document.getElementById(descendant)) || focused
+  const select = focused.closest('[data-slot="select-trigger"]')
+  return {
+    item,
+    state: JSON.stringify([
+      item.id,
+      item.getAttribute("data-value"),
+      item.getAttribute("aria-expanded"),
+      item.getAttribute("aria-selected"),
+      item.getAttribute("aria-checked"),
+      item.getAttribute("aria-pressed"),
+      select?.querySelector('[data-slot="select-value"]')?.textContent ?? select?.textContent,
+      // Tree shortcuts can expand siblings/descendants without moving focus.
+      tree && Array.from(tree.querySelectorAll('[role="treeitem"][aria-expanded]'), (el) => [el.id, el.getAttribute("aria-expanded")]),
+      carousel && Array.from(carousel.querySelectorAll('[data-slot="carousel-item"][data-active]'), (el) => el.id),
+    ]),
+  }
+}
 
 // What a click on something sounds like, from what it is. A component can
 // say otherwise with `data-sfx="<voice>"`, or "none" to stay quiet and play
@@ -370,11 +400,26 @@ function installSound() {
     if (hovered && (!(event.relatedTarget instanceof Node) || !hovered.contains(event.relatedTarget))) hovered = null
   }, { capture: true, passive: true })
 
+  let navigationFrame = 0
+  let pendingNavigation: { before: NonNullable<ReturnType<typeof keyboardSelection>>; tree: Element | null; carousel: Element | null; sequence: number } | null = null
+  const finishNavigation = () => {
+    cancelAnimationFrame(navigationFrame)
+    const pending = pendingNavigation
+    pendingNavigation = null
+    if (!pending || pending.sequence !== playbackSequence) return
+    const after = keyboardSelection(pending.tree, pending.carousel)
+    if (after && (after.item !== pending.before.item || after.state !== pending.before.state)) sfx("tick")
+  }
+
   document.addEventListener(
     "keydown",
     (event) => {
-      if (!enabled || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return
+      // Finish the preceding move before capturing a repeated key, even if
+      // several key events arrive within one animation frame.
+      finishNavigation()
       const target = event.target as Element | null
+      const treeShortcut = event.altKey && (event.key === "ArrowLeft" || event.key === "ArrowRight") && target?.closest('[role="tree"]')
+      if (!enabled || event.isComposing || event.metaKey || event.ctrlKey || (event.altKey && !treeShortcut)) return
       // Menu choices handle Enter/Space directly without a click. Wait
       // for the resulting state so canceled changes stay silent as well.
       const check = target?.closest?.('[role="menuitemcheckbox"], [role="menuitemradio"]')
@@ -385,6 +430,23 @@ function installSound() {
           if (voice && check.getAttribute("aria-checked") !== before) sfx(voice)
         })
         return
+      }
+      const typeahead = event.key.length === 1 && !target?.closest(typing)
+      if (navigationKeys.has(event.key) || typeahead || event.key === "Enter") {
+        const tree = event.key === "*" || treeShortcut ? target?.closest('[role="tree"]') ?? null : null
+        let carousel = target?.closest('[data-slot="carousel-viewport"]') ?? null
+        if (carousel) {
+          const arrows = carousel.getAttribute("data-orientation") === "vertical" ? ["ArrowUp", "ArrowDown"] : ["ArrowLeft", "ArrowRight"]
+          if (event.shiftKey || ![...arrows, "Home", "End"].includes(event.key) || target?.closest(`${keyboardCollection}, input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="slider"], [role="spinbutton"]`)) carousel = null
+        }
+        const before = keyboardSelection(tree, carousel)
+        if (before) {
+          pendingNavigation = { before, tree, carousel, sequence: playbackSequence }
+          // The SDK can preventDefault on a successful move. Compare the
+          // result after its handlers/render instead of inspecting that flag.
+          // Existing popup/selection/control feedback wins over this fallback.
+          navigationFrame = requestAnimationFrame(finishNavigation)
+        }
       }
       if (!target?.closest?.(typing) || !target.closest('[data-skin="cyber"]')) return
       if (event.key.length === 1 || event.key === "Backspace" || event.key === "Enter" || event.key === "Unidentified") sfx("type")

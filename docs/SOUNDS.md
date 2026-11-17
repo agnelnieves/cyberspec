@@ -46,9 +46,10 @@ python3 scripts/sound-samples.py /path/to/ticking.mp3 /path/to/moving-slider-to-
 ```
 
 The engine retains gesture unlocking, the remembered on/off preference,
-master gain, limiting and duplicate suppression. The shared single tick uses
-gain `0.14`, a 6 dB increase from `0.07`; the continuous adjustment loop stays
-at `0.065`. A continuous sound runs only
+master gain, limiting and duplicate suppression. The shared single tick and
+directional steps use gain `0.42`; the continuous adjustment loop uses `0.195`.
+All tick paths are 9.5 dB louder than their previous levels (`0.14` and `0.065`),
+preserving their relative balance. A continuous sound runs only
 while accepted movements arrive, with a short inactivity cutoff. Release,
 cancellation, losing focus, unmounting and muting stop it. Holding still or
 reaching a bound does not keep ticking. Muting stops current playback as well
@@ -63,6 +64,14 @@ accepted change. `ButtonGroup` keys use `action: "increment" | "decrement"`;
 returning `false` from `onPress` rejects the change and stops a held repeat.
 `data-sfx="none"` suppresses automatic click sounds without suppressing hover.
 Use `data-sfx-hover="none"` when hover itself should be silent.
+
+Keyboard navigation uses the same tick when focus or the highlighted option
+actually moves in menus, selects, comboboxes, tabs, radio and toggle groups,
+trees, calendars, toolbars and carousels. Arrow keys, Home/End, PageUp/Down
+and supported typeahead follow the component's behavior. Tree expansion and closed-select
+typeahead also tick when their state changes. Unchanged boundaries, canceled
+navigation and ordinary text-caret movement stay silent. Existing control or
+popup feedback takes precedence so one key does not produce a second tick.
 
 Modal content uses `modal-open` / `modal-close` once per actual transition,
 including newly mounted portal content. Dialogs, alert dialogs, drawers and

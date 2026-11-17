@@ -201,9 +201,9 @@ arriving, something an agent changed, a heading decoding.
 `lib/sound.ts` mixes recordings and synthesized sounds through Web Audio;
 it's off until the person turns it on. The compact PCM recordings live in
 `lib/sound-samples.ts`, which travels with the installable registry. Page-wide
-listeners already cover hover, presses, options, tabs, switches, typing and
-popups opening, from roles and `data-slot`s. A component only needs code for
-what those can't know:
+listeners already cover hover, presses, options, tabs, switches, typing,
+keyboard navigation and popups opening, from roles and `data-slot`s. A
+component only needs code for what those can't know:
 
 ```ts
 import { createAdjustmentSound, sfx } from "@/registry/cyber/lib/sound"
@@ -225,6 +225,9 @@ Use `data-sfx-hover="none"` to opt out of hover itself.
 Lightweight interactions, including typing, selection and small popup
 transitions, share the recorded tick. Primary actions share the button-press
 recording; success, warning, error and deny retain their original voices.
+Keyboard navigation ticks after focus, the active descendant or the relevant
+selection/expansion state changes. An unchanged target stays silent, and
+existing component feedback takes precedence over the automatic tick.
 Play directional sounds only after a change succeeds, including repeats and
 keyboard changes. Disabled controls, canceled changes and bounds must not
 produce a successful-step sound.

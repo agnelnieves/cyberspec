@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Run against the dev server: bun scripts/sound-check.mjs
 // Only modal duration/lifecycle checks: bun scripts/sound-check.mjs --timing-only
-// Only menu, typing and shared-voice checks: bun scripts/sound-check.mjs --feedback-only
+// Only keyboard navigation, menu, typing and shared-voice checks: bun scripts/sound-check.mjs --feedback-only
 // Observe actual Web Audio nodes while driving controls in headless Chrome.
 import assert from "node:assert/strict"
 import { existsSync } from "node:fs"
@@ -338,6 +338,214 @@ try {
       assert.equal(await page.$eval(selector, (node) => node.getAttribute("aria-selected")), "true", `${route} selection changed`)
     }
     pass("tree rows and calendar days share hover and selection ticks")
+
+    // Check the interaction's result as well as its audio. A combobox keeps
+    // DOM focus in the input; other collections move focus to an actual row.
+    const navigationTarget = () => page.evaluate(() => {
+      const focus = document.activeElement
+      const descendant = focus?.getAttribute("aria-activedescendant")
+      const item = descendant ? document.getElementById(descendant) : focus
+      // Some SDK parts (CalendarDay, Toggle, CarouselViewport) have no ID.
+      // Track actual node identity without changing the component's DOM.
+      const identities = window.audioCheck.navigationNodes ||= new WeakMap()
+      if (item && !identities.has(item)) identities.set(item, ++window.audioCheck.next)
+      const labelledBy = item?.getAttribute("aria-labelledby")?.split(/\s+/).map((id) => document.getElementById(id)?.textContent || "").join(" ")
+      return {
+        id: item ? identities.get(item) : null,
+        focusId: focus?.id,
+        descendant: descendant || null,
+        role: item?.getAttribute("role"),
+        label: (item?.getAttribute("aria-label") || labelledBy || item?.querySelector('[data-kit="tree-name"]')?.textContent || item?.textContent || "").trim(),
+        selected: item?.getAttribute("aria-selected"),
+        checked: item?.getAttribute("aria-checked"),
+        expanded: item?.getAttribute("aria-expanded"),
+        valueLabel: item?.querySelector('[data-kit="select-value-text"]')?.textContent,
+        carouselPage: item?.matches('[data-slot="carousel-viewport"]') ? item.closest('[data-slot="carousel"]')?.querySelector('[data-kit="carousel-page"]')?.textContent : null,
+      }
+    })
+    const navigationKey = async (key, label, { changed = true, sameItem = false, startsWith, role, selected, checked, expanded, valueLabel } = {}) => {
+      await pause(35)
+      const before = await navigationTarget()
+      await clear()
+      await page.keyboard.press(key)
+      await pause(60)
+      const after = await navigationTarget()
+      assert(before.id && after.id, `${label}: navigable items exist`)
+      if (changed) {
+        if (sameItem) {
+          assert.equal(after.id, before.id, `${label}: focus stays on the same item`)
+          assert.notDeepEqual(after, before, `${label}: the item's displayed state actually changed`)
+        } else assert.notEqual(after.id, before.id, `${label}: the focused/highlighted item actually changed`)
+        await onlySample(signatures.hover, label)
+      } else {
+        assert.equal(after.id, before.id, `${label}: the focused/highlighted item stays put`)
+        assert.deepEqual(after, before, `${label}: navigation state is unchanged`)
+        assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, `${label}: unchanged navigation is silent`)
+      }
+      if (startsWith) assert(after.label.startsWith(startsWith), `${label}: expected ${startsWith}, got ${after.label}`)
+      if (role) assert.equal(after.role, role, `${label}: expected item role`)
+      if (selected != null) assert.equal(after.selected, String(selected), `${label}: selected state`)
+      if (checked != null) assert.equal(after.checked, String(checked), `${label}: checked state`)
+      if (expanded != null) assert.equal(after.expanded, String(expanded), `${label}: expanded state`)
+      if (valueLabel) assert.equal(after.valueLabel, valueLabel, `${label}: displayed selection`)
+      return { before, after }
+    }
+
+    await open("/preview/menu")
+    await click('[data-slot="menu-trigger"]')
+    await page.focus(await tagRow("Call", "keyboard-start"))
+    await navigationKey("ArrowDown", "Menu next row", { startsWith: "Message" })
+    // Disabled menu items remain focusable for discovery. Moving there still
+    // provides navigation feedback, although activation cannot select them.
+    await navigationKey("ArrowDown", "Menu discovers disabled Locate", { startsWith: "Locate" })
+    await navigationKey("ArrowDown", "Menu continues past disabled Locate", { startsWith: "Share with" })
+    await navigationKey("End", "Menu last row", { startsWith: "Forget contact" })
+    await navigationKey("End", "Menu unchanged End", { changed: false })
+    await navigationKey("Home", "Menu first row", { startsWith: "Call" })
+    await navigationKey("Home", "Menu unchanged Home", { changed: false })
+    await navigationKey("m", "Menu typeahead", { startsWith: "Message" })
+    pass("menu arrows, Home/End and typeahead tick once; unchanged targets stay silent")
+
+    await open("/preview/select")
+    await click('[data-slot="select-trigger"]')
+    await page.waitForSelector('[role="option"][data-highlighted]')
+    await navigationKey("ArrowDown", "Select next option", { role: "option", startsWith: "Cinder Row" })
+    await navigationKey("End", "Select skips disabled final option", { role: "option", startsWith: "The Stacks" })
+    await navigationKey("End", "Select unchanged End", { changed: false })
+    await navigationKey("Home", "Select first option", { role: "option", startsWith: "Lowtide" })
+    await navigationKey("c", "Select typeahead", { role: "option", startsWith: "Cinder Row" })
+    await open("/preview/select")
+    await page.focus('[data-slot="select-trigger"]')
+    await navigationKey("l", "Closed Select typeahead", { sameItem: true, valueLabel: "Lowtide" })
+    await navigationKey("l", "Closed Select unchanged typeahead", { changed: false, valueLabel: "Lowtide" })
+    pass("Select focus and closed-trigger typeahead tick once; disabled and unchanged targets add no sound")
+
+    await open("/preview/combobox")
+    await page.focus('input[role="combobox"]')
+    // Opening from the input uses virtual focus. The separate pointer
+    // trigger intentionally enters the SDK's real-focus option mode.
+    for (const key of ["ArrowDown", "ArrowDown", "ArrowUp"]) {
+      const { before, after } = await navigationKey(key, `Combobox ${key}`, { role: "option" })
+      assert.equal(after.focusId, before.focusId, "Combobox navigation leaves DOM focus in its input")
+      assert(after.descendant, "Combobox highlights through aria-activedescendant")
+    }
+    await navigationKey("ArrowLeft", "Combobox caret movement", { changed: false })
+    pass("Combobox active-descendant changes tick once while caret-only movement stays silent")
+
+    await open("/preview/tabs")
+    await page.focus('[role="tablist"][aria-label="Loadout"] [role="tab"][aria-selected="true"]')
+    await navigationKey("ArrowRight", "Tabs next", { startsWith: "Crafting", selected: true })
+    await navigationKey("End", "Tabs last", { startsWith: "Backpack", selected: true })
+    await navigationKey("End", "Tabs unchanged End", { changed: false })
+    await navigationKey("Home", "Tabs first", { startsWith: "Inventory", selected: true })
+    await page.focus('[role="tablist"][aria-label="Gear type"] [role="tab"][aria-selected="true"]')
+    await navigationKey("End", "Tabs discover disabled Daemons", { startsWith: "Daemons", selected: false })
+    assert.equal(await page.$eval('[role="tablist"][aria-label="Gear type"] [aria-selected="true"]', (node) => node.textContent.trim()), "Arms", "Disabled tab navigation preserves the selected panel")
+    await navigationKey("End", "Disabled tab unchanged End", { changed: false })
+    pass("tab focus moves tick once; disabled tabs remain unselected and unchanged targets stay silent")
+
+    await open("/preview/toggle-group")
+    await page.focus('[data-slot="toggle-group"] [aria-pressed="true"]')
+    const pressedBefore = await page.$$eval('[data-slot="toggle-group"] [aria-pressed="true"]', (nodes) => nodes.map((node) => node.textContent))
+    await navigationKey("ArrowRight", "ToggleGroup next focus", { startsWith: "Auto" })
+    await navigationKey("Home", "ToggleGroup first focus", { startsWith: "Semi" })
+    await navigationKey("Home", "ToggleGroup unchanged Home", { changed: false })
+    assert.deepEqual(await page.$$eval('[data-slot="toggle-group"] [aria-pressed="true"]', (nodes) => nodes.map((node) => node.textContent)), pressedBefore, "ToggleGroup focus navigation does not press a toggle")
+    pass("ToggleGroup keyboard focus moves tick once without changing its pressed values")
+
+    await open("/preview/carousel")
+    await page.focus('[data-slot="carousel-viewport"]')
+    await navigationKey("ArrowRight", "Carousel next page", { sameItem: true })
+    assert.equal(await page.$eval('[data-kit="carousel-page"]', (node) => node.textContent), "02", "Carousel moved to its second page")
+    await navigationKey("End", "Carousel last page", { sameItem: true })
+    await navigationKey("End", "Carousel unchanged End", { changed: false })
+    await navigationKey("Home", "Carousel first page", { sameItem: true })
+    await navigationKey("Home", "Carousel unchanged Home", { changed: false })
+    pass("carousel viewport navigation ticks once per changed page while retaining focus")
+
+    await open("/preview/radio-group")
+    await page.focus('[data-kit="radio"][aria-checked="true"]')
+    await navigationKey("ArrowDown", "Radio next", { startsWith: "Loud", checked: true })
+    await navigationKey("ArrowDown", "Radio wraps past disabled Talk", { startsWith: "Quiet", checked: true })
+    pass("radio keyboard selection ticks once, including wrapping past a disabled option")
+
+    await open("/preview/tree")
+    await page.focus('[role="treeitem"][aria-selected="true"]')
+    await navigationKey("ArrowDown", "Tree next visible item", { startsWith: "deadlock.dmn", role: "treeitem" })
+    await navigationKey("Space", "Tree selects focused item", { sameItem: true, selected: true })
+    await navigationKey("Space", "Tree deselects focused item", { sameItem: true, selected: false })
+    await navigationKey("Enter", "Tree selects on Enter", { sameItem: true, selected: true })
+    await navigationKey("Enter", "Tree unchanged Enter selection", { changed: false, selected: true })
+    await navigationKey("End", "Tree last visible item", { startsWith: "boot.cfg", role: "treeitem" })
+    await navigationKey("End", "Tree unchanged End", { changed: false })
+    await navigationKey("Home", "Tree first visible item", { startsWith: "daemons", role: "treeitem" })
+    await navigationKey("ArrowLeft", "Tree collapses focused branch", { sameItem: true, expanded: false })
+    await navigationKey("ArrowLeft", "Tree unchanged root collapse", { changed: false, expanded: false })
+    await navigationKey("ArrowRight", "Tree expands focused branch", { sameItem: true, expanded: true })
+    await navigationKey("g", "Tree typeahead", { startsWith: "ghostwrite.dmn", role: "treeitem" })
+    pass("tree focus, typeahead and same-focus branch changes tick once; unchanged collapse stays silent")
+
+    // Stable dates and an actual consumer cancellation exercise boundaries
+    // independently of today's month or the catalog's unavailable dates.
+    await open("/preview/calendar")
+    await page.evaluate(async () => {
+      const loaded = (pathname) => performance.getEntriesByType("resource").filter((entry) => new URL(entry.name).pathname === pathname).at(-1)?.name || pathname
+      const reactModule = await import(loaded("/node_modules/.vite/deps/react.js"))
+      const React = reactModule.default || reactModule
+      const domModule = await import(loaded("/node_modules/.vite/deps/react-dom_client.js"))
+      const { createRoot } = domModule.default || domModule
+      const { Cyber } = await import(loaded("/registry/cyber/ui/cyber.tsx"))
+      const { Calendar } = await import(loaded("/registry/cyber/ui/calendar.tsx"))
+      document.getElementById("root").style.display = "none"
+      const fixture = document.createElement("div")
+      fixture.dataset.soundFixture = "keyboard-calendar"
+      document.body.append(fixture)
+      window.navigationGuard = { refuse: false, canceled: 0 }
+      createRoot(fixture).render(React.createElement(Cyber, { fx: "off", style: { padding: 40, width: 400 } },
+        React.createElement(Calendar, {
+          defaultMonth: "2026-11", defaultValue: "2026-11-11", min: "2026-11-10", max: "2026-11-12",
+          onFocusedChange: (_date, details) => {
+            if (window.navigationGuard.refuse) { details.cancel(); window.navigationGuard.canceled++ }
+          },
+        })))
+    })
+    await page.waitForSelector('[data-sound-fixture="keyboard-calendar"] [role="gridcell"][tabindex="0"]')
+    await page.focus('[data-sound-fixture="keyboard-calendar"] [role="gridcell"][tabindex="0"]')
+    await navigationKey("ArrowRight", "Calendar next day", { role: "gridcell" })
+    assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), "12", "Calendar reached maximum date")
+    await navigationKey("ArrowRight", "Calendar maximum boundary", { changed: false })
+    await navigationKey("ArrowLeft", "Calendar previous day", { role: "gridcell" })
+    await page.evaluate(() => { window.navigationGuard.refuse = true })
+    await navigationKey("ArrowLeft", "Calendar canceled focus change", { changed: false })
+    assert.equal(await page.evaluate(() => window.navigationGuard.canceled), 1, "Consumer canceled the attempted navigation")
+    await page.evaluate(() => { window.navigationGuard.refuse = false })
+    await navigationKey("ArrowLeft", "Calendar accepted after cancellation", { role: "gridcell" })
+    await navigationKey("ArrowLeft", "Calendar minimum boundary", { changed: false })
+    pass("calendar navigation ticks only after an accepted focus change; canceled moves and bounds stay silent")
+
+    for (const { route, selector, actions, value } of [
+      { route: "slider", selector: '[data-kit="slider-thumb"] input[type="range"]', value: "value", actions: [["ArrowRight", "hover"], ["End", "hover"], ["End", null]] },
+      { route: "stepper", selector: '[data-kit="stepper-value"]', value: "value", actions: [["ArrowUp", "increment"], ["ArrowDown", "decrement"], ["Home", "decrement"], ["Home", null]] },
+    ]) {
+      await open(`/preview/${route}`)
+      await page.focus(selector)
+      for (const [key, voice] of actions) {
+        const before = await page.$eval(selector, (node, value) => node[value], value)
+        await clear()
+        await page.keyboard.press(key)
+        await pause(60)
+        const after = await page.$eval(selector, (node, value) => node[value], value)
+        if (voice) {
+          assert.notEqual(after, before, `${route} ${key} changed its value`)
+          await onlySample(signatures[voice], `${route} ${key}: no duplicate navigation tick`)
+        } else {
+          assert.equal(after, before, `${route} ${key} remains at its boundary`)
+          assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, `${route} boundary is silent`)
+        }
+        assert.equal(await active(), 0, `${route} keyboard action does not start an adjustment loop`)
+      }
+    }
+    pass("slider and Stepper retain exactly one own keyboard sound, with silent unchanged bounds")
   }
 
   // Full-motion timing is deliberately measured separately from the rest
