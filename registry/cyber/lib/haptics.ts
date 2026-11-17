@@ -52,12 +52,11 @@ function haptic(kind: Haptic) {
   const now = performance.now()
   if (now - last < 30) return
   last = now
-  if (canVibrate()) {
-    navigator.vibrate(patterns[kind])
-  } else if (hasSwitch()) {
-    if (navigator.userActivation && !navigator.userActivation.isActive) return
-    tapSwitch()
-  }
+  // Outside a gesture (an agent's change, a timer) there's nothing to feel:
+  // iOS stays silent and Chrome refuses the call and logs it.
+  if (navigator.userActivation && !navigator.userActivation.isActive) return
+  if (canVibrate()) navigator.vibrate(patterns[kind])
+  else if (hasSwitch()) tapSwitch()
 }
 
 // Whether a value moving from `from` to `to` crosses into another step of
