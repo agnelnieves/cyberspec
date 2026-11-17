@@ -21,14 +21,9 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs"
 import { join, relative } from "node:path"
 
 const root = new URL("..", import.meta.url).pathname
-// Where the registry is served: REGISTRY_URL if set; on Vercel, the
-// project's production domain, which Vercel provides to the build; otherwise
-// the kit's own site.
-const base = (
-  process.env.REGISTRY_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
-  "https://cyberspec-mocha.vercel.app"
-).replace(/\/$/, "")
+// Where the registry is served: REGISTRY_URL if set, otherwise the kit's
+// site. www is the canonical host; cyberspec.dev redirects to it.
+const base = (process.env.REGISTRY_URL || "https://www.cyberspec.dev").replace(/\/$/, "")
 const reg = "registry/cyber"
 const prefix = `@/${reg}/`
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))

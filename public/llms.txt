@@ -7,11 +7,11 @@ Every control is a ui-sdk component underneath (`@ui-sdk/react`, `@ui-sdk/core`)
 ## Install
 
 ```sh
-npx shadcn@latest registry add @cyberspec=https://cyberspec.vercel.app/r/{name}.json
+npx shadcn@latest registry add @cyberspec=https://www.cyberspec.dev/r/{name}.json
 npx shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
 ```
 
-Any item also installs from its URL: `npx shadcn@latest add https://cyberspec.vercel.app/r/panel.json`. Every item depends on `cyber`, which adds the `<Cyber>` root, the foundation stylesheets, the fonts and the page-wide behaviors.
+Any item also installs from its URL: `npx shadcn@latest add https://www.cyberspec.dev/r/panel.json`. Every item depends on `cyber`, which adds the `<Cyber>` root, the foundation stylesheets, the fonts and the page-wide behaviors.
 
 ```tsx
 import { Cyber } from "@/components/ui/cyber"
@@ -42,96 +42,96 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 
 ## The skin
 
-- [Cyber](https://cyberspec.vercel.app/r/cyber.json): Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).
+- [Cyber](https://www.cyberspec.dev/r/cyber.json): Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).
 
 ## Components
 
-- [Accordion](https://cyberspec.vercel.app/r/accordion.json): Stacked sections that open from numbered headings, each with a glyph that turns.
-- [Alert dialog](https://cyberspec.vercel.app/r/alert-dialog.json): A flagged confirmation that has to be answered, and that an agent has to ask a person about.
-- [Alert](https://cyberspec.vercel.app/r/alert.json): An inline notice on a spined frame: info, success, warning or danger, each with its own glyph.
-- [Avatar](https://cyberspec.vercel.app/r/avatar.json): A portrait in a cut frame, with initials over a generated scanline field when there's no image.
-- [Badge](https://cyberspec.vercel.app/r/badge.json): A small cut label in seven tones, with count and status variants.
-- [Breadcrumb](https://cyberspec.vercel.app/r/breadcrumb.json): A trail of pages, the current one in the signal color.
-- [Button group](https://cyberspec.vercel.app/r/button-group.json): Keys joined in one strip, horizontal or vertical, with hold-to-repeat.
-- [Button](https://cyberspec.vercel.app/r/button.json): A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed.
-- [Calendar](https://cyberspec.vercel.app/r/calendar.json): A month grid with today marked and the chosen day lit.
-- [Card](https://cyberspec.vercel.app/r/card.json): A content card with a scanlined media slot, plain or interactive.
-- [Carousel](https://cyberspec.vercel.app/r/carousel.json): A viewer: slides in a cut frame, with keys, segment indicators and a position readout.
-- [Checkbox](https://cyberspec.vercel.app/r/checkbox.json): A cut box that fills and marks when checked, with an indeterminate state.
-- [Choice list](https://cyberspec.vercel.app/r/choice-list.json): Replies to choose from: rows in the signal color, the chosen one a solid yellow bar.
-- [Code block](https://cyberspec.vercel.app/r/code-block.json): Highlighted code with line numbers, a filename tab and a copy key. No highlighting dependency.
-- [Collapsible](https://cyberspec.vercel.app/r/collapsible.json): One section behind a key that shows and hides it.
-- [Combobox](https://cyberspec.vercel.app/r/combobox.json): A text control that filters a list of options as you type.
-- [Command palette](https://cyberspec.vercel.app/r/command-palette.json): A searchable list of commands behind a prompt, in a dialog.
-- [Context menu](https://cyberspec.vercel.app/r/context-menu.json): An area that opens a menu on right-click, a long press, or the keyboard.
-- [Data table](https://cyberspec.vercel.app/r/data-table.json): Rows with selection, sortable columns, status badges and a menu per row.
-- [Date picker](https://cyberspec.vercel.app/r/date-picker.json): A date field with a calendar that opens beside it.
-- [Dialog](https://cyberspec.vercel.app/r/dialog.json): A modal panel on a spined frame that tears in over a dimmed page, with its answers on keys below.
-- [Drawer](https://cyberspec.vercel.app/r/drawer.json): A sheet that slides in from the edge of the page, and can be dragged.
-- [Feed](https://cyberspec.vercel.app/r/feed.json): Dated events in order on a vertical rule: who did what, and when.
-- [Fieldset](https://cyberspec.vercel.app/r/fieldset.json): A spined frame grouping several fields under a legend.
-- [Glitch text](https://cyberspec.vercel.app/r/glitch-text.json): Text that decodes itself into place and tears for a moment, with a stable copy for screen readers.
-- [Hex stat](https://cyberspec.vercel.app/r/hex-stat.json): An attribute as a hexagon holding an icon, a value and a name, and a honeycomb to lay several out.
-- [Holo card](https://cyberspec.vercel.app/r/holo-card.json): A surface that tilts toward the pointer in 3D, with a sheen and layers at different depths.
-- [Hover card](https://cyberspec.vercel.app/r/hover-card.json): A name that previews a small dossier on hover or focus.
-- [Item list](https://cyberspec.vercel.app/r/item-list.json): An always-visible list of rows in columns, the selected row a solid signal bar.
-- [Item slot](https://cyberspec.vercel.app/r/item-slot.json): A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.
-- [Key hint](https://cyberspec.vercel.app/r/key-hint.json): An input hint: a key glyph and what it does, optionally pressable.
-- [Loader](https://cyberspec.vercel.app/r/loader.json): A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line.
-- [Menu](https://cyberspec.vercel.app/r/menu.json): A key that opens a menu of actions, with checkable items, groups and a submenu.
-- [Menubar](https://cyberspec.vercel.app/r/menubar.json): A bar of menus with one tab stop.
-- [Meter](https://cyberspec.vercel.app/r/meter.json): A segmented gauge with thresholds that change its tone and print a word.
-- [Micro-print](https://cyberspec.vercel.app/r/micro.json): The printed decoration around frames: micro-print lines, barcodes, rulers, data streams and corner brackets.
-- [Navbar](https://cyberspec.vercel.app/r/navbar.json): A navigation bar with status readouts, page links and trailing content.
-- [OTP input](https://cyberspec.vercel.app/r/otp-input.json): One cut cell per character of a code, with a blinking caret in the active one.
-- [Pagination](https://cyberspec.vercel.app/r/pagination.json): Page keys with previous, next and ellipses, and a position readout.
-- [Panel](https://cyberspec.vercel.app/r/panel.json): The kit's container: a frame with a spine or a title bar, a heading, micro-print and a body.
-- [Password input](https://cyberspec.vercel.app/r/password-input.json): A password field with a key to show or hide it.
-- [Popover](https://cyberspec.vercel.app/r/popover.json): A key that opens a framed surface beside it, with a title, description and body.
-- [Progress](https://cyberspec.vercel.app/r/progress.json): A segmented bar with a percentage readout, and an indeterminate state.
-- [Radio group](https://cyberspec.vercel.app/r/radio-group.json): Options where one is chosen, each with a diamond indicator.
-- [Rating](https://cyberspec.vercel.app/r/rating.json): A level picked from a row of diamond pips.
-- [Readout](https://cyberspec.vercel.app/r/readout.json): A large numeral with a unit and a label that counts to its new value when it changes.
-- [Resizable](https://cyberspec.vercel.app/r/resizable.json): Panels split by a handle that drags or steps with keys.
-- [Reticle](https://cyberspec.vercel.app/r/reticle.json): A lock-on bracket that snaps onto whatever it wraps when hovered, focused or active.
-- [Screen](https://cyberspec.vercel.app/r/screen.json): The chrome every full screen shares: a status strip, the content, and a foot with key hints.
-- [Scroll area](https://cyberspec.vercel.app/r/scroll-area.json): A scrolling region with a thin scrollbar and edge indicators.
-- [Segmented control](https://cyberspec.vercel.app/r/segmented-control.json): A row of segments with an indicator that slides to the choice.
-- [Select](https://cyberspec.vercel.app/r/select.json): A labelled trigger that opens a list of options to choose from.
-- [Separator](https://cyberspec.vercel.app/r/separator.json): A rule with tick marks, plain, labelled or vertical.
-- [Side tabs](https://cyberspec.vercel.app/r/side-tabs.json): Icon keys stacked down the edge, with a panel beside them.
-- [Signal graph](https://cyberspec.vercel.app/r/signal-graph.json): A compact live graph, as a trace or a spectrum, with a text summary.
-- [Skeleton](https://cyberspec.vercel.app/r/skeleton.json): Placeholder lines and blocks for content that's loading.
-- [Slider](https://cyberspec.vercel.app/r/slider.json): A ticked track with a cut thumb and a value readout, single or range.
-- [Number stepper](https://cyberspec.vercel.app/r/stepper.json): A value on a readout between minus and plus keys, with MIN and MAX tags.
-- [Switch](https://cyberspec.vercel.app/r/switch.json): A block that slides across a cut track and lights, with its state printed beside it.
-- [Tabs](https://cyberspec.vercel.app/r/tabs.json): Tabs over panels with a sliding indicator, or as cut keys.
-- [Terminal](https://cyberspec.vercel.app/r/terminal.json): A console log with tagged lines, a prompt with history, and a follow-the-end scroll.
-- [Text field](https://cyberspec.vercel.app/r/text-field.json): A labelled text input in a cut frame, with a hint, an error and an optional icon.
-- [Textarea](https://cyberspec.vercel.app/r/textarea.json): A labelled multi-line input with a character count.
-- [Toast](https://cyberspec.vercel.app/r/toast.json): Keys that raise a notification in each tone.
-- [Toaster](https://cyberspec.vercel.app/r/toaster.json): The page's notification region and a notify() helper.
-- [Toggle group](https://cyberspec.vercel.app/r/toggle-group.json): Toggles that share one value, one or several at a time.
-- [Toggle](https://cyberspec.vercel.app/r/toggle.json): A latching key that stays lit while pressed.
-- [Toolbar](https://cyberspec.vercel.app/r/toolbar.json): Keys, toggles and separators in one bar, moved through with arrow keys.
-- [Tooltip](https://cyberspec.vercel.app/r/tooltip.json): A small cut label that appears on hover or focus.
-- [Tree](https://cyberspec.vercel.app/r/tree.json): A hierarchy with connector lines and branches that open.
+- [Accordion](https://www.cyberspec.dev/r/accordion.json): Stacked sections that open from numbered headings, each with a glyph that turns.
+- [Alert dialog](https://www.cyberspec.dev/r/alert-dialog.json): A flagged confirmation that has to be answered, and that an agent has to ask a person about.
+- [Alert](https://www.cyberspec.dev/r/alert.json): An inline notice on a spined frame: info, success, warning or danger, each with its own glyph.
+- [Avatar](https://www.cyberspec.dev/r/avatar.json): A portrait in a cut frame, with initials over a generated scanline field when there's no image.
+- [Badge](https://www.cyberspec.dev/r/badge.json): A small cut label in seven tones, with count and status variants.
+- [Breadcrumb](https://www.cyberspec.dev/r/breadcrumb.json): A trail of pages, the current one in the signal color.
+- [Button group](https://www.cyberspec.dev/r/button-group.json): Keys joined in one strip, horizontal or vertical, with hold-to-repeat.
+- [Button](https://www.cyberspec.dev/r/button.json): A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed.
+- [Calendar](https://www.cyberspec.dev/r/calendar.json): A month grid with today marked and the chosen day lit.
+- [Card](https://www.cyberspec.dev/r/card.json): A content card with a scanlined media slot, plain or interactive.
+- [Carousel](https://www.cyberspec.dev/r/carousel.json): A viewer: slides in a cut frame, with keys, segment indicators and a position readout.
+- [Checkbox](https://www.cyberspec.dev/r/checkbox.json): A cut box that fills and marks when checked, with an indeterminate state.
+- [Choice list](https://www.cyberspec.dev/r/choice-list.json): Replies to choose from: rows in the signal color, the chosen one a solid yellow bar.
+- [Code block](https://www.cyberspec.dev/r/code-block.json): Highlighted code with line numbers, a filename tab and a copy key. No highlighting dependency.
+- [Collapsible](https://www.cyberspec.dev/r/collapsible.json): One section behind a key that shows and hides it.
+- [Combobox](https://www.cyberspec.dev/r/combobox.json): A text control that filters a list of options as you type.
+- [Command palette](https://www.cyberspec.dev/r/command-palette.json): A searchable list of commands behind a prompt, in a dialog.
+- [Context menu](https://www.cyberspec.dev/r/context-menu.json): An area that opens a menu on right-click, a long press, or the keyboard.
+- [Data table](https://www.cyberspec.dev/r/data-table.json): Rows with selection, sortable columns, status badges and a menu per row.
+- [Date picker](https://www.cyberspec.dev/r/date-picker.json): A date field with a calendar that opens beside it.
+- [Dialog](https://www.cyberspec.dev/r/dialog.json): A modal panel on a spined frame that tears in over a dimmed page, with its answers on keys below.
+- [Drawer](https://www.cyberspec.dev/r/drawer.json): A sheet that slides in from the edge of the page, and can be dragged.
+- [Feed](https://www.cyberspec.dev/r/feed.json): Dated events in order on a vertical rule: who did what, and when.
+- [Fieldset](https://www.cyberspec.dev/r/fieldset.json): A spined frame grouping several fields under a legend.
+- [Glitch text](https://www.cyberspec.dev/r/glitch-text.json): Text that decodes itself into place and tears for a moment, with a stable copy for screen readers.
+- [Hex stat](https://www.cyberspec.dev/r/hex-stat.json): An attribute as a hexagon holding an icon, a value and a name, and a honeycomb to lay several out.
+- [Holo card](https://www.cyberspec.dev/r/holo-card.json): A surface that tilts toward the pointer in 3D, with a sheen and layers at different depths.
+- [Hover card](https://www.cyberspec.dev/r/hover-card.json): A name that previews a small dossier on hover or focus.
+- [Item list](https://www.cyberspec.dev/r/item-list.json): An always-visible list of rows in columns, the selected row a solid signal bar.
+- [Item slot](https://www.cyberspec.dev/r/item-slot.json): A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.
+- [Key hint](https://www.cyberspec.dev/r/key-hint.json): An input hint: a key glyph and what it does, optionally pressable.
+- [Loader](https://www.cyberspec.dev/r/loader.json): A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line.
+- [Menu](https://www.cyberspec.dev/r/menu.json): A key that opens a menu of actions, with checkable items, groups and a submenu.
+- [Menubar](https://www.cyberspec.dev/r/menubar.json): A bar of menus with one tab stop.
+- [Meter](https://www.cyberspec.dev/r/meter.json): A segmented gauge with thresholds that change its tone and print a word.
+- [Micro-print](https://www.cyberspec.dev/r/micro.json): The printed decoration around frames: micro-print lines, barcodes, rulers, data streams and corner brackets.
+- [Navbar](https://www.cyberspec.dev/r/navbar.json): A navigation bar with status readouts, page links and trailing content.
+- [OTP input](https://www.cyberspec.dev/r/otp-input.json): One cut cell per character of a code, with a blinking caret in the active one.
+- [Pagination](https://www.cyberspec.dev/r/pagination.json): Page keys with previous, next and ellipses, and a position readout.
+- [Panel](https://www.cyberspec.dev/r/panel.json): The kit's container: a frame with a spine or a title bar, a heading, micro-print and a body.
+- [Password input](https://www.cyberspec.dev/r/password-input.json): A password field with a key to show or hide it.
+- [Popover](https://www.cyberspec.dev/r/popover.json): A key that opens a framed surface beside it, with a title, description and body.
+- [Progress](https://www.cyberspec.dev/r/progress.json): A segmented bar with a percentage readout, and an indeterminate state.
+- [Radio group](https://www.cyberspec.dev/r/radio-group.json): Options where one is chosen, each with a diamond indicator.
+- [Rating](https://www.cyberspec.dev/r/rating.json): A level picked from a row of diamond pips.
+- [Readout](https://www.cyberspec.dev/r/readout.json): A large numeral with a unit and a label that counts to its new value when it changes.
+- [Resizable](https://www.cyberspec.dev/r/resizable.json): Panels split by a handle that drags or steps with keys.
+- [Reticle](https://www.cyberspec.dev/r/reticle.json): A lock-on bracket that snaps onto whatever it wraps when hovered, focused or active.
+- [Screen](https://www.cyberspec.dev/r/screen.json): The chrome every full screen shares: a status strip, the content, and a foot with key hints.
+- [Scroll area](https://www.cyberspec.dev/r/scroll-area.json): A scrolling region with a thin scrollbar and edge indicators.
+- [Segmented control](https://www.cyberspec.dev/r/segmented-control.json): A row of segments with an indicator that slides to the choice.
+- [Select](https://www.cyberspec.dev/r/select.json): A labelled trigger that opens a list of options to choose from.
+- [Separator](https://www.cyberspec.dev/r/separator.json): A rule with tick marks, plain, labelled or vertical.
+- [Side tabs](https://www.cyberspec.dev/r/side-tabs.json): Icon keys stacked down the edge, with a panel beside them.
+- [Signal graph](https://www.cyberspec.dev/r/signal-graph.json): A compact live graph, as a trace or a spectrum, with a text summary.
+- [Skeleton](https://www.cyberspec.dev/r/skeleton.json): Placeholder lines and blocks for content that's loading.
+- [Slider](https://www.cyberspec.dev/r/slider.json): A ticked track with a cut thumb and a value readout, single or range.
+- [Number stepper](https://www.cyberspec.dev/r/stepper.json): A value on a readout between minus and plus keys, with MIN and MAX tags.
+- [Switch](https://www.cyberspec.dev/r/switch.json): A block that slides across a cut track and lights, with its state printed beside it.
+- [Tabs](https://www.cyberspec.dev/r/tabs.json): Tabs over panels with a sliding indicator, or as cut keys.
+- [Terminal](https://www.cyberspec.dev/r/terminal.json): A console log with tagged lines, a prompt with history, and a follow-the-end scroll.
+- [Text field](https://www.cyberspec.dev/r/text-field.json): A labelled text input in a cut frame, with a hint, an error and an optional icon.
+- [Textarea](https://www.cyberspec.dev/r/textarea.json): A labelled multi-line input with a character count.
+- [Toast](https://www.cyberspec.dev/r/toast.json): Keys that raise a notification in each tone.
+- [Toaster](https://www.cyberspec.dev/r/toaster.json): The page's notification region and a notify() helper.
+- [Toggle group](https://www.cyberspec.dev/r/toggle-group.json): Toggles that share one value, one or several at a time.
+- [Toggle](https://www.cyberspec.dev/r/toggle.json): A latching key that stays lit while pressed.
+- [Toolbar](https://www.cyberspec.dev/r/toolbar.json): Keys, toggles and separators in one bar, moved through with arrow keys.
+- [Tooltip](https://www.cyberspec.dev/r/tooltip.json): A small cut label that appears on hover or focus.
+- [Tree](https://www.cyberspec.dev/r/tree.json): A hierarchy with connector lines and branches that open.
 
 ## Screens
 
-- [Archive](https://cyberspec.vercel.app/r/archive.json): A database of people, places and machines, one dossier each.
-- [Augments](https://cyberspec.vercel.app/r/augments.json): Five attributes on a hexagonal lattice, with points to spend and an info panel.
-- [Comms](https://cyberspec.vercel.app/r/comms.json): Contacts, a message thread, and replies to choose from.
-- [Daemon](https://cyberspec.vercel.app/r/daemon.json): An agent console: what the agent sees, what it does, a permission prompt, and undo.
-- [Grid](https://cyberspec.vercel.app/r/grid.json): A generated district map with filters, markers and a route.
-- [Jobs](https://cyberspec.vercel.app/r/jobs.json): A job board: tabs, a list of jobs, objectives to tick off, and the brief.
-- [Loadout](https://cyberspec.vercel.app/r/loadout.json): Gear slots, a weapon's sheet with its stats, and what's in the pack.
+- [Archive](https://www.cyberspec.dev/r/archive.json): A database of people, places and machines, one dossier each.
+- [Augments](https://www.cyberspec.dev/r/augments.json): Five attributes on a hexagonal lattice, with points to spend and an info panel.
+- [Comms](https://www.cyberspec.dev/r/comms.json): Contacts, a message thread, and replies to choose from.
+- [Daemon](https://www.cyberspec.dev/r/daemon.json): An agent console: what the agent sees, what it does, a permission prompt, and undo.
+- [Grid](https://www.cyberspec.dev/r/grid.json): A generated district map with filters, markers and a route.
+- [Jobs](https://www.cyberspec.dev/r/jobs.json): A job board: tabs, a list of jobs, objectives to tick off, and the brief.
+- [Loadout](https://www.cyberspec.dev/r/loadout.json): Gear slots, a weapon's sheet with its stats, and what's in the pack.
 
 ## Examples
 
-One per component, named `<component>-demo`: https://cyberspec.vercel.app/r/button-demo.json
+One per component, named `<component>-demo`: https://www.cyberspec.dev/r/button-demo.json
 
 ## More
 
-- [Registry index](https://cyberspec.vercel.app/r/registry.json)
+- [Registry index](https://www.cyberspec.dev/r/registry.json)
 - [ui-sdk docs for agents](https://ui-sdk.dev/llms.txt)

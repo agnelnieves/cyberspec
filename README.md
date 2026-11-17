@@ -1,5 +1,7 @@
 # CYBERSPEC
 
+Live: https://www.cyberspec.dev
+
 A component kit in the style of a machine from a darker future: a blue-black
 void lit in hot red, cyan for anything that's a value or a signal, yellow for
 the one thing to look at, corners cut rather than rounded, micro-print in the
@@ -19,14 +21,13 @@ packages the components are built on, `@ui-sdk/core` and `@ui-sdk/react`,
 install from npm along with them:
 
 ```sh
-npx shadcn@latest registry add @cyberspec=https://cyberspec-mocha.vercel.app/r/{name}.json
+npx shadcn@latest registry add @cyberspec=https://www.cyberspec.dev/r/{name}.json
 npx shadcn@latest add @cyberspec/slider @cyberspec/panel
 ```
 
-(`https://cyberspec-mocha.vercel.app` is the kit's site and the registry's
-default address. A Vercel build uses its project's production domain on its
-own; for another host, build with `REGISTRY_URL=https://your.domain bun run
-registry:build`.)
+(`https://www.cyberspec.dev` is the kit's site and the registry's default
+address; `cyberspec.dev` redirects to it. For another host, build with
+`REGISTRY_URL=https://your.domain bun run registry:build`.)
 
 Every item depends on `cyber`, which sets the project up for the kit: the
 foundation stylesheets, a `<Cyber>` root, the fonts, and the page-wide
@@ -97,6 +98,7 @@ node scripts/shot.mjs slider   # screenshot one component in headless Chrome
 node scripts/sheet.mjs         # a contact sheet of every catalog group
 node scripts/audit.mjs         # axe-core, motion, agent names and phone layout, every page
 node scripts/thumbs.mjs        # the Examples page's thumbnails, into public/examples
+node scripts/og.mjs            # the link-preview image, public/og.png
 ```
 
 The three scripts need the dev server running and a local Chrome. They write
