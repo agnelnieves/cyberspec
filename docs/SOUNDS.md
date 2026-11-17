@@ -46,7 +46,9 @@ python3 scripts/sound-samples.py /path/to/ticking.mp3 /path/to/moving-slider-to-
 ```
 
 The engine retains gesture unlocking, the remembered on/off preference,
-master gain, limiting and duplicate suppression. A continuous sound runs only
+master gain, limiting and duplicate suppression. The shared single tick uses
+gain `0.14`, a 6 dB increase from `0.07`; the continuous adjustment loop stays
+at `0.065`. A continuous sound runs only
 while accepted movements arrive, with a short inactivity cutoff. Release,
 cancellation, losing focus, unmounting and muting stop it. Holding still or
 reaching a bound does not keep ticking. Muting stops current playback as well

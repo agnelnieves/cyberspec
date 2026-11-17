@@ -56,28 +56,30 @@
 
   /* The block. Hollow while off, solid and lit while on. */
   [data-skin="cyber"] [data-kit="switch-thumb"] {
+    --frame-cut: 4px;
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: transparent;
+    --frame-image: none;
+
     position: absolute;
     inset-block: 3px;
     inset-inline-start: 3px;
     width: var(--thumb);
-    border: 1px solid var(--cy-line-ctl);
-    background: transparent;
-    clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
     transition:
       translate var(--cy-t) var(--cy-ease-snap),
       background-color var(--cy-t-fast) linear;
 
     &[data-checked] {
       translate: calc(var(--w) - var(--thumb) - 8px) 0;
-      border-color: var(--cy-ink-hi);
-      background: var(--cy-ink-hi);
+      --frame-line: var(--cy-ink-hi);
+      --frame-fill: var(--cy-ink-hi);
     }
 
     &[data-disabled] {
-      border-color: var(--cy-line-deco);
+      --frame-line: var(--cy-line-deco);
     }
 
-    :dir(rtl) &[data-checked] {
+    &:dir(rtl)[data-checked] {
       translate: calc((var(--w) - var(--thumb) - 8px) * -1) 0;
     }
   }

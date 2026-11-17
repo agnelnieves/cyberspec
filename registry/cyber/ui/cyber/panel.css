@@ -75,24 +75,8 @@
       transition: background-color var(--cy-t) var(--cy-ease-snap);
     }
 
-    /* A tick halfway down, reaching in from the spine's inner line. */
-    &::after {
-      content: "";
-      position: absolute;
-      inset-block-start: calc(50% - 1px);
-      inset-inline-start: -9px;
-      width: 9px;
-      height: 2px;
-      background: var(--panel-line);
-      pointer-events: none;
-      transition: background-color var(--cy-t) var(--cy-ease-snap);
-    }
-
     &:focus-within::before {
       background: var(--tone);
-    }
-    &:focus-within::after {
-      background: var(--cy-on-solid);
     }
   }
 

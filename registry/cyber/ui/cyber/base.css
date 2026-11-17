@@ -154,8 +154,11 @@
     --_bl: 0px;
     --_n: 0px;
     --_nw: 0px;
-    --_nx: var(--frame-notch-x, 56px);
+    --_nx: var(--_tl);
     --_edge: calc(50% - var(--_w) - 0.5px);
+    /* Extend the notch tile down through its horizontal stroke. Recenter
+       the 45-degree gradient for that extra height (1 / (2 * sqrt(2))). */
+    --_notch-edge: calc(50% - var(--_w) + var(--_nw) * 0.353553);
 
     border: var(--cy-line) solid var(--_line);
     background-color: var(--frame-fill, var(--cy-panel-a));
@@ -166,7 +169,7 @@
       linear-gradient(to top right, transparent var(--_edge), var(--_line) calc(50% - var(--_w))),
       linear-gradient(to bottom right, transparent var(--_edge), var(--_line) calc(50% - var(--_w))),
       linear-gradient(to bottom left, transparent var(--_edge), var(--_line) calc(50% - var(--_w))),
-      linear-gradient(to top right, transparent var(--_edge), var(--_line) calc(50% - var(--_w))),
+      linear-gradient(45deg, transparent calc(var(--_notch-edge) - 0.5px), var(--_line) var(--_notch-edge)),
       linear-gradient(var(--_line), var(--_line)),
       var(--frame-image, none);
     background-position:
@@ -182,7 +185,7 @@
       var(--_tr) var(--_tr),
       var(--_br) var(--_br),
       var(--_bl) var(--_bl),
-      var(--_n) var(--_n),
+      var(--_n) calc(var(--_n) + var(--_nw)),
       calc(100% - var(--_nx) - var(--_n)) var(--_nw),
       auto;
     clip-path: polygon(
@@ -218,6 +221,7 @@
     --_tl: var(--_cut);
   }
   [data-skin="cyber"] [data-frame~="notch"] {
+    --_nx: var(--frame-notch-x, 56px);
     --_n: var(--frame-notch, 5px);
     --_nw: var(--_w);
     padding-block-start: var(--_n);

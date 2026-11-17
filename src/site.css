@@ -397,7 +397,7 @@
       var(--_tr) var(--_tr),
       var(--_br) var(--_br),
       var(--_bl) var(--_bl),
-      var(--_n) var(--_n),
+      var(--_n) calc(var(--_n) + var(--_nw)),
       calc(100% - var(--_nx) - var(--_n)) var(--_nw),
       22px 22px;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;

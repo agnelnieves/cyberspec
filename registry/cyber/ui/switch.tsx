@@ -13,7 +13,7 @@ function Switch({
     <label data-kit="switch-row">
       <span data-kit="label">{label}</span>
       <SdkSwitch data-kit="switch" data-frame="tl br" {...props}>
-        <SwitchThumb data-kit="switch-thumb" />
+        <SwitchThumb data-kit="switch-thumb" data-frame="tl br" />
         <span data-kit="switch-state" aria-hidden />
       </SdkSwitch>
     </label>

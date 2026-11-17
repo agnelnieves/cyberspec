@@ -247,7 +247,7 @@ function hiss(at: number, { freq, q = 2, length, level }: { freq: number; q?: nu
 
 // One small recorded tick for lightweight interactions. Keep semantic voice
 // names so a future recording can replace one interaction independently.
-const tick = (at: number) => sample("hover", at, 0.07)
+const tick = (at: number) => sample("hover", at, 0.14)
 
 const voices: Record<Voice, (at: number, owner?: Element) => void> = {
   hover: tick,
