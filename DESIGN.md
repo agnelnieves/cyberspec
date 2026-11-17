@@ -196,6 +196,13 @@ arriving, something an agent changed, a heading decoding.
   informative with every animation removed. Mark an animation that carries
   meaning (a spinner) `data-motion="essential"` and keep it small and slow.
 
+The optional CRT screen treatment is `<Cyber data-crt="">`, once on the
+outer screen root. It paints a static viewport raster and soft corner vignette
+at full FX, with no animation, filter or JavaScript loop. Calm/off remove it;
+high contrast, forced colors and print hide it. Local media rasters are
+suppressed while the screen raster is active, except in native top-layer
+dialogs/popovers. Keep the texture subtle enough for text and controls to read.
+
 ## 6. Sound and haptics
 
 `lib/sound.ts` mixes recordings and synthesized sounds through Web Audio;

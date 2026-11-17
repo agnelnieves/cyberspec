@@ -36,10 +36,14 @@
 
     --cy-accent: oklch(var(--theme-l, 0.656) var(--theme-c, 0.23) var(--theme-h, 24));
     --cy-ink: oklch(from var(--cy-accent) max(l, 0.69) min(c, 0.2) h);
-    --cy-ink-mute: oklch(from var(--cy-accent) 0.62 calc(c * 0.5) h);
+    /* Compensate the two lower-contrast roles when a screen raster is on:
+       against the panel, the shipped accents keep text above 4.5:1 and
+       controls above 3:1 even in its darkest corner.
+       The inherited screen flag also covers nested Cyber roots. */
+    --cy-ink-mute: oklch(from var(--cy-accent) calc(0.62 + 0.06 * var(--cy-crt-screen, 0)) calc(c * 0.5) h);
     --cy-ink-hi: oklch(from var(--cy-accent) 0.94 0.03 h);
     --cy-line-deco: color-mix(in srgb, var(--cy-accent) 30%, var(--cy-panel));
-    --cy-line-ctl: color-mix(in srgb, var(--cy-accent) 70%, var(--cy-panel));
+    --cy-line-ctl: color-mix(in srgb, var(--cy-accent) calc(70% + 15% * var(--cy-crt-screen, 0)), var(--cy-panel));
     --cy-line-hot: var(--cy-accent);
     --cy-fill-hover: color-mix(in srgb, var(--cy-accent) 10%, var(--cy-panel));
     --cy-fill-active: color-mix(in srgb, var(--cy-accent) 40%, var(--cy-panel));

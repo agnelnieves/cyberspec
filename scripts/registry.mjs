@@ -123,7 +123,7 @@ items.push(
     ],
     {
       css: { [fontImport]: {} },
-      docs: 'Wrap your app (or any part of it) in <Cyber> from @/components/ui/cyber; everything inside is styled by the skin. Set accent={{ l: 0.82, c: 0.13, h: 215 }} for another accent color (OKLCH), and fx="calm" or "off" to pin the effects level. Rajdhani and JetBrains Mono are imported at the top of your CSS file.',
+      docs: 'Wrap your app (or any part of it) in <Cyber> from @/components/ui/cyber; everything inside is styled by the skin. Set accent={{ l: 0.82, c: 0.13, h: 215 }} for another accent color (OKLCH), and fx="calm" or "off" to pin the effects level. Add data-crt="" once on the outer app root for a static screen raster and subtle corner vignette at full FX. Rajdhani and JetBrains Mono are imported at the top of your CSS file.',
       categories: ["theme"],
     },
   ),

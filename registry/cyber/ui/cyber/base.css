@@ -252,7 +252,7 @@
       inset: 0;
       pointer-events: none;
       background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.28) 2px 3px);
-      opacity: calc(0.5 * var(--cy-fx) + 0.25);
+      opacity: calc(0.75 * var(--cy-fx) * (1 - var(--cy-crt-screen, 0)));
       mix-blend-mode: multiply;
     }
   }

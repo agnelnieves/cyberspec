@@ -255,7 +255,7 @@ function Site({ route }: { route: string }) {
   const root = React.useRef<HTMLDivElement>(null)
   const level = React.useSyncExternalStore(onFxChange, fxLevel)
   return (
-    <div ref={root} data-skin="cyber" data-fx={level} data-site>
+    <div ref={root} data-skin="cyber" data-fx={level} data-crt="" data-site>
       <a href="#main" data-site-skip>
         Skip to content
       </a>

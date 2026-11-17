@@ -12,10 +12,9 @@
     overflow-x: clip;
     display: flex;
     flex-direction: column;
-    /* The void, lit from above by the accent, with a fine line raster. */
+    /* The void, lit from above. The shared CRT overlay supplies the raster. */
     background:
       radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--cy-accent) 30%, transparent), transparent 70%),
-      repeating-linear-gradient(to bottom, transparent 0 3px, rgb(255 255 255 / calc(0.012 * var(--cy-fx) + 0.006)) 3px 4px),
       var(--cy-void);
     background-attachment: fixed;
   }

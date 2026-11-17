@@ -190,6 +190,43 @@
 }
 
 @layer cyber.fx {
+  /* Opt in once, on the screen's outer Cyber root. One fixed, static paint
+     gives the whole interface a fine phosphor raster and soft tube corners.
+     No filter, blend pass, animation, or per-frame JavaScript is needed. */
+  [data-skin="cyber"][data-crt] {
+    --cy-crt-screen: var(--cy-fx);
+  }
+
+  [data-skin="cyber"][data-crt]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    user-select: none;
+    background:
+      radial-gradient(ellipse at 50% 48%, transparent 54%, rgb(2 3 8 / 0.035) 78%, rgb(2 3 8 / 0.1) 100%),
+      repeating-linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0.08) 0 1px,
+        transparent 1px 3px,
+        rgb(216 244 255 / 0.012) 3px 4px
+      );
+    opacity: var(--cy-fx);
+  }
+
+  /* The inherited screen flag replaces local rasters only while CRT is on,
+     including inside separately pinned Cyber roots. Native top-layer surfaces
+     sit above this overlay, so their media keeps its own raster. */
+  [data-skin="cyber"][data-crt] :is(dialog, [popover]) {
+    --cy-crt-screen: 0;
+  }
+
+  [data-skin="cyber"][data-crt] [data-crt]::after,
+  [data-skin="cyber"][data-crt]:is([data-fx="calm"], [data-fx="off"])::after {
+    display: none;
+  }
+
   /* A press flashes any pressable frame that asks for it. */
   [data-skin="cyber"] [data-press-flash]:active:not(:disabled, [data-disabled], [aria-disabled="true"]) {
     animation: var(--cy-fx-flash) 220ms var(--cy-ease-snap);
@@ -211,6 +248,12 @@
 }
 
 @layer cyber.a11y {
+  @media (prefers-contrast: more), (forced-colors: active), print {
+    [data-skin="cyber"][data-crt]::after {
+      display: none;
+    }
+  }
+
   /* Focus. Everything focusable gets the signal-colored ring. A frame's
      corners are clipped, which would clip an outline too, so a frame draws
      the ring inside itself: its edge and its cut corners turn the signal
