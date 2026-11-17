@@ -131,9 +131,6 @@ function Masthead() {
           code={`npx shadcn@latest registry add @cyberspec=${origin}/r/{name}.json\nnpx shadcn@latest add @cyberspec/cyber @cyberspec/button`}
         />
         <div data-kit="actions">
-          <a href="/daemon" data-kit="button" data-frame="notch br" data-press-flash="" data-tone="signal">
-            Watch an agent
-          </a>
           <InstallPrompt origin={origin} />
         </div>
       </Panel>

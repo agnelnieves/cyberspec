@@ -211,9 +211,9 @@ import { haptic, crosses } from "@/registry/cyber/lib/haptics"
 
 sfx("increment")         // a successful plus/up step
 sfx("decrement")         // a successful minus/down step
-sfx("tick")              // the original navigation tick
+sfx("tick")              // the shared recorded tick
 sfx("success")           // outcomes: "success" | "warning" | "error" | "deny"
-sfx("glitch")            // interference
+sfx("glitch")            // explicit interference cue; currently the shared tick
 haptic("selection")      // "selection" | "light" | "medium" | "heavy" | "success" | "warning" | "error"
 ```
 
@@ -222,6 +222,9 @@ you play your own, or `data-sfx="confirm"` (any voice) to choose it. Click
 suppression does not suppress the shared hover tick. Use explicit action
 metadata for directional controls; never infer direction from an icon or label.
 Use `data-sfx-hover="none"` to opt out of hover itself.
+Lightweight interactions, including typing, selection and small popup
+transitions, share the recorded tick. Primary actions share the button-press
+recording; success, warning, error and deny retain their original voices.
 Play directional sounds only after a change succeeds, including repeats and
 keyboard changes. Disabled controls, canceled changes and bounds must not
 produce a successful-step sound.
@@ -275,7 +278,7 @@ that visible and safe:
 
 - **The agent signal** (`lib/agent-signal.ts`): when a change's source is
   `"agent"`, the control it touched lights cyan with `data-agent-touch`, a
-  chirp plays, and it's announced. This is automatic.
+  tick plays, and it's announced. This is automatic.
 - An agent finds controls by their accessible names, so name things the way
   a person would say them ("Stealth routing", not "Switch 2"), and keep
   names unique within a screen.

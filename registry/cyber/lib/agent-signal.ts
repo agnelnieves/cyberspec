@@ -3,7 +3,7 @@ import { sfx } from "@/registry/cyber/lib/sound"
 
 // When an agent changes something through the ui-sdk agent bridge, the page
 // shows it: the control it touched lights in the signal color for a moment
-// (`data-agent-touch`, styled in fx.css), a chirp plays, and the change is
+// (`data-agent-touch`, styled in fx.css), a tick plays, and the change is
 // announced to assistive technology. A person sharing the page with an
 // agent can then always tell what the agent did, and what they did
 // themselves.

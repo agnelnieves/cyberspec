@@ -79,7 +79,7 @@ export function App() {
 - **Red isn't "wrong".** It's the resting color, so errors are yellow, with
   a glyph and words. No state is shown by color alone.
 - **Agents you can watch.** The components work with ui-sdk's agent bridge.
-  When an agent changes one, it lights cyan for a moment, chirps, and is
+  When an agent changes one, it lights cyan for a moment, plays a tick, and is
   announced to screen readers. Anything marked `data-agent-confirm` makes
   the agent ask a person first. The Daemon screen is a console for trying
   all of it, with no API key.

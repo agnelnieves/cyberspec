@@ -17,7 +17,7 @@ type Voice =
   | "press" // a button going down
   | "confirm" // a primary action
   | "select" // an option, a tab, a row chosen
-  | "tick" // original synthesized tick: pagination and carousel navigation
+  | "tick" // the shared recorded tick: pagination and carousel navigation
   | "on" // a switch or a checkbox turning on
   | "off" // ...and off
   | "open" // a small popup or an informational toast appearing
@@ -245,37 +245,26 @@ function hiss(at: number, { freq, q = 2, length, level }: { freq: number; q?: nu
   src.start(at, Math.random() * 0.1, length + 0.02)
 }
 
-// No two plays are identical: pitch drifts a few percent each time.
-const drift = (hz: number, amount = 0.03) => hz * (1 + (Math.random() * 2 - 1) * amount)
+// One small recorded tick for lightweight interactions. Keep semantic voice
+// names so a future recording can replace one interaction independently.
+const tick = (at: number) => sample("hover", at, 0.07)
 
 const voices: Record<Voice, (at: number, owner?: Element) => void> = {
-  hover: (at) => sample("hover", at, 0.07),
+  hover: tick,
   increment: (at) => sample("increment", at, 0.14),
   decrement: (at) => sample("decrement", at, 0.14),
   "modal-open": (at, owner) => sample(modalSample(owner, true), at, 0.1, owner),
   "modal-close": (at, owner) => sample(modalSample(owner, false), at, 0.1, owner),
   press: (at) => sample("press", at, 0.14),
-  confirm: (at) => {
-    tone(at, { type: "square", from: drift(440), to: 220, length: 0.07, level: 0.07 })
-    tone(at + 0.045, { from: drift(1320), length: 0.09, level: 0.07 })
-  },
-  select: (at) => tone(at, { from: drift(1480), to: 1760, length: 0.045, level: 0.07 }),
-  tick: (at) => tone(at, { type: "triangle", from: drift(1900, 0.05), length: 0.018, level: 0.05 }),
+  confirm: (at) => sample("press", at, 0.14),
+  select: tick,
+  tick,
   on: (at) => sample("on", at, 0.12),
   off: (at) => sample("off", at, 0.12),
-  open: (at) => {
-    hiss(at, { freq: 1800, q: 0.8, length: 0.07, level: 0.05 })
-    tone(at, { from: drift(300), to: 900, length: 0.09, level: 0.05 })
-  },
-  close: (at) => tone(at, { from: drift(820), to: 280, length: 0.07, level: 0.045 }),
-  type: (at) => {
-    hiss(at, { freq: drift(4200, 0.15), q: 3, length: 0.014, level: 0.05 })
-    tone(at, { type: "square", from: drift(1700, 0.08), length: 0.012, level: 0.015 })
-  },
-  glitch: (at) => {
-    for (let i = 0; i < 4; i++) hiss(at + i * 0.028, { freq: 600 + Math.random() * 5000, q: 6, length: 0.022, level: 0.07 })
-    tone(at, { type: "sawtooth", from: drift(90), to: 60, length: 0.1, level: 0.04 })
-  },
+  open: tick,
+  close: tick,
+  type: tick,
+  glitch: tick,
   success: (at) => {
     tone(at, { from: 988, length: 0.08, level: 0.07 })
     tone(at + 0.075, { from: 1480, length: 0.16, level: 0.07 })
@@ -290,33 +279,31 @@ const voices: Record<Voice, (at: number, owner?: Element) => void> = {
     hiss(at, { freq: 900, q: 1, length: 0.1, level: 0.04 })
   },
   deny: (at) => tone(at, { type: "square", from: 196, to: 150, length: 0.09, level: 0.06 }),
-  agent: (at) => {
-    tone(at, { from: 1976, length: 0.03, level: 0.05 })
-    tone(at + 0.035, { from: 2637, length: 0.03, level: 0.05 })
-    tone(at + 0.07, { from: 3136, length: 0.05, level: 0.045 })
-  },
+  agent: tick,
 }
 
+const tickVoices = new Set<Voice>(["hover", "select", "tick", "open", "close", "type", "glitch", "agent"])
 let lastAt = 0
-let lastVoice: Voice | null = null
+let lastFamily: Voice | null = null
 
 function sfx(voice: Voice, owner?: Element) {
   if (!enabled) return
   unlock()
   if (!ctx || ctx.state !== "running") return
-  // The same voice twice within 25ms is one sound: a listener and a handler
-  // both answering one press.
+  // Voices sharing a recording also share duplicate suppression: selecting
+  // a menu option and closing its popup is one tick, not two stacked ticks.
   const now = performance.now()
-  if (voice === lastVoice && now - lastAt < 25) return
+  const family = tickVoices.has(voice) ? "tick" : voice === "confirm" ? "press" : voice
+  if (family === lastFamily && now - lastAt < 25) return
   lastAt = now
-  lastVoice = voice
+  lastFamily = family
   voices[voice](ctx.currentTime + 0.001, owner)
 }
 
 const disabled = ':disabled, [aria-disabled="true"], [data-disabled]'
 const typing =
   'textarea, [contenteditable="true"], input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"], input[type="number"]'
-const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"]'
+const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"], [role="treeitem"], [role="gridcell"]'
 const hoverable = `${pressable}, [role="slider"], [role="separator"][aria-valuenow], input:not([type="hidden"]), textarea, select, summary`
 
 // What a click on something sounds like, from what it is. A component can
@@ -364,7 +351,7 @@ function installSound() {
     true,
   )
 
-  // Hover only chirps for a mouse, and only on things that react to it.
+  // Hover only ticks for a mouse, and only on things that react to it.
   let hovered: Element | null = null
   document.addEventListener(
     "pointerover",
@@ -388,9 +375,9 @@ function installSound() {
     (event) => {
       if (!enabled || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return
       const target = event.target as Element | null
-      // Menu checkboxes handle Enter/Space directly without a click. Wait
+      // Menu choices handle Enter/Space directly without a click. Wait
       // for the resulting state so canceled changes stay silent as well.
-      const check = target?.closest?.('[role="menuitemcheckbox"]')
+      const check = target?.closest?.('[role="menuitemcheckbox"], [role="menuitemradio"]')
       if (check && check.closest('[data-skin="cyber"]') && !check.matches(disabled) && (event.key === " " || event.key === "Enter")) {
         const before = check.getAttribute("aria-checked")
         const voice = voiceFor(check)

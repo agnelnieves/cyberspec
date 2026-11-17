@@ -7,7 +7,10 @@ remembered in local storage, including on `/preview/<component>` routes.
 
 | Interaction | Recording | Where to try it |
 | --- | --- | --- |
-| Shared mouse hover | Exactly one tick from `ticking.mp3` | Any enabled button or other pressable, including repeating and Stepper keys |
+| Shared mouse hover | Exactly one tick from `ticking.mp3` | Any enabled button or other pressable, including menu rows, submenu triggers, repeating and Stepper keys |
+| Selection, navigation and text entry | The same single recorded tick | Menu items, options, tabs, radio choices, tree rows, calendar dates, carousel/pagination, typing and deletion |
+| Small popup opening / closing | The same single recorded tick | Menus, submenus, select lists, popovers, tooltips and informational toasts |
+| Agent-driven changes | The same single recorded tick | `/daemon`; also the explicit `glitch` voice, which has no automatic trigger |
 | Continuous adjustment | Eight consecutive ticks from `ticking.mp3` | Drag in `/preview/resizable` and `/preview/slider`; focus Frame and scroll in `/preview/stepper` |
 | Decrement / minus / down | One instance of the earlier repeated sound in `moving-slider-to-left.wav` | Zoom minus and Floor down in `/preview/button-group`; Stepper minus; `/grid` zoom out |
 | Increment / plus / up | The distinct final sound in `moving-slider-to-left.wav` | Zoom plus and Floor up in `/preview/button-group`; Stepper plus; `/grid` zoom in; Raise in `/augments` |
@@ -15,7 +18,7 @@ remembered in local storage, including on `/preview/<component>` routes.
 | Off / unchecked / released | The last sound in the same Variations 02 recording | The same controls; also password visibility in `/preview/password-input` |
 | Modal opening | The cue starting near 7.4 seconds in `ES_User Interface, Motion, Hitech GUI, Scifi, Interact, Digital, Glitch 01 - Epidemic Sound.mp3`, compressed to the movement's duration | `/preview/dialog`, `/preview/alert-dialog`, `/preview/drawer`, `/preview/command-palette` |
 | Modal closing | The same cue compressed to the shorter exit duration and reversed | Close buttons, Escape and supported backdrop dismissal on those surfaces |
-| Button press | The cue near second 2 in `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Ordinary buttons in `/preview/button`; ButtonGroup reset/readout keys |
+| Button press and confirmation | The cue near second 2 in `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Ordinary and primary buttons in `/preview/button`; ButtonGroup reset/readout keys |
 
 The directional samples are not used on sliders. The original recordings in
 Downloads remain unchanged. The WAV contains two earlier bursts, followed by
@@ -82,39 +85,25 @@ or muting fades the previous cue out promptly. Ordinary modal trigger/close
 buttons use the transition cue without a second, longer generic button
 recording underneath it; explicit confirmation sounds still apply.
 
-Small popups and informational toasts retain the original `open` / `close` voices. Ordinary
-button presses use the new `press` recording; primary and explicitly marked
-confirmation buttons retain their separate `confirm` voice.
+Small popups and informational toasts use the single tick for both `open`
+and `close`, replacing the original pop and falling tone. Menu rows tick on
+hover, and submenus tick when they open. Ordinary and primary buttons share
+the `press` recording. Semantic voice names remain available, so future
+recordings can replace an individual interaction without changing its callers.
+Voices using the same recording are coalesced within 25 ms; choosing a menu
+item and closing its popup together produces one tick.
 
-## Original synthesized voices still available
+## Four sounds left to choose
 
-These voices have not been replaced. The descriptions below can guide the
-next set of recordings. The routes are relative to the running site.
+These outcome voices retain their original synthesized sounds while their
+recordings remain undecided. The routes are relative to the running site.
 
 | Voice | Current sound | Trigger / test location |
 | --- | --- | --- |
-| `confirm` | Falling square click followed by a higher note | Primary buttons and confirmation actions, e.g. `/preview/button`, `/preview/alert-dialog` |
-| `select` | Short rising blip | Options, tabs, radio choices, menu items; `/preview/tabs`, `/preview/select` |
-| `tick` | Very short triangle-wave detent | Previous/next slide in `/preview/carousel`, previous/next page in `/preview/pagination`; fallback for a repeating ButtonGroup key without directional action |
-| `open` | Filtered noise with a rising tone | Small popups and informational toasts; `/preview/menu`, `/preview/toast` |
-| `close` | Short falling tone | Small popups closing |
-| `type` | Tiny filtered-noise click with a square tone | Text entry and deletion; `/preview/text-field`, `/preview/textarea` |
-| `glitch` | Four bursts of static with a low falling buzz | Available through `sfx("glitch")`; no current component calls it automatically |
 | `success` | Two-note rising chime | Success toast, successful copy, Daemon Commit route or Undo agent; `/preview/toast`, `/preview/code-block`, `/daemon` |
 | `warning` | Two repeated triangle-wave beeps | Warning toast or a Daemon warning; `/preview/toast`, `/daemon` |
 | `error` | Two falling square tones with noise | Error toast; `/preview/toast` |
 | `deny` | Low falling square-wave refusal | Refused actions, disabled focusable controls, failed copy, blocked Daemon action |
-| `agent` | Three quick rising notes | Agent-driven changes; `/daemon` |
-
-The original synthesized `hover`, `press`, `on` and `off` have been replaced. The original synthesized
-`tick` remains intentionally available for navigation and non-directional
-repeating keys; resizing, slider movement and Stepper changes no longer use it.
-
-There are eleven actively mapped synthesized voices left. `glitch` is a
-twelfth available voice with no automatic trigger yet. For the next recording
-pass, start with `confirm` and `select`, then small-popup `open` / `close` and
-`type`; outcomes (`success`, `warning`, `error`, `deny`), navigation `tick`,
-and `agent` can follow.
 
 ## Focused checks
 
@@ -129,6 +118,7 @@ bun run build
 The browser check instruments real Web Audio buffer starts/stops while driving
 the UI. It checks sample identity, hover on controls that suppress automatic
 click sounds, pointer and keyboard directions, held repeats, disabled/bounded
-controls, and continuous-sound cleanup. Listening remains the final check for
+controls, menu hover/submenus, typing, voice mappings and continuous-sound
+cleanup. Listening remains the final check for
 the desired tone and volume. Modal checks also compare effective audio spans
 with desktop/mobile motion, reversed sample identity and interruption cleanup.

@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 // Run against the dev server: bun scripts/sound-check.mjs
 // Only modal duration/lifecycle checks: bun scripts/sound-check.mjs --timing-only
+// Only menu, typing and shared-voice checks: bun scripts/sound-check.mjs --feedback-only
 // Observe actual Web Audio nodes while driving controls in headless Chrome.
 import assert from "node:assert/strict"
 import { existsSync } from "node:fs"
@@ -19,6 +20,7 @@ const page = await browser.newPage()
 await page.setViewport({ width: 1280, height: 900 })
 const errors = []
 const timingOnly = process.argv.includes("--timing-only")
+const feedbackOnly = process.argv.includes("--feedback-only")
 page.on("pageerror", (error) => errors.push(error.message))
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 let checks = 0
@@ -177,149 +179,312 @@ try {
   }
   pass("modal close exactly reverses the compressed closing recording")
 
+  if (!timingOnly) {
+    for (const voice of ["select", "tick", "open", "close", "type", "agent", "glitch", "confirm"]) {
+      await pause(30)
+      await clear()
+      await page.evaluate((voice) => window.sound.sfx(voice), voice)
+      await onlySample(voice === "confirm" ? signatures.press : signatures.hover, `${voice} shared recording`)
+    }
+    pass("selection, navigation, popup, typing, agent and glitch use the shared tick; confirm uses press")
+    for (const [voice, count] of [["success", 2], ["warning", 2], ["error", 2], ["deny", 1]]) {
+      await clear()
+      await page.evaluate((voice) => window.sound.sfx(voice), voice)
+      const heard = await events()
+      assert.equal(heard.filter((event) => event.kind === "oscillator").length, count, `${voice} retains its original synthesized tones`)
+      assert(!heard.some((event) => Object.values(signatures).includes(event.signature)), `${voice} has no replacement recording`)
+    }
+    pass("success, warning, error and deny retain their original synthesized voices")
+    await clear()
+    await page.evaluate(() => { window.sound.sfx("hover"); window.sound.sfx("select"); window.sound.sfx("close") })
+    await onlySample(signatures.hover, "shared tick family deduplication")
+    await clear()
+    await page.evaluate(() => { window.sound.sfx("press"); window.sound.sfx("confirm") })
+    await onlySample(signatures.press, "shared press family deduplication")
+    pass("different voices sharing one recording coalesce within the duplicate window")
+
+    const tagRow = async (label, tag) => {
+      const found = await page.evaluate(({ label, tag }) => {
+        const row = [...document.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]')].find((node) => node.textContent.trim().startsWith(label))
+        row?.setAttribute("data-sound-row", tag)
+        return Boolean(row)
+      }, { label, tag })
+      assert(found, `Menu row ${label} exists`)
+      return `[data-sound-row="${tag}"]`
+    }
+    for (const config of [
+      { route: "menu", rows: ["Call", "Message"], disabled: "Locate", submenu: "Share with", child: "Ilya Brandt" },
+      { route: "menubar", rows: ["Mount deck", "Run diagnostics"], submenu: "Load daemon", child: "Ghostwrite" },
+      { route: "context-menu", rows: ["Inspect sector", "Route here"], disabled: "Unavailable", submenu: "More routes", child: "Relay route" },
+    ]) {
+      await open(`/preview/${config.route}`)
+      if (config.route === "context-menu") {
+        // The catalog's context menu has no submenu; exercise the installable
+        // wrapper with a real nested menu rather than changing the demo.
+        await page.evaluate(async () => {
+          const loaded = (pathname) => performance.getEntriesByType("resource").filter((entry) => new URL(entry.name).pathname === pathname).at(-1)?.name || pathname
+          const reactModule = await import(loaded("/node_modules/.vite/deps/react.js"))
+          const React = reactModule.default || reactModule
+          const domModule = await import(loaded("/node_modules/.vite/deps/react-dom_client.js"))
+          const { createRoot } = domModule.default || domModule
+          const { Cyber } = await import(loaded("/registry/cyber/ui/cyber.tsx"))
+          const { ContextMenu } = await import(loaded("/registry/cyber/ui/context-menu.tsx"))
+          document.getElementById("root").style.display = "none"
+          const fixture = document.createElement("div")
+          document.body.append(fixture)
+          createRoot(fixture).render(React.createElement(Cyber, { fx: "full", style: { padding: 80 } }, React.createElement(ContextMenu, {
+            label: "Audited sector",
+            items: [
+              { value: "inspect", label: "Inspect sector" },
+              { value: "route", label: "Route here" },
+              { value: "unavailable", label: "Unavailable", disabled: true },
+              { type: "submenu", label: "More routes", items: [{ value: "relay", label: "Relay route" }] },
+            ],
+          })))
+        })
+        await page.waitForSelector('[aria-label="Audited sector"]')
+        await page.click('[aria-label="Audited sector"]', { button: "right" })
+      } else {
+        await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
+        await page.click('[data-slot="menu-trigger"]')
+      }
+      await page.waitForSelector('[data-slot="menu-content"][data-open]', { visible: true })
+      await pause(280)
+      for (const [index, label] of config.rows.entries()) {
+        await hover(await tagRow(label, `row-${index}`))
+        await onlySample(signatures.hover, `${config.route} ${label} hover`)
+      }
+      if (config.disabled) {
+        await hover(await tagRow(config.disabled, "disabled"))
+        assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, "Disabled menu row hover stays silent")
+      }
+      const sub = await tagRow(config.submenu, "submenu")
+      await hover(sub)
+      await pause(250)
+      const opening = (await events()).filter((event) => event.kind !== "stop")
+      assert.equal(opening.length, 2, `${config.route}: row hover and delayed submenu opening each tick once`)
+      assert(opening.every((event) => event.kind === "buffer" && event.signature === signatures.hover), `${config.route}: no old synthesized popup pop`)
+      const child = await tagRow(config.child, "child")
+      await clear()
+      await page.hover(child)
+      await pause(40)
+      await onlySample(signatures.hover, `${config.route} submenu child hover`)
+      await clear()
+      await page.click(child)
+      await pause(50)
+      await onlySample(signatures.hover, `${config.route} selection and popup close coalesce`)
+      pass(`${config.route}: row/submenu hover, submenu opening and selection use only the shared tick`)
+    }
+
+    await open("/preview/menu")
+    await click('[data-slot="menu-trigger"]')
+    for (const [label, key] of [["Known", "Space"], ["Burned", "Enter"]]) {
+      const radio = await tagRow(label, "radio-choice")
+      await page.focus(radio)
+      await clear()
+      await page.keyboard.press(key)
+      await pause(40)
+      assert.equal(await page.$eval(radio, (node) => node.getAttribute("aria-checked")), "true", `menu radio ${key} selects ${label}`)
+      await onlySample(signatures.hover, `menu radio ${key} selection`)
+      await clear()
+      await page.keyboard.press(key)
+      await pause(40)
+      assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, `unchanged menu radio ${key} stays silent`)
+      await page.$eval(radio, (node) => node.removeAttribute("data-sound-row"))
+    }
+    pass("menu radio keyboard changes tick once and unchanged choices stay silent")
+
+    for (const [route, selector, keys] of [
+      ["text-field", '[data-kit="text-field"]', ["a", "Backspace"]],
+      ["textarea", "textarea", ["x", "Enter", "Backspace"]],
+    ]) {
+      await open(`/preview/${route}`)
+      await page.focus(selector)
+      for (const key of keys) {
+        await clear()
+        await page.keyboard.press(key)
+        await pause(40)
+        await onlySample(signatures.hover, `${route} typing ${key}`)
+      }
+    }
+    pass("typing and deleting in text fields and textareas use the shared tick")
+    for (const [route, selector] of [
+      ["tabs", '[data-kit="tabs-tab"]:nth-child(2)'],
+      ["pagination", '[aria-label="Next page"]'],
+      ["carousel", '[aria-label="Next slide"]'],
+    ]) {
+      await open(`/preview/${route}`)
+      await click(selector)
+      await onlySample(signatures.hover, `${route} navigation tick`)
+    }
+    pass("tab selection, pagination and carousel navigation share the recorded tick")
+    for (const route of ["tree", "calendar"]) {
+      await open(`/preview/${route}`)
+      const tagged = await page.evaluate((route) => {
+        const node = route === "tree"
+          ? [...document.querySelectorAll('[data-kit="tree-name"]')].find((el) => el.textContent === "deadlock.dmn")?.closest('[role="treeitem"]')
+          : document.querySelector('[role="gridcell"]:not([data-disabled]):not([data-unavailable]):not([data-outside]):not([data-selected])')
+        node?.setAttribute("data-sound-row", "selection-target")
+        return Boolean(node)
+      }, route)
+      assert(tagged, `${route} selectable row exists`)
+      const selector = '[data-sound-row="selection-target"]'
+      await hover(selector)
+      await onlySample(signatures.hover, `${route} row hover`)
+      await clear()
+      await page.click(selector)
+      await pause(40)
+      await onlySample(signatures.hover, `${route} row selection`)
+      assert.equal(await page.$eval(selector, (node) => node.getAttribute("aria-selected")), "true", `${route} selection changed`)
+    }
+    pass("tree rows and calendar days share hover and selection ticks")
+  }
+
   // Full-motion timing is deliberately measured separately from the rest
   // of the suite. The default fixture uses FX off for deterministic input.
-  const startProbe = async (route) => page.evaluate((route) => {
-    const probe = { at: performance.now(), frames: [], animations: [] }
-    window.modalTiming = probe
-    const seen = new WeakSet()
-    let running = true
-    window.endModalTiming = () => { running = false; return probe }
-    const frame = () => {
-      if (!running) return
-      const node = document.querySelector(`[data-slot="${route}-content"]`)
-      const at = performance.now()
-      if (node) {
-        const rect = node.getBoundingClientRect()
-        const side = node.getAttribute("data-side")
-        const position = side === "right" ? 1 - (rect.left - (innerWidth - rect.width)) / rect.width
-          : side === "bottom" ? 1 - (rect.top - (innerHeight - rect.height)) / rect.height : null
-        probe.frames.push({ at, position, open: node.hasAttribute("data-open") })
-        for (const animation of node.getAnimations()) {
-          if (seen.has(animation)) continue
-          seen.add(animation)
-          const timing = animation.effect?.getComputedTiming()
-          if (!timing || timing.iterations === Infinity) continue
-          const info = { duration: timing.duration, name: animation.animationName || "WAAPI", keyframes: animation.effect?.getKeyframes() }
-          probe.animations.push(info)
-          animation.finished.then(() => { info.finishedAt = performance.now() }, () => {})
-        }
-      } else probe.frames.push({ at, absent: true })
+  if (!feedbackOnly) {
+    const startProbe = async (route) => page.evaluate((route) => {
+      const probe = { at: performance.now(), frames: [], animations: [] }
+      window.modalTiming = probe
+      const seen = new WeakSet()
+      let running = true
+      window.endModalTiming = () => { running = false; return probe }
+      const frame = () => {
+        if (!running) return
+        const node = document.querySelector(`[data-slot="${route}-content"]`)
+        const at = performance.now()
+        if (node) {
+          const rect = node.getBoundingClientRect()
+          const side = node.getAttribute("data-side")
+          const position = side === "right" ? 1 - (rect.left - (innerWidth - rect.width)) / rect.width
+            : side === "bottom" ? 1 - (rect.top - (innerHeight - rect.height)) / rect.height : null
+          probe.frames.push({ at, position, open: node.hasAttribute("data-open") })
+          for (const animation of node.getAnimations()) {
+            if (seen.has(animation)) continue
+            seen.add(animation)
+            const timing = animation.effect?.getComputedTiming()
+            if (!timing || timing.iterations === Infinity) continue
+            const info = { duration: timing.duration, name: animation.animationName || "WAAPI", keyframes: animation.effect?.getKeyframes() }
+            probe.animations.push(info)
+            animation.finished.then(() => { info.finishedAt = performance.now() }, () => {})
+          }
+        } else probe.frames.push({ at, absent: true })
+        requestAnimationFrame(frame)
+      }
       requestAnimationFrame(frame)
-    }
-    requestAnimationFrame(frame)
-  }, route)
-  for (const mobile of [false, true]) {
-    await page.setViewport(mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: 1280, height: 900 })
-    for (const route of ["dialog", "alert-dialog", "drawer"]) {
-      await open(`/preview/${route}`)
-      await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
-      for (const phase of ["open", "close"]) {
-        const selector = `[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`
-        await hover(selector)
-        await clear()
-        await startProbe(route)
-        await page.click(selector)
-        await pause(680)
-        const probe = await page.evaluate(() => window.endModalTiming())
-        const heard = await modalSounds()
-        assert.equal(heard.length, 1, `${route} ${phase}: one timed modal sample`)
-        const play = heard[0]
-        const key = route === "drawer" ? (phase === "open" ? "drawerOpen" : mobile ? "drawerCloseShort" : "drawerClose") : (phase === "open" ? "modalOpen" : "modalClose")
-        assert.equal(play.signature, modalSamples[key].signature, `${route} ${phase}: expected duration variant`)
-        const expected = route === "drawer" ? (phase === "open" ? 350 : mobile ? 180 : 240) : phase === "open" ? 280 : 150
-        assert(Math.abs(play.duration * 1000 / play.rate - expected) <= 1, `${route} ${phase}: ${expected}ms at original pitch`)
-        assert.equal(play.rate, 1, `${route} ${phase}: no playback pitch shift`)
-        if (phase === "close") {
-          const base = route === "drawer" ? (mobile ? "drawerCloseShortBase" : "drawerCloseBase") : "modalCloseBase"
-          const exact = await page.evaluate(async ({ base, signature }) => {
-            const loaded = performance.getEntriesByType("resource").filter((entry) => new URL(entry.name).pathname === "/registry/cyber/lib/sound-samples.ts").at(-1)
-            const { soundSamples } = await import(loaded?.name || "/registry/cyber/lib/sound-samples.ts")
-            const bytes = atob(soundSamples[base].pcm)
-            const actual = window.audioCheck.buffers.get(signature).getChannelData(0)
-            return actual.length === bytes.length / 2 && actual.every((value, index) => {
-              const at = (actual.length - 1 - index) * 2
-              const signed = bytes.charCodeAt(at) | bytes.charCodeAt(at + 1) << 8
-              return value === (signed >= 0x8000 ? signed - 0x10000 : signed) / 0x8000
-            })
-          }, { base, signature: play.signature })
-          assert(exact, `${route} close reverses every sample of its compressed base`)
-        }
-        assert(play.endedAt && play.endedAt <= play.startsAt + expected + 100, `${route} ${phase}: playback ends promptly`)
-        assert(!(await events()).some((event) => event.signature === signatures.press), `${route} ${phase}: no longer button-press tail`)
-        if (route !== "drawer") {
-          assert(probe.animations.some((animation) => animation.duration === expected), `${route} ${phase}: existing CSS duration unchanged`)
-        } else {
-          assert(probe.animations.some((animation) => animation.name === "WAAPI" && animation.duration >= 450 && animation.duration <= 550), "Drawer retains its existing spring")
+    }, route)
+    for (const mobile of [false, true]) {
+      await page.setViewport(mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: 1280, height: 900 })
+      for (const route of ["dialog", "alert-dialog", "drawer"]) {
+        await open(`/preview/${route}`)
+        await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
+        for (const phase of ["open", "close"]) {
+          const selector = `[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`
+          await hover(selector)
+          await clear()
+          await startProbe(route)
+          await page.click(selector)
+          await pause(680)
+          const probe = await page.evaluate(() => window.endModalTiming())
+          const heard = await modalSounds()
+          assert.equal(heard.length, 1, `${route} ${phase}: one timed modal sample`)
+          const play = heard[0]
+          const key = route === "drawer" ? (phase === "open" ? "drawerOpen" : mobile ? "drawerCloseShort" : "drawerClose") : (phase === "open" ? "modalOpen" : "modalClose")
+          assert.equal(play.signature, modalSamples[key].signature, `${route} ${phase}: expected duration variant`)
+          const expected = route === "drawer" ? (phase === "open" ? 350 : mobile ? 180 : 240) : phase === "open" ? 280 : 150
+          assert(Math.abs(play.duration * 1000 / play.rate - expected) <= 1, `${route} ${phase}: ${expected}ms at original pitch`)
+          assert.equal(play.rate, 1, `${route} ${phase}: no playback pitch shift`)
           if (phase === "close") {
-            const invisible = probe.frames.find((frame) => frame.position != null && frame.position <= 0)
-            assert(invisible, "Drawer travels fully out of view")
-            assert(play.startsAt + expected <= invisible.at + 80, "Drawer closing sound does not follow the invisible spring tail")
+            const base = route === "drawer" ? (mobile ? "drawerCloseShortBase" : "drawerCloseBase") : "modalCloseBase"
+            const exact = await page.evaluate(async ({ base, signature }) => {
+              const loaded = performance.getEntriesByType("resource").filter((entry) => new URL(entry.name).pathname === "/registry/cyber/lib/sound-samples.ts").at(-1)
+              const { soundSamples } = await import(loaded?.name || "/registry/cyber/lib/sound-samples.ts")
+              const bytes = atob(soundSamples[base].pcm)
+              const actual = window.audioCheck.buffers.get(signature).getChannelData(0)
+              return actual.length === bytes.length / 2 && actual.every((value, index) => {
+                const at = (actual.length - 1 - index) * 2
+                const signed = bytes.charCodeAt(at) | bytes.charCodeAt(at + 1) << 8
+                return value === (signed >= 0x8000 ? signed - 0x10000 : signed) / 0x8000
+              })
+            }, { base, signature: play.signature })
+            assert(exact, `${route} close reverses every sample of its compressed base`)
+          }
+          assert(play.endedAt && play.endedAt <= play.startsAt + expected + 100, `${route} ${phase}: playback ends promptly`)
+          assert(!(await events()).some((event) => event.signature === signatures.press), `${route} ${phase}: no longer button-press tail`)
+          if (route !== "drawer") {
+            assert(probe.animations.some((animation) => animation.duration === expected), `${route} ${phase}: existing CSS duration unchanged`)
+          } else {
+            assert(probe.animations.some((animation) => animation.name === "WAAPI" && animation.duration >= 450 && animation.duration <= 550), "Drawer retains its existing spring")
+            if (phase === "close") {
+              const invisible = probe.frames.find((frame) => frame.position != null && frame.position <= 0)
+              assert(invisible, "Drawer travels fully out of view")
+              assert(play.startsAt + expected <= invisible.at + 80, "Drawer closing sound does not follow the invisible spring tail")
+            }
           }
         }
-      }
-      pass(`${mobile ? "mobile" : "desktop"} ${route}: sound timing follows existing visuals without a press tail`)
-    }
-  }
-  await page.setViewport({ width: 1280, height: 900 })
-  for (const quiet of ["off", "reduced"]) {
-    await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: quiet === "reduced" ? "reduce" : "no-preference" }])
-    for (const route of ["dialog", "drawer"]) {
-      await open(`/preview/${route}`)
-      await page.evaluate((quiet) => { document.querySelector('[data-skin="cyber"]').dataset.fx = quiet === "off" ? "off" : "full" }, quiet)
-      for (const phase of ["open", "close"]) {
-        await click(`[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`)
-        await pause(200)
-        const heard = await modalSounds()
-        assert.equal(heard.length, 1, `${route} ${quiet} ${phase}: one short feedback sound`)
-        assert.equal(heard[0].signature, modalSamples[phase === "open" ? "modalCloseBase" : "modalClose"].signature)
-        assert(Math.abs(heard[0].duration * 1000 - 150) <= 1, "Quiet motion uses 150ms feedback")
-        await pause(400)
+        pass(`${mobile ? "mobile" : "desktop"} ${route}: sound timing follows existing visuals without a press tail`)
       }
     }
-    pass(`${quiet}: dialogs and drawers use short feedback without stretching motion`)
+    await page.setViewport({ width: 1280, height: 900 })
+    for (const quiet of ["off", "reduced"]) {
+      await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: quiet === "reduced" ? "reduce" : "no-preference" }])
+      for (const route of ["dialog", "drawer"]) {
+        await open(`/preview/${route}`)
+        await page.evaluate((quiet) => { document.querySelector('[data-skin="cyber"]').dataset.fx = quiet === "off" ? "off" : "full" }, quiet)
+        for (const phase of ["open", "close"]) {
+          await click(`[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`)
+          await pause(200)
+          const heard = await modalSounds()
+          assert.equal(heard.length, 1, `${route} ${quiet} ${phase}: one short feedback sound`)
+          assert.equal(heard[0].signature, modalSamples[phase === "open" ? "modalCloseBase" : "modalClose"].signature)
+          assert(Math.abs(heard[0].duration * 1000 - 150) <= 1, "Quiet motion uses 150ms feedback")
+          await pause(400)
+        }
+      }
+      pass(`${quiet}: dialogs and drawers use short feedback without stretching motion`)
+    }
+    await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }])
+
+    await open("/preview/dialog")
+    await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
+    await click('[data-slot="dialog-trigger"]')
+    await pause(35)
+    await page.evaluate(() => document.querySelector('[data-slot="dialog-close"]').click())
+    await pause(60)
+    await page.evaluate(() => document.querySelector('[data-slot="dialog-trigger"]').click())
+    await pause(350)
+    const reversal = await modalSounds()
+    assert.equal(reversal.length, 3, "Rapid opening, closing and reopening each produce one cue")
+    assert(reversal[0].stopsAt <= reversal[1].startsAt + 12, "Close fades the unfinished opening cue")
+    assert(reversal[1].stopsAt <= reversal[2].startsAt + 12, "Reopen fades the unfinished closing cue")
+    pass("rapid reversals replace the previous modal cue promptly")
+    await page.keyboard.press("Escape")
+    await pause(250)
+    await click('[data-slot="dialog-trigger"]')
+    await page.evaluate(() => window.sound.setSoundEnabled(false))
+    const muted = await modalSounds()
+    assert(muted[0].stopsAt < muted[0].startsAt + 100, "Muting stops the active modal cue")
+    pass("muting stops the active modal cue immediately")
+
+    await open("/preview/drawer")
+    await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
+    await click('[data-slot="drawer-trigger"]')
+    await pause(45)
+    const grab = await page.$eval('[data-slot="drawer-content"]', (node) => {
+      const rect = node.getBoundingClientRect()
+      return { x: Math.min(innerWidth - 25, rect.left + 25), y: rect.top + 170 }
+    })
+    await page.mouse.move(grab.x, grab.y)
+    await page.mouse.down()
+    await page.mouse.move(grab.x + 15, grab.y, { steps: 3 })
+    await pause(25)
+    const dragged = await modalSounds()
+    assert(dragged[0]?.stopsAt < dragged[0]?.startsAt + 350, "Grabbing a drawer cancels its unfinished opening cue")
+    await page.mouse.up()
+    pass("drawer dragging cancels the old transition cue")
   }
-  await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }])
 
-  await open("/preview/dialog")
-  await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
-  await click('[data-slot="dialog-trigger"]')
-  await pause(35)
-  await page.evaluate(() => document.querySelector('[data-slot="dialog-close"]').click())
-  await pause(60)
-  await page.evaluate(() => document.querySelector('[data-slot="dialog-trigger"]').click())
-  await pause(350)
-  const reversal = await modalSounds()
-  assert.equal(reversal.length, 3, "Rapid opening, closing and reopening each produce one cue")
-  assert(reversal[0].stopsAt <= reversal[1].startsAt + 12, "Close fades the unfinished opening cue")
-  assert(reversal[1].stopsAt <= reversal[2].startsAt + 12, "Reopen fades the unfinished closing cue")
-  pass("rapid reversals replace the previous modal cue promptly")
-  await page.keyboard.press("Escape")
-  await pause(250)
-  await click('[data-slot="dialog-trigger"]')
-  await page.evaluate(() => window.sound.setSoundEnabled(false))
-  const muted = await modalSounds()
-  assert(muted[0].stopsAt < muted[0].startsAt + 100, "Muting stops the active modal cue")
-  pass("muting stops the active modal cue immediately")
-
-  await open("/preview/drawer")
-  await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
-  await click('[data-slot="drawer-trigger"]')
-  await pause(45)
-  const grab = await page.$eval('[data-slot="drawer-content"]', (node) => {
-    const rect = node.getBoundingClientRect()
-    return { x: Math.min(innerWidth - 25, rect.left + 25), y: rect.top + 170 }
-  })
-  await page.mouse.move(grab.x, grab.y)
-  await page.mouse.down()
-  await page.mouse.move(grab.x + 15, grab.y, { steps: 3 })
-  await pause(25)
-  const dragged = await modalSounds()
-  assert(dragged[0]?.stopsAt < dragged[0]?.startsAt + 350, "Grabbing a drawer cancels its unfinished opening cue")
-  await page.mouse.up()
-  pass("drawer dragging cancels the old transition cue")
-
-  if (!timingOnly) {
+  if (!timingOnly && !feedbackOnly) {
     await open("/preview/button-group")
     await clear()
     await page.evaluate(() => { window.sound.sfx("hover"); window.sound.sfx("hover") })
@@ -373,9 +538,8 @@ try {
     await pause(40)
     await onlySample(signatures.press, "ordinary keyboard press")
     await click('[data-kit="button"][data-tone="primary"]')
-    assert(!(await events()).some((event) => event.signature === signatures.press), "Primary confirm retains its separate voice")
-    assert((await events()).some((event) => event.kind === "oscillator"), "Primary confirm remains synthesized")
-    pass("ordinary buttons use sampled press; primary confirm remains separate")
+    await onlySample(signatures.press, "primary confirm shares the button recording")
+    pass("ordinary and primary buttons share sampled press")
 
     for (const route of ["dialog", "alert-dialog", "drawer"]) {
       await open(`/preview/${route}`)
@@ -438,13 +602,14 @@ try {
     await open("/preview/popover")
     await click('[data-slot="popover-trigger"]')
     assert.equal((await modalSounds()).length, 0, "Small popovers do not use the modal recording")
-    assert((await events()).some((event) => event.kind === "oscillator"), "Small popovers retain the generic synthesized open")
+    assert((await events()).some((event) => event.signature === signatures.hover), "Small popovers open with the shared tick")
+    assert(!(await events()).some((event) => event.kind === "oscillator"), "Small popovers have no synthesized opening pop")
     await clear()
     await page.keyboard.press("Escape")
     await pause(50)
     assert.equal((await modalSounds()).length, 0, "Small popover closing stays separate")
-    assert((await events()).some((event) => event.kind === "oscillator"), "Small popovers retain the generic synthesized close")
-    pass("small popovers keep their existing synthesized open/close voices")
+    await onlySample(signatures.hover, "Small popovers close with the shared tick")
+    pass("small popovers open and close with the recorded tick")
 
     for (const { route, selector, first, state, disabled } of [
       { route: "checkbox", selector: '[data-kit="checkbox"]', first: "off", state: "aria-checked", disabled: '[data-kit="checkbox"][data-disabled]' },
