@@ -1,0 +1,103 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* The backdrop, the description and the body are the dialog's (dialog.css),
+   and the keys are buttons. What's here is what makes it an
+   alert: the yellow frame and its hazard spine. */
+@layer cyber.ui {
+  /* The same column as a dialog: micro-print, the frame, the keys. */
+  [data-skin="cyber"] [data-kit="alert-dialog"] {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(480px, calc(100vw - 32px));
+    height: fit-content;
+    max-height: calc(100dvh - 32px);
+
+    & > [data-kit="alert-dialog-surface"] {
+      min-height: min(124px, 100%);
+    }
+
+    &[data-open] {
+      animation: var(--cy-fx-in) 280ms var(--cy-ease-snap) backwards;
+    }
+    &[data-ending-style] {
+      animation: var(--cy-fx-out) 150ms var(--cy-ease-snap) both;
+    }
+
+    & > [data-micro] {
+      color: var(--cy-flag);
+    }
+
+    & > [data-kit="actions"] {
+      margin-block-start: 6px;
+    }
+  }
+
+  /* Yellow means "look here" everywhere in the kit, so the whole frame takes
+     it: edge, spine and the question itself. */
+  [data-skin="cyber"] [data-kit="alert-dialog-surface"] {
+    --frame-cut: var(--cy-cut-lg);
+    --frame-line: var(--cy-flag);
+    --frame-fill: color-mix(in srgb, var(--cy-flag) 7%, var(--cy-panel));
+    /* Frame variables inherit; this one is never patterned. */
+    --frame-image: none;
+    --frame-spine: 34px;
+
+    display: flex;
+    min-height: 124px;
+  }
+
+  /* The words scroll inside the frame if they have to, so the spine's
+     glyph, which sits over the frame's border, is never clipped. */
+  [data-skin="cyber"] [data-kit="alert-dialog-text"] {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 18px 22px 24px;
+    overflow: auto;
+  }
+
+  /* The question, in the flag color. */
+  [data-skin="cyber"] [data-kit="alert-dialog-title"] {
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-flag);
+    text-wrap: balance;
+  }
+
+  /* The spine: the warning glyph at its head, hazard stripes down the rest.
+     It sits over the frame's thick leading border. */
+  [data-skin="cyber"] [data-kit="alert-dialog-glyph"] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--frame-spine) * -1);
+    width: var(--frame-spine);
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    padding-block-start: 16px;
+    color: var(--cy-on-solid);
+    background: repeating-linear-gradient(
+        135deg,
+        transparent 0 7px,
+        color-mix(in srgb, var(--cy-on-solid) 78%, transparent) 7px 14px
+      )
+      0 56px / 100% 100% no-repeat;
+
+    & svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      /* One small lamp that isn't quite steady. */
+      animation: var(--cy-fx-flicker) 3.6s linear infinite;
+    }
+  }
+}

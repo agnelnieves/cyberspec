@@ -1,0 +1,106 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* The input sits in the shared control frame (field.css) and the popup
+   holds the calendar's own parts (calendar.css); this is the row over the
+   control, the key at its end, and the popup's frame. */
+@layer cyber.ui {
+  [data-skin="cyber"] [data-kit="date-picker"] {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* The label, and the format the field reads, as a tag at the other end. */
+  [data-skin="cyber"] [data-kit="date-picker-head"] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  [data-skin="cyber"] [data-kit="date-picker-format"] {
+    font-family: var(--cy-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--cy-ink-mute);
+  }
+
+  /* The calendar key. It's inside the frame, which lights for whichever of
+     its children has focus, so the key also marks itself when it's the one. */
+  [data-skin="cyber"] [data-kit="date-picker-trigger"] {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-inline-end: -4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--cy-ink);
+    cursor: pointer;
+    transition:
+      color var(--cy-t-fast) linear,
+      background-color var(--cy-t-fast) linear;
+
+    @media (pointer: coarse) {
+      width: 36px;
+      height: 36px;
+    }
+
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        color: var(--cy-ink-hi);
+        background: var(--cy-fill-hover);
+      }
+    }
+
+    &[data-open] {
+      color: var(--cy-ink-hi);
+      background: var(--cy-fill-active);
+    }
+
+    &:focus-visible {
+      color: var(--cy-on-solid);
+      background: var(--cy-signal);
+    }
+
+    &[data-disabled] {
+      color: var(--cy-ink-mute);
+      cursor: not-allowed;
+    }
+  }
+
+  /* The popup: the same hot frame as the kit's floating lists, sized to the
+     calendar it holds. */
+  [data-skin="cyber"] [data-kit="date-picker-popup"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-hot);
+    --frame-fill: var(--cy-panel);
+
+    display: grid;
+    gap: 8px;
+    width: min(264px, calc(100vw - 16px));
+    margin: 0;
+    padding: 10px;
+    outline: none;
+
+    @media (pointer: coarse) {
+      width: min(344px, calc(100vw - 16px));
+    }
+
+    &[data-open] {
+      animation: var(--cy-fx-in) 200ms var(--cy-ease-snap) backwards;
+    }
+    &[data-ending-style] {
+      animation: var(--cy-fx-out) 120ms var(--cy-ease-snap) both;
+    }
+  }
+}

@@ -1,0 +1,160 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The strip, then the readout. Side by side while there's room; the
+     readout drops under the strip when there isn't. */
+  [data-skin="cyber"] [data-kit="pagination"] {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="pagination-list"] {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    /* The cells restack as they light, and that stays inside the strip. */
+    isolation: isolate;
+  }
+
+  /* Each cell is a square that gives up width before the strip overflows:
+     nine cells still fit a phone, and stay taller than they are narrow. */
+  [data-skin="cyber"] [data-kit="pagination-item"] {
+    position: relative;
+    flex: 0 1 var(--cy-h);
+    min-width: 26px;
+    display: grid;
+
+    /* Neighbours share one line, and it belongs to whichever is hot: the
+       current page comes forward, the one under the pointer or the keyboard
+       further still, and a dead step drops back. */
+    & + & {
+      margin-inline-start: -1px;
+    }
+    &:has([data-current]) {
+      z-index: 1;
+    }
+    &:has(:hover, :active, :focus-visible) {
+      z-index: 2;
+    }
+    &:has([data-disabled]),
+    &[data-gap] {
+      z-index: -1;
+    }
+  }
+
+  /* A page, or a step: the kit's key states.
+       idle     line 70%, no fill
+       hover    line 100%, fill 10%
+       current  line 100%, fill 40%, bright ink, a signal bar along its foot
+       down     a flash to 70% as it lands (data-press-flash) */
+  [data-skin="cyber"] :is([data-kit="pagination-link"], [data-kit="pagination-step"]) {
+    --frame-cut: var(--cy-cut-sm);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel-a);
+
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    height: var(--cy-h);
+    padding: 0;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    color: var(--cy-ink);
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear,
+      color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      &:hover:not([data-disabled], [data-current]) {
+        --frame-line: var(--cy-line-hot);
+        --frame-fill: var(--cy-fill-hover);
+      }
+    }
+
+    &:active:not([data-disabled]) {
+      --frame-line: var(--cy-line-hot);
+      --frame-fill: var(--cy-fill-active);
+      color: var(--cy-ink-hi);
+    }
+  }
+
+  /* Where you are: lit, and marked with a bar in the signal color along its
+     foot, drawn under the frame's edges so it's cut with them. Pressing it
+     goes nowhere, so it doesn't ask to be pressed. */
+  [data-skin="cyber"] [data-kit="pagination-link"][data-current] {
+    --frame-line: var(--cy-line-hot);
+    --frame-fill: var(--cy-fill-active);
+    --frame-image: linear-gradient(to top, var(--cy-signal) 3px, transparent 3px);
+    font-weight: 700;
+    color: var(--cy-ink-hi);
+    cursor: default;
+  }
+
+  /* A step at the end it goes to: hatched. It stays focusable, and says
+     it's unavailable. */
+  [data-skin="cyber"] [data-kit="pagination-step"][data-disabled] {
+    --frame-line: var(--cy-line-deco);
+    --frame-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--cy-line-deco) 5px 6px);
+    color: var(--cy-ink-mute);
+    cursor: not-allowed;
+  }
+
+  [data-skin="cyber"] [data-kit="pagination-chevron"] {
+    width: 16px;
+    height: 16px;
+
+    &:dir(rtl) {
+      scale: -1 1;
+    }
+  }
+
+  /* Pages skipped: not a key, so it has no sides of its own. Its top and
+     bottom rules bridge the keys either side of it. */
+  [data-skin="cyber"] [data-kit="pagination-gap"] {
+    display: grid;
+    place-items: center;
+    height: var(--cy-h);
+    border-block: 1px solid var(--cy-line-deco);
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-sm);
+    line-height: 1;
+    color: var(--cy-ink-mute);
+    user-select: none;
+  }
+
+  /* PAGE 03 / 12: a readout, so it's in the signal color. */
+  [data-skin="cyber"] [data-kit="pagination-readout"] {
+    flex: none;
+    margin: 0;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: var(--cy-signal);
+  }
+
+  /* The current figure, a weight heavier. Its channels slip apart for a
+     moment each time it steps. */
+  [data-skin="cyber"] [data-kit="pagination-page"] {
+    display: inline-block;
+    font-weight: 700;
+
+    &[data-stepped] {
+      animation: var(--cy-fx-rgb) 260ms var(--cy-ease-snap);
+    }
+  }
+}

@@ -1,0 +1,196 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The group: one cut frame the panes share. The SDK lays the panes out
+     (a flex row, or a column when vertical) and sizes them. */
+  [data-skin="cyber"] [data-kit="resizable"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-deco);
+    --frame-fill: var(--cy-panel-a);
+    /* Frame variables inherit, and a surface behind may have set one. */
+    --frame-image: none;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 172px;
+    text-align: start;
+
+    &[data-orientation="vertical"] {
+      min-height: 300px;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="resizable-pane"] {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* What the pane holds, printed along its top with its number. */
+  [data-skin="cyber"] [data-kit="resizable-label"] {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding-inline: 12px;
+    border-block-end: 1px solid var(--cy-line-deco);
+    overflow: hidden;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--cy-ink-mute);
+
+    & > [aria-hidden] {
+      color: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="resizable-content"] {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 10px 12px 12px;
+    overflow: auto;
+    font-size: var(--cy-text-sm);
+    line-height: 1.45;
+    color: var(--cy-ink-hi);
+
+    & ul {
+      display: grid;
+      gap: 6px;
+      padding: 0;
+      list-style: none;
+    }
+  }
+
+  /* A handle: a rule across the group with a grip on it. It stops short of
+     the frame at both ends, so its focus ring isn't clipped by the frame's
+     corners.
+       idle      rule 70%, grip hollow
+       hover     rule 100%, grip fill 10%
+       dragging  rule 100%, grip fill 40%, bright ticks
+       focus     the kit's ring around it
+       disabled  rule 30%, no grip
+     `data-hovering` is the SDK's: it covers the handle's whole hit area,
+     which reaches past the rule. */
+  [data-skin="cyber"] [data-kit="resizable-handle"] {
+    --line: var(--cy-line-ctl);
+    --grip-fill: var(--cy-panel);
+    --grip-ink: var(--cy-line-ctl);
+
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 9px;
+    margin-block: 5px;
+
+    /* The rule. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 4px;
+      width: 1px;
+      background: var(--line);
+      transition: background-color var(--cy-t-fast) linear;
+    }
+
+    &[data-orientation="vertical"] {
+      width: auto;
+      height: 9px;
+      margin-block: 0;
+      margin-inline: 5px;
+
+      &::before {
+        inset-inline: 0;
+        inset-block: 4px auto;
+        width: auto;
+        height: 1px;
+      }
+    }
+
+    &:is([data-hovering], :focus-visible) {
+      --line: var(--cy-line-hot);
+      --grip-fill: var(--cy-fill-hover);
+      --grip-ink: var(--cy-line-hot);
+    }
+
+    &[data-dragging] {
+      --line: var(--cy-line-hot);
+      --grip-fill: var(--cy-fill-active);
+      --grip-ink: var(--cy-ink-hi);
+    }
+
+    &[data-disabled] {
+      --line: var(--cy-line-deco);
+    }
+
+    /* The size of the pane before it, read off the handle's own
+       aria-valuenow: a tag beside the grip, shown while the handle is lit. */
+    &::after {
+      content: attr(aria-valuenow) "%";
+      position: absolute;
+      z-index: 1;
+      inset-block-start: 50%;
+      inset-inline-start: 12px;
+      translate: 0 -50%;
+      padding: 2px 5px;
+      border: 1px solid var(--cy-signal-dim);
+      background: var(--cy-panel);
+      font-family: var(--cy-mono);
+      font-size: 10px;
+      line-height: 1.2;
+      color: var(--cy-signal);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--cy-t-fast) linear;
+    }
+
+    &[data-orientation="vertical"]::after {
+      inset-block-start: 12px;
+      inset-inline-start: 50%;
+      translate: -50% 0;
+
+      &:dir(rtl) {
+        translate: 50% 0;
+      }
+    }
+
+    &:is([data-hovering], [data-dragging], :focus-visible):not([data-disabled])::after {
+      opacity: 1;
+    }
+  }
+
+  /* The grip: a small cut block on the rule with ticks across it. */
+  [data-skin="cyber"] [data-kit="resizable-grip"] {
+    position: relative;
+    width: 9px;
+    height: 30px;
+    border: 1px solid var(--line);
+    background:
+      repeating-linear-gradient(to bottom, var(--grip-ink) 0 1px, transparent 1px 4px) center / 3px 17px no-repeat,
+      var(--grip-fill);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%);
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear;
+
+    [data-orientation="vertical"] > & {
+      width: 30px;
+      height: 9px;
+      background:
+        repeating-linear-gradient(to right, var(--grip-ink) 0 1px, transparent 1px 4px) center / 17px 3px no-repeat,
+        var(--grip-fill);
+    }
+
+    [data-disabled] > & {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,247 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* The month's head, grid and days are styled on their own, not under the
+   calendar's frame, so a date picker's popup can hold the same parts. The
+   two keys in the head are the shared button (button.css). */
+@layer cyber.ui {
+  /* The panel a calendar sits on when it stands alone. Seven columns fit a
+     256px stage; on a touch screen the days grow toward a finger's width. */
+  [data-skin="cyber"] [data-kit="calendar"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-deco);
+    --frame-fill: var(--cy-panel);
+
+    display: grid;
+    gap: 8px;
+    width: min(100%, 264px);
+    padding: 10px;
+    text-align: start;
+
+    @media (pointer: coarse) {
+      width: min(100%, 344px);
+    }
+  }
+
+  /* Previous, the month, next. */
+  [data-skin="cyber"] [data-kit="calendar-head"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    /* The chevrons point the way the months turn. */
+    & svg:dir(rtl) {
+      scale: -1 1;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="calendar-heading"] {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--cy-track);
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--cy-ink);
+  }
+
+  [data-skin="cyber"] [data-kit="calendar-year"] {
+    color: var(--cy-signal);
+  }
+
+  /* The grid is a table. Its cells share the width, with a hairline of
+     space between them that the negative margin takes back at the edges. */
+  [data-skin="cyber"] [data-kit="calendar-grid"] {
+    --day: 30px;
+
+    width: calc(100% + 4px);
+    margin: -2px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 2px;
+
+    @media (pointer: coarse) {
+      --day: 40px;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="calendar-weekday"] {
+    height: 20px;
+    padding: 0;
+    font-family: var(--cy-mono);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--cy-ink-mute);
+  }
+
+  /* A day is the cell, which takes focus and the press; its face is what
+     shows. */
+  [data-skin="cyber"] [data-kit="calendar-day"] {
+    padding: 0;
+    cursor: pointer;
+    user-select: none;
+
+    &[data-disabled] {
+      cursor: not-allowed;
+    }
+
+    [data-readonly] &,
+    [data-readonly] &[data-disabled] {
+      cursor: default;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="calendar-day-face"] {
+    --cut: 7px;
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: var(--day);
+    font-size: var(--cy-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--cy-ink);
+    transition:
+      background-color var(--cy-t-fast) linear,
+      color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      [data-kit="calendar-day"]:hover:not([data-disabled], [data-selected]) > & {
+        background: var(--cy-fill-hover);
+        box-shadow: inset 0 0 0 1px var(--cy-line-hot);
+      }
+    }
+
+    /* Days of the months either side: there, and pickable, but quiet. */
+    [data-outside] > & {
+      font-weight: 500;
+      color: var(--cy-ink-mute);
+    }
+
+    /* Today: an edge all round and a flag in its corner, so it's marked by
+       shape and not only by a brighter numeral. */
+    [data-today] > & {
+      box-shadow: inset 0 0 0 1px var(--cy-line-ctl);
+      color: var(--cy-ink-hi);
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-end: 0;
+        width: 8px;
+        height: 8px;
+        background: var(--cy-accent);
+        clip-path: polygon(0 0, 100% 0, 100% 100%);
+      }
+
+      &:dir(rtl)::after {
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+      }
+    }
+
+    /* Can't be picked: hatched and struck through. */
+    [data-disabled] > & {
+      background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--cy-line-deco) 4px 5px);
+      font-weight: 500;
+      text-decoration: line-through;
+      color: var(--cy-ink-mute);
+    }
+
+    /* The chosen day: a solid signal block, dark ink, its corner cut. */
+    [data-selected] > & {
+      background: var(--cy-signal);
+      box-shadow: none;
+      font-weight: 700;
+      color: var(--cy-on-solid);
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+
+      &:dir(rtl) {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+      }
+
+      &::after {
+        background: var(--cy-on-solid);
+      }
+
+      @media (hover: hover) {
+        [data-kit="calendar-day"]:hover:not([data-disabled]) > & {
+          background: color-mix(in srgb, var(--cy-signal) 84%, white);
+        }
+      }
+    }
+
+    /* A chosen day that can no longer be picked keeps its shape, dimmed. */
+    [data-selected][data-disabled] > & {
+      background-color: var(--cy-signal-dim);
+      color: var(--cy-ink-hi);
+    }
+
+    /* A range: solid at both ends, and a quieter band between them, also
+       while its end is still being picked. */
+    :is([data-range-middle], [data-preview]:not([data-range-start], [data-range-end])) > & {
+      background: var(--cy-signal-fill);
+      box-shadow: inset 0 1px 0 var(--cy-signal-dim), inset 0 -1px 0 var(--cy-signal-dim);
+      font-weight: 600;
+      color: var(--cy-signal);
+      clip-path: none;
+
+      &::after {
+        background: var(--cy-signal);
+      }
+    }
+
+    /* Keyboard focus belongs to the cell; the face draws the ring inside
+       itself, dark on the solid block. */
+    [data-kit="calendar-day"]:focus-visible > & {
+      outline: 2px solid var(--cy-signal);
+      outline-offset: -2px;
+    }
+
+    [data-kit="calendar-day"][data-selected]:not([data-range-middle]):focus-visible > & {
+      outline-color: var(--cy-on-solid);
+      outline-offset: -4px;
+    }
+  }
+
+  /* The foot: what's selected, as the machine holds it. */
+  [data-skin="cyber"] [data-kit="calendar-foot"] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding-block-start: 7px;
+    border-block-start: 1px solid var(--cy-line-deco);
+
+    /* In a tight column the print gives way before the readout does. */
+    & [data-micro] {
+      min-width: 0;
+      overflow: hidden;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="calendar-readout"] {
+    font-family: var(--cy-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex: none;
+    white-space: nowrap;
+    color: var(--cy-ink-mute);
+
+    & [data-kit="value"] {
+      font-size: inherit;
+    }
+
+    [data-disabled] > * > & [data-kit="value"] {
+      color: var(--cy-ink-mute);
+    }
+  }
+}

@@ -1,0 +1,250 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The page behind. ui-sdk drives its opacity from how far the sheet is
+     open, so this is only what it dims to. */
+  [data-skin="cyber"] [data-kit="drawer-backdrop"] {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--cy-void) 72%, transparent);
+  }
+
+  /* The sheet. ui-sdk places it against its edge and moves it with
+     `translate`; the skin sizes it and leaves the rest alone. It isn't a
+     frame itself, because a frame is clipped and this needs to paint past
+     its own edge (see ::after). */
+  [data-skin="cyber"] [data-kit="drawer"] {
+    display: flex;
+    outline: none;
+
+    &:is([data-side="right"], [data-side="left"]) {
+      width: min(380px, calc(100vw - 44px));
+      height: 100dvh;
+    }
+
+    &:is([data-side="bottom"], [data-side="top"]) {
+      width: 100vw;
+      max-height: min(86dvh, 640px);
+    }
+
+    /* Dragged past fully open, the sheet stretches a little before it
+       springs back. This fills what would show behind it. */
+    &::after {
+      content: "";
+      position: absolute;
+      background: var(--cy-panel);
+    }
+    &[data-side="right"]::after {
+      inset: 0 auto 0 100%;
+      width: 40px;
+    }
+    &[data-side="left"]::after {
+      inset: 0 100% 0 auto;
+      width: 40px;
+    }
+    &[data-side="bottom"]::after {
+      inset: 100% 0 auto 0;
+      height: 40px;
+    }
+    &[data-side="top"]::after {
+      inset: auto 0 100% 0;
+      height: 40px;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="drawer-surface"] {
+    --frame-cut: var(--cy-cut-lg);
+    --frame-line: var(--cy-line-hot);
+    --frame-fill: var(--cy-panel);
+    /* Frame variables inherit; this one is never patterned. */
+    --frame-image: none;
+
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    /* Only the edge that faces the page is drawn. */
+    border-width: 0;
+
+    [data-side="right"] > & {
+      border-inline-start-width: var(--cy-line);
+      padding-inline-start: 14px;
+    }
+    [data-side="left"] > & {
+      border-inline-end-width: var(--cy-line);
+      padding-inline-end: 14px;
+    }
+    [data-side="bottom"] > & {
+      border-block-start-width: var(--cy-line);
+      padding-block-start: 14px;
+    }
+    [data-side="top"] > & {
+      border-block-end-width: var(--cy-line);
+      padding-block-end: 14px;
+    }
+  }
+
+  /* The grip: three ticks on the edge you drag by. They light while a drag
+     has hold of the sheet. */
+  [data-skin="cyber"] [data-kit="drawer-grip"] {
+    position: absolute;
+    pointer-events: none;
+    background: repeating-linear-gradient(var(--grip-dir, to bottom), var(--cy-line-ctl) 0 2px, transparent 2px 6px);
+    transition: filter var(--cy-t-fast) linear;
+
+    [data-side="right"] > * > & {
+      inset: calc(50% - 8px) auto auto 5px;
+      width: 4px;
+      height: 14px;
+    }
+    [data-side="left"] > * > & {
+      inset: calc(50% - 8px) 5px auto auto;
+      width: 4px;
+      height: 14px;
+    }
+    [data-side="bottom"] > * > & {
+      --grip-dir: to right;
+      inset: 5px auto auto calc(50% - 8px);
+      width: 14px;
+      height: 4px;
+    }
+    [data-side="top"] > * > & {
+      --grip-dir: to right;
+      inset: auto auto 5px calc(50% - 8px);
+      width: 14px;
+      height: 4px;
+    }
+
+    [data-dragging] > * > & {
+      background-image: repeating-linear-gradient(var(--grip-dir, to bottom), var(--cy-signal) 0 2px, transparent 2px 6px);
+      filter: drop-shadow(0 0 calc(4px * var(--cy-fx)) var(--cy-signal));
+    }
+  }
+
+  /* The title bar: lit, with the close key at its end. */
+  [data-skin="cyber"] [data-kit="drawer-bar"] {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--cy-h);
+    margin: 14px 14px 0 0;
+    padding-inline-start: 12px;
+    background: var(--cy-fill-active);
+    box-shadow: inset 3px 0 0 var(--cy-line-hot);
+  }
+
+  [data-skin="cyber"] [data-kit="drawer-title"] {
+    flex: 1;
+    min-width: 0;
+    padding-block: 6px;
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink-hi);
+  }
+
+  [data-skin="cyber"] [data-kit="drawer-close"] {
+    --frame-cut: 0px;
+    --frame-line: transparent;
+    --frame-fill: transparent;
+    --frame-focus: var(--cy-ink-hi);
+
+    flex: none;
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    width: var(--cy-h);
+    padding: 0;
+    color: var(--cy-ink-hi);
+    cursor: pointer;
+    transition: background-color var(--cy-t-fast) linear;
+
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        --frame-fill: color-mix(in srgb, var(--cy-accent) 58%, var(--cy-panel));
+      }
+    }
+    &:active {
+      --frame-fill: var(--cy-fill-flash);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="drawer-description"] {
+    flex: none;
+    margin: 12px 14px 0 0;
+    color: var(--cy-ink-mute);
+    font-size: var(--cy-text-sm);
+    text-wrap: pretty;
+  }
+
+  /* The body scrolls; the bar and the foot stay put. */
+  [data-skin="cyber"] [data-kit="drawer-body"] {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    margin-block-start: 12px;
+    padding: 2px 14px 14px 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    color: var(--cy-ink-hi);
+  }
+
+  /* A list in the body is a log: one row each, ruled, and a <time> reads as
+     a value. */
+  [data-skin="cyber"] [data-kit="drawer-body"] :is(ol, ul) {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: baseline;
+      gap: 12px;
+      padding-block: 9px;
+      border-block-end: 1px solid var(--cy-line-deco);
+    }
+
+    & time {
+      font-family: var(--cy-mono);
+      font-size: var(--cy-text-xs);
+      color: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="drawer-foot"] {
+    flex: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-inline-end: 14px;
+    padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    border-block-start: 1px solid var(--cy-line-deco);
+  }
+
+  /* How far open the sheet is, read off ui-sdk's own progress, so it steps
+     as the sheet is dragged. */
+  [data-skin="cyber"] [data-kit="drawer"] {
+    counter-reset: drawer-travel calc(var(--drawer-progress, 1) * 100);
+  }
+  [data-skin="cyber"] [data-kit="drawer-travel"] {
+    color: var(--cy-signal);
+    opacity: 1;
+
+    &::before {
+      content: "TRAVEL " counter(drawer-travel, decimal-leading-zero) "%";
+    }
+  }
+}

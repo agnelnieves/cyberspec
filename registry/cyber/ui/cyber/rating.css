@@ -1,0 +1,170 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The label, a rule running off it, and the level as a number at the end
+     of the rule. */
+  [data-skin="cyber"] [data-kit="rating-head"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 8px;
+    min-width: 0;
+
+    & > [data-kit="label"] {
+      flex: none;
+    }
+
+    &::after {
+      content: "";
+      order: 1;
+      flex: 1;
+      min-width: 12px;
+      height: 1px;
+      background: var(--cy-line-deco);
+    }
+  }
+
+  /* What it reads: the level's name if it has one, then the number. */
+  [data-skin="cyber"] [data-kit="rating-readout"] {
+    order: 2;
+    flex: none;
+    display: flex;
+    align-items: baseline;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-sm);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--cy-signal);
+
+    &:is([data-empty], [data-disabled]) {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="rating-level"] {
+    margin-inline-end: 8px;
+    font-size: var(--cy-text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* "of how many" is the quieter half. */
+  [data-skin="cyber"] [data-kit="rating-max"] {
+    color: var(--cy-ink-mute);
+  }
+
+  /* The row of pips, strung on a hairline that runs from the first pip's
+     centre to the last one's. */
+  [data-skin="cyber"] [data-kit="rating"] {
+    --pitch: 30px;
+    --pip: 14px;
+
+    position: relative;
+    justify-self: start;
+    display: inline-flex;
+    max-width: 100%;
+    /* The first pip's point sits on the label's edge, not half a pitch in. */
+    margin-inline-start: calc((var(--pitch) - var(--pip) * 1.414) / -2);
+
+    @media (pointer: coarse) {
+      --pitch: 44px;
+    }
+
+    /* Half levels: each half of a pip is its own target, so a pip is two
+       targets wide. */
+    &[data-halves] {
+      --pitch: 48px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-inline: calc(var(--pitch) / 2);
+      top: calc(var(--cy-h) / 2);
+      height: 1px;
+      background: var(--cy-line-deco);
+    }
+  }
+
+  /* One pip's slot: the target the SDK lays its radio (or two) over. */
+  [data-skin="cyber"] [data-kit="rating-item"] {
+    display: grid;
+    place-items: center;
+    width: var(--pitch);
+    height: var(--cy-h);
+
+    /* The radios themselves: one over the whole slot, or one over each
+       half. */
+    & > [role="radio"] {
+      cursor: pointer;
+    }
+
+    &[data-readonly] > [role="radio"] {
+      cursor: default;
+    }
+
+    &[data-disabled] > [role="radio"] {
+      cursor: not-allowed;
+    }
+  }
+
+  /* The pip: a square turned on its corner, never a star. It fills from its
+     leading point as far as the level reaches, so half a level is half a
+     diamond; the gradient runs along the square's diagonal, which is the
+     diamond's width. */
+  [data-skin="cyber"] [data-kit="rating-pip"] {
+    --pip-line: var(--cy-line-ctl);
+    --pip-fill: var(--cy-accent);
+    --pip-angle: 45deg;
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--pip);
+    height: var(--pip);
+    border: var(--cy-line) solid var(--pip-line);
+    background: linear-gradient(var(--pip-angle), var(--pip-fill) calc(var(--rating-fill, 0) * 100%), var(--cy-panel) 0);
+    rotate: 45deg;
+    transition: border-color var(--cy-t-fast) linear;
+
+    :dir(rtl) & {
+      --pip-angle: 225deg;
+    }
+
+    :is([data-filled], [data-partial]) > & {
+      --pip-line: var(--cy-line-hot);
+    }
+
+    /* A pointer over the pips previews a level: the pips up to it show a
+       dimmer fill until it's pressed. */
+    [data-highlighted] > & {
+      --pip-line: var(--cy-line-hot);
+      --pip-fill: var(--cy-fill-active);
+    }
+
+    /* The pip the level ends in keeps a core in the signal color, like
+       every selection mark, so the set level is still marked while another
+       is being previewed. */
+    [data-checked] > &::after {
+      content: "";
+      width: 4px;
+      height: 4px;
+      background: var(--cy-signal);
+      outline: 2px solid var(--cy-panel);
+    }
+
+    /* Unavailable: hatched, not just dimmer. The hatching runs along the
+       square, so it reads as diagonal on the diamond. */
+    [data-disabled] > & {
+      --pip-line: var(--cy-line-deco);
+      --pip-fill: var(--cy-line-deco);
+      background-image:
+        repeating-linear-gradient(90deg, transparent 0 3px, var(--cy-line-deco) 3px 4px),
+        linear-gradient(var(--pip-angle), var(--pip-fill) calc(var(--rating-fill, 0) * 100%), var(--cy-panel) 0);
+
+      &::after {
+        background: var(--cy-ink-mute);
+      }
+    }
+  }
+}

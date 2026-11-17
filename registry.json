@@ -1,0 +1,3562 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cyberspec",
+  "homepage": "https://cyberspec.vercel.app",
+  "items": [
+    {
+      "name": "cyber",
+      "type": "registry:item",
+      "title": "Cyber",
+      "description": "Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.5"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/cyber.tsx",
+          "type": "registry:ui",
+          "target": "@ui/cyber.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/skin.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/skin.css"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/tokens.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/tokens.css"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/base.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/base.css"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/fx.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/fx.css"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/field.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/field.css"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/popup.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/popup.css"
+        },
+        {
+          "path": "registry/cyber/lib/agent-signal.ts",
+          "type": "registry:lib",
+          "target": "@lib/agent-signal.ts"
+        },
+        {
+          "path": "registry/cyber/lib/fx.ts",
+          "type": "registry:lib",
+          "target": "@lib/fx.ts"
+        },
+        {
+          "path": "registry/cyber/lib/glitch.ts",
+          "type": "registry:lib",
+          "target": "@lib/glitch.ts"
+        },
+        {
+          "path": "registry/cyber/lib/haptics.ts",
+          "type": "registry:lib",
+          "target": "@lib/haptics.ts"
+        },
+        {
+          "path": "registry/cyber/lib/input-modality.ts",
+          "type": "registry:lib",
+          "target": "@lib/input-modality.ts"
+        },
+        {
+          "path": "registry/cyber/lib/install.ts",
+          "type": "registry:lib",
+          "target": "@lib/install.ts"
+        },
+        {
+          "path": "registry/cyber/lib/sound.ts",
+          "type": "registry:lib",
+          "target": "@lib/sound.ts"
+        }
+      ],
+      "css": {
+        "@import url(\"https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=block\")": {}
+      },
+      "docs": "Wrap your app (or any part of it) in <Cyber> from @/components/ui/cyber; everything inside is styled by the skin. Set accent={{ l: 0.82, c: 0.13, h: 215 }} for another accent color (OKLCH), and fx=\"calm\" or \"off\" to pin the effects level. Rajdhani and JetBrains Mono are imported at the top of your CSS file.",
+      "categories": [
+        "theme"
+      ]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Stacked sections that open from numbered headings, each with a glyph that turns.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/accordion.tsx",
+          "type": "registry:ui",
+          "target": "@ui/accordion.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/accordion.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/accordion.css"
+        }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert dialog",
+      "description": "A flagged confirmation that has to be answered, and that an agent has to ask a person about.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/dialog.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/alert-dialog.tsx",
+          "type": "registry:ui",
+          "target": "@ui/alert-dialog.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/alert-dialog.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/alert-dialog.css"
+        }
+      ]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "An inline notice on a spined frame: info, success, warning or danger, each with its own glyph.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/alert.tsx",
+          "type": "registry:ui",
+          "target": "@ui/alert.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/alert.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/alert.css"
+        }
+      ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "A portrait in a cut frame, with initials over a generated scanline field when there's no image.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/avatar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/avatar.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/avatar.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/avatar.css"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "A small cut label in seven tones, with count and status variants.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/badge.tsx",
+          "type": "registry:ui",
+          "target": "@ui/badge.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/badge.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/badge.css"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "A trail of pages, the current one in the signal color.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/breadcrumb.tsx",
+          "type": "registry:ui",
+          "target": "@ui/breadcrumb.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/breadcrumb.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/breadcrumb.css"
+        }
+      ]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button group",
+      "description": "Keys joined in one strip, horizontal or vertical, with hold-to-repeat.",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.5",
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/button-group.tsx",
+          "type": "registry:ui",
+          "target": "@ui/button-group.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/button-group.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/button-group.css"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/button.tsx",
+          "type": "registry:ui",
+          "target": "@ui/button.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/button.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/button.css"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month grid with today marked and the chosen day lit.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/calendar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/calendar.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/calendar.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/calendar.css"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A content card with a scanlined media slot, plain or interactive.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/card.tsx",
+          "type": "registry:ui",
+          "target": "@ui/card.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/card.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/card.css"
+        }
+      ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "A viewer: slides in a cut frame, with keys, segment indicators and a position readout.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/carousel.tsx",
+          "type": "registry:ui",
+          "target": "@ui/carousel.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/carousel.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/carousel.css"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "A cut box that fills and marks when checked, with an indeterminate state.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/checkbox.tsx",
+          "type": "registry:ui",
+          "target": "@ui/checkbox.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/checkbox.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/checkbox.css"
+        }
+      ]
+    },
+    {
+      "name": "choice-list",
+      "type": "registry:ui",
+      "title": "Choice list",
+      "description": "Replies to choose from: rows in the signal color, the chosen one a solid yellow bar.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/choice-list.tsx",
+          "type": "registry:ui",
+          "target": "@ui/choice-list.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/choice-list.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/choice-list.css"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code block",
+      "description": "Highlighted code with line numbers, a filename tab and a copy key. No highlighting dependency.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/code-block.tsx",
+          "type": "registry:ui",
+          "target": "@ui/code-block.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/code-block.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/code-block.css"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "One section behind a key that shows and hides it.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/collapsible.tsx",
+          "type": "registry:ui",
+          "target": "@ui/collapsible.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/collapsible.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/collapsible.css"
+        }
+      ]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "A text control that filters a list of options as you type.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/combobox.tsx",
+          "type": "registry:ui",
+          "target": "@ui/combobox.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/combobox.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/combobox.css"
+        }
+      ]
+    },
+    {
+      "name": "command-palette",
+      "type": "registry:ui",
+      "title": "Command palette",
+      "description": "A searchable list of commands behind a prompt, in a dialog.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/dialog.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/command-palette.tsx",
+          "type": "registry:ui",
+          "target": "@ui/command-palette.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/command-palette.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/command-palette.css"
+        }
+      ]
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context menu",
+      "description": "An area that opens a menu on right-click, a long press, or the keyboard.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/context-menu.tsx",
+          "type": "registry:ui",
+          "target": "@ui/context-menu.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/context-menu.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/context-menu.css"
+        }
+      ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data table",
+      "description": "Rows with selection, sortable columns, status badges and a menu per row.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/checkbox.json",
+        "https://cyberspec.vercel.app/r/menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/data-table.tsx",
+          "type": "registry:ui",
+          "target": "@ui/data-table.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/data-table.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/data-table.css"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date picker",
+      "description": "A date field with a calendar that opens beside it.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/calendar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/date-picker.tsx",
+          "type": "registry:ui",
+          "target": "@ui/date-picker.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/date-picker.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/date-picker.css"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal panel on a spined frame that tears in over a dimmed page, with its answers on keys below.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/dialog.tsx",
+          "type": "registry:ui",
+          "target": "@ui/dialog.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/dialog.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/dialog.css"
+        }
+      ]
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "A sheet that slides in from the edge of the page, and can be dragged.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/drawer.tsx",
+          "type": "registry:ui",
+          "target": "@ui/drawer.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/drawer.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/drawer.css"
+        }
+      ]
+    },
+    {
+      "name": "feed",
+      "type": "registry:ui",
+      "title": "Feed",
+      "description": "Dated events in order on a vertical rule: who did what, and when.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/feed.tsx",
+          "type": "registry:ui",
+          "target": "@ui/feed.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/feed.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/feed.css"
+        }
+      ]
+    },
+    {
+      "name": "fieldset",
+      "type": "registry:ui",
+      "title": "Fieldset",
+      "description": "A spined frame grouping several fields under a legend.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/fieldset.tsx",
+          "type": "registry:ui",
+          "target": "@ui/fieldset.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/fieldset.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/fieldset.css"
+        }
+      ]
+    },
+    {
+      "name": "glitch-text",
+      "type": "registry:ui",
+      "title": "Glitch text",
+      "description": "Text that decodes itself into place and tears for a moment, with a stable copy for screen readers.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/glitch-text.tsx",
+          "type": "registry:ui",
+          "target": "@ui/glitch-text.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/glitch-text.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/glitch-text.css"
+        }
+      ]
+    },
+    {
+      "name": "hex-stat",
+      "type": "registry:ui",
+      "title": "Hex stat",
+      "description": "An attribute as a hexagon holding an icon, a value and a name, and a honeycomb to lay several out.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/hex-stat.tsx",
+          "type": "registry:ui",
+          "target": "@ui/hex-stat.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/hex-stat.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/hex-stat.css"
+        }
+      ]
+    },
+    {
+      "name": "holo-card",
+      "type": "registry:ui",
+      "title": "Holo card",
+      "description": "A surface that tilts toward the pointer in 3D, with a sheen and layers at different depths.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/holo-card.tsx",
+          "type": "registry:ui",
+          "target": "@ui/holo-card.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/holo-card.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/holo-card.css"
+        }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover card",
+      "description": "A name that previews a small dossier on hover or focus.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/hover-card.tsx",
+          "type": "registry:ui",
+          "target": "@ui/hover-card.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/hover-card.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/hover-card.css"
+        }
+      ]
+    },
+    {
+      "name": "item-list",
+      "type": "registry:ui",
+      "title": "Item list",
+      "description": "An always-visible list of rows in columns, the selected row a solid signal bar.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/item-list.tsx",
+          "type": "registry:ui",
+          "target": "@ui/item-list.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/item-list.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/item-list.css"
+        }
+      ]
+    },
+    {
+      "name": "item-slot",
+      "type": "registry:ui",
+      "title": "Item slot",
+      "description": "A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/item-slot.tsx",
+          "type": "registry:ui",
+          "target": "@ui/item-slot.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/item-slot.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/item-slot.css"
+        }
+      ]
+    },
+    {
+      "name": "key-hint",
+      "type": "registry:ui",
+      "title": "Key hint",
+      "description": "An input hint: a key glyph and what it does, optionally pressable.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/key-hint.tsx",
+          "type": "registry:ui",
+          "target": "@ui/key-hint.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/key-hint.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/key-hint.css"
+        }
+      ]
+    },
+    {
+      "name": "loader",
+      "type": "registry:ui",
+      "title": "Loader",
+      "description": "A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/loader.tsx",
+          "type": "registry:ui",
+          "target": "@ui/loader.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/loader.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/loader.css"
+        }
+      ]
+    },
+    {
+      "name": "menu",
+      "type": "registry:ui",
+      "title": "Menu",
+      "description": "A key that opens a menu of actions, with checkable items, groups and a submenu.",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.5",
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/menu.tsx",
+          "type": "registry:ui",
+          "target": "@ui/menu.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/menu.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/menu.css"
+        }
+      ]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "A bar of menus with one tab stop.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/menubar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/menubar.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/menubar.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/menubar.css"
+        }
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "title": "Meter",
+      "description": "A segmented gauge with thresholds that change its tone and print a word.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/meter.tsx",
+          "type": "registry:ui",
+          "target": "@ui/meter.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/meter.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/meter.css"
+        }
+      ]
+    },
+    {
+      "name": "micro",
+      "type": "registry:ui",
+      "title": "Micro-print",
+      "description": "The printed decoration around frames: micro-print lines, barcodes, rulers, data streams and corner brackets.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/micro.tsx",
+          "type": "registry:ui",
+          "target": "@ui/micro.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/micro.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/micro.css"
+        }
+      ]
+    },
+    {
+      "name": "navbar",
+      "type": "registry:ui",
+      "title": "Navbar",
+      "description": "A navigation bar with status readouts, page links and trailing content.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/navbar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/navbar.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/navbar.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/navbar.css"
+        }
+      ]
+    },
+    {
+      "name": "otp-input",
+      "type": "registry:ui",
+      "title": "OTP input",
+      "description": "One cut cell per character of a code, with a blinking caret in the active one.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/otp-input.tsx",
+          "type": "registry:ui",
+          "target": "@ui/otp-input.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/otp-input.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/otp-input.css"
+        }
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Page keys with previous, next and ellipses, and a position readout.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/pagination.tsx",
+          "type": "registry:ui",
+          "target": "@ui/pagination.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/pagination.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/pagination.css"
+        }
+      ]
+    },
+    {
+      "name": "panel",
+      "type": "registry:ui",
+      "title": "Panel",
+      "description": "The kit's container: a frame with a spine or a title bar, a heading, micro-print and a body.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/panel.tsx",
+          "type": "registry:ui",
+          "target": "@ui/panel.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/panel.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/panel.css"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:ui",
+      "title": "Password input",
+      "description": "A password field with a key to show or hide it.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/password-input.tsx",
+          "type": "registry:ui",
+          "target": "@ui/password-input.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/password-input.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/password-input.css"
+        }
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "A key that opens a framed surface beside it, with a title, description and body.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/popover.tsx",
+          "type": "registry:ui",
+          "target": "@ui/popover.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/popover.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/popover.css"
+        }
+      ]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "A segmented bar with a percentage readout, and an indeterminate state.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/progress.tsx",
+          "type": "registry:ui",
+          "target": "@ui/progress.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/progress.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/progress.css"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio group",
+      "description": "Options where one is chosen, each with a diamond indicator.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "@ui/radio-group.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/radio-group.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/radio-group.css"
+        }
+      ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "A level picked from a row of diamond pips.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/rating.tsx",
+          "type": "registry:ui",
+          "target": "@ui/rating.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/rating.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/rating.css"
+        }
+      ]
+    },
+    {
+      "name": "readout",
+      "type": "registry:ui",
+      "title": "Readout",
+      "description": "A large numeral with a unit and a label that counts to its new value when it changes.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/readout.tsx",
+          "type": "registry:ui",
+          "target": "@ui/readout.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/readout.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/readout.css"
+        }
+      ]
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Panels split by a handle that drags or steps with keys.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/resizable.tsx",
+          "type": "registry:ui",
+          "target": "@ui/resizable.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/resizable.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/resizable.css"
+        }
+      ]
+    },
+    {
+      "name": "reticle",
+      "type": "registry:ui",
+      "title": "Reticle",
+      "description": "A lock-on bracket that snaps onto whatever it wraps when hovered, focused or active.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/reticle.tsx",
+          "type": "registry:ui",
+          "target": "@ui/reticle.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/reticle.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/reticle.css"
+        }
+      ]
+    },
+    {
+      "name": "screen",
+      "type": "registry:ui",
+      "title": "Screen",
+      "description": "The chrome every full screen shares: a status strip, the content, and a foot with key hints.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/key-hint.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/screen.tsx",
+          "type": "registry:ui",
+          "target": "@ui/screen.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/screen.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/screen.css"
+        }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll area",
+      "description": "A scrolling region with a thin scrollbar and edge indicators.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/scroll-area.tsx",
+          "type": "registry:ui",
+          "target": "@ui/scroll-area.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/scroll-area.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/scroll-area.css"
+        }
+      ]
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:ui",
+      "title": "Segmented control",
+      "description": "A row of segments with an indicator that slides to the choice.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/segmented-control.tsx",
+          "type": "registry:ui",
+          "target": "@ui/segmented-control.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/segmented-control.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/segmented-control.css"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A labelled trigger that opens a list of options to choose from.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/select.tsx",
+          "type": "registry:ui",
+          "target": "@ui/select.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/select.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/select.css"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "A rule with tick marks, plain, labelled or vertical.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/separator.tsx",
+          "type": "registry:ui",
+          "target": "@ui/separator.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/separator.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/separator.css"
+        }
+      ]
+    },
+    {
+      "name": "side-tabs",
+      "type": "registry:ui",
+      "title": "Side tabs",
+      "description": "Icon keys stacked down the edge, with a panel beside them.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/side-tabs.tsx",
+          "type": "registry:ui",
+          "target": "@ui/side-tabs.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/side-tabs.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/side-tabs.css"
+        }
+      ]
+    },
+    {
+      "name": "signal-graph",
+      "type": "registry:ui",
+      "title": "Signal graph",
+      "description": "A compact live graph, as a trace or a spectrum, with a text summary.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/signal-graph.tsx",
+          "type": "registry:ui",
+          "target": "@ui/signal-graph.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/signal-graph.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/signal-graph.css"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Placeholder lines and blocks for content that's loading.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/skeleton.tsx",
+          "type": "registry:ui",
+          "target": "@ui/skeleton.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/skeleton.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/skeleton.css"
+        }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "A ticked track with a cut thumb and a value readout, single or range.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/slider.tsx",
+          "type": "registry:ui",
+          "target": "@ui/slider.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/slider.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/slider.css"
+        }
+      ]
+    },
+    {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Number stepper",
+      "description": "A value on a readout between minus and plus keys, with MIN and MAX tags.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/stepper.tsx",
+          "type": "registry:ui",
+          "target": "@ui/stepper.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/stepper.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/stepper.css"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "A block that slides across a cut track and lights, with its state printed beside it.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/switch.tsx",
+          "type": "registry:ui",
+          "target": "@ui/switch.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/switch.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/switch.css"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Tabs over panels with a sliding indicator, or as cut keys.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/tabs.tsx",
+          "type": "registry:ui",
+          "target": "@ui/tabs.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/tabs.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/tabs.css"
+        }
+      ]
+    },
+    {
+      "name": "terminal",
+      "type": "registry:ui",
+      "title": "Terminal",
+      "description": "A console log with tagged lines, a prompt with history, and a follow-the-end scroll.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/terminal.tsx",
+          "type": "registry:ui",
+          "target": "@ui/terminal.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/terminal.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/terminal.css"
+        }
+      ]
+    },
+    {
+      "name": "text-field",
+      "type": "registry:ui",
+      "title": "Text field",
+      "description": "A labelled text input in a cut frame, with a hint, an error and an optional icon.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/text-field.tsx",
+          "type": "registry:ui",
+          "target": "@ui/text-field.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/text-field.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/text-field.css"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "A labelled multi-line input with a character count.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/textarea.tsx",
+          "type": "registry:ui",
+          "target": "@ui/textarea.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/textarea.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/textarea.css"
+        }
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Keys that raise a notification in each tone.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/toast.tsx",
+          "type": "registry:ui",
+          "target": "@ui/toast.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/toast.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/toast.css"
+        }
+      ]
+    },
+    {
+      "name": "toaster",
+      "type": "registry:ui",
+      "title": "Toaster",
+      "description": "The page's notification region and a notify() helper.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/toast.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/toaster.tsx",
+          "type": "registry:ui",
+          "target": "@ui/toaster.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/toaster.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/toaster.css"
+        }
+      ]
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle group",
+      "description": "Toggles that share one value, one or several at a time.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/toggle-group.tsx",
+          "type": "registry:ui",
+          "target": "@ui/toggle-group.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/toggle-group.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/toggle-group.css"
+        }
+      ]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "A latching key that stays lit while pressed.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/toggle.tsx",
+          "type": "registry:ui",
+          "target": "@ui/toggle.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/toggle.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/toggle.css"
+        }
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "Keys, toggles and separators in one bar, moved through with arrow keys.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/toolbar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/toolbar.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/toolbar.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/toolbar.css"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "A small cut label that appears on hover or focus.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/tooltip.tsx",
+          "type": "registry:ui",
+          "target": "@ui/tooltip.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/tooltip.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/tooltip.css"
+        }
+      ]
+    },
+    {
+      "name": "tree",
+      "type": "registry:ui",
+      "title": "Tree",
+      "description": "A hierarchy with connector lines and branches that open.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/tree.tsx",
+          "type": "registry:ui",
+          "target": "@ui/tree.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/tree.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/tree.css"
+        }
+      ]
+    },
+    {
+      "name": "accordion-demo",
+      "type": "registry:component",
+      "title": "Accordion demo",
+      "description": "How to use accordion, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/accordion.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/accordion-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/accordion-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "alert-demo",
+      "type": "registry:component",
+      "title": "Alert demo",
+      "description": "How to use alert, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/alert.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/alert-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/alert-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "alert-dialog-demo",
+      "type": "registry:component",
+      "title": "Alert dialog demo",
+      "description": "How to use alert dialog, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/alert-dialog.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/alert-dialog-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/alert-dialog-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "avatar-demo",
+      "type": "registry:component",
+      "title": "Avatar demo",
+      "description": "How to use avatar, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/avatar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/avatar-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/avatar-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "badge-demo",
+      "type": "registry:component",
+      "title": "Badge demo",
+      "description": "How to use badge, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/badge-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/badge-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "breadcrumb-demo",
+      "type": "registry:component",
+      "title": "Breadcrumb demo",
+      "description": "How to use breadcrumb, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/breadcrumb.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/breadcrumb-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/breadcrumb-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "button-demo",
+      "type": "registry:component",
+      "title": "Button demo",
+      "description": "How to use button, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/button-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/button-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "button-group-demo",
+      "type": "registry:component",
+      "title": "Button group demo",
+      "description": "How to use button group, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button-group.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/button-group-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/button-group-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "calendar-demo",
+      "type": "registry:component",
+      "title": "Calendar demo",
+      "description": "How to use calendar, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/calendar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/calendar-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/calendar-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "card-demo",
+      "type": "registry:component",
+      "title": "Card demo",
+      "description": "How to use card, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/card.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/card-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/card-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "carousel-demo",
+      "type": "registry:component",
+      "title": "Carousel demo",
+      "description": "How to use carousel, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/carousel.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/carousel-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/carousel-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "checkbox-demo",
+      "type": "registry:component",
+      "title": "Checkbox demo",
+      "description": "How to use checkbox, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/checkbox.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/checkbox-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/checkbox-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "choice-list-demo",
+      "type": "registry:component",
+      "title": "Choice list demo",
+      "description": "How to use choice list, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/choice-list.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/choice-list-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/choice-list-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "code-block-demo",
+      "type": "registry:component",
+      "title": "Code block demo",
+      "description": "How to use code block, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/code-block.json",
+        "https://cyberspec.vercel.app/r/meter.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/code-block-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/code-block-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "collapsible-demo",
+      "type": "registry:component",
+      "title": "Collapsible demo",
+      "description": "How to use collapsible, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/collapsible.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/collapsible-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/collapsible-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "combobox-demo",
+      "type": "registry:component",
+      "title": "Combobox demo",
+      "description": "How to use combobox, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/combobox.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/combobox-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/combobox-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "command-palette-demo",
+      "type": "registry:component",
+      "title": "Command palette demo",
+      "description": "How to use command palette, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/command-palette.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/command-palette-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/command-palette-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "context-menu-demo",
+      "type": "registry:component",
+      "title": "Context menu demo",
+      "description": "How to use context menu, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/context-menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/context-menu-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/context-menu-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "data-table-demo",
+      "type": "registry:component",
+      "title": "Data table demo",
+      "description": "How to use data table, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/data-table.json",
+        "https://cyberspec.vercel.app/r/menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/data-table-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/data-table-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "date-picker-demo",
+      "type": "registry:component",
+      "title": "Date picker demo",
+      "description": "How to use date picker, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/date-picker.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/date-picker-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/date-picker-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "dialog-demo",
+      "type": "registry:component",
+      "title": "Dialog demo",
+      "description": "How to use dialog, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/dialog.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/dialog-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/dialog-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "drawer-demo",
+      "type": "registry:component",
+      "title": "Drawer demo",
+      "description": "How to use drawer, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/drawer.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/drawer-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/drawer-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "feed-demo",
+      "type": "registry:component",
+      "title": "Feed demo",
+      "description": "How to use feed, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/feed.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/feed-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/feed-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "fieldset-demo",
+      "type": "registry:component",
+      "title": "Fieldset demo",
+      "description": "How to use fieldset, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/fieldset.json",
+        "https://cyberspec.vercel.app/r/switch.json",
+        "https://cyberspec.vercel.app/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/fieldset-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/fieldset-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "glitch-text-demo",
+      "type": "registry:component",
+      "title": "Glitch text demo",
+      "description": "How to use glitch text, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/glitch-text.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/glitch-text-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/glitch-text-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "hex-stat-demo",
+      "type": "registry:component",
+      "title": "Hex stat demo",
+      "description": "How to use hex stat, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/hex-stat.json",
+        "https://cyberspec.vercel.app/r/readout.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/hex-stat-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/hex-stat-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "holo-card-demo",
+      "type": "registry:component",
+      "title": "Holo card demo",
+      "description": "How to use holo card, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/card.json",
+        "https://cyberspec.vercel.app/r/holo-card.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/holo-card-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/holo-card-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "hover-card-demo",
+      "type": "registry:component",
+      "title": "Hover card demo",
+      "description": "How to use hover card, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/hover-card.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/hover-card-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/hover-card-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "item-list-demo",
+      "type": "registry:component",
+      "title": "Item list demo",
+      "description": "How to use item list, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/item-list.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/item-list-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/item-list-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "item-slot-demo",
+      "type": "registry:component",
+      "title": "Item slot demo",
+      "description": "How to use item slot, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/item-slot.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/item-slot-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/item-slot-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "key-hint-demo",
+      "type": "registry:component",
+      "title": "Key hint demo",
+      "description": "How to use key hint, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/key-hint.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/key-hint-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/key-hint-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "loader-demo",
+      "type": "registry:component",
+      "title": "Loader demo",
+      "description": "How to use loader, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/loader.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/loader-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/loader-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "menu-demo",
+      "type": "registry:component",
+      "title": "Menu demo",
+      "description": "How to use menu, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/menu.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/menu-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/menu-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "menubar-demo",
+      "type": "registry:component",
+      "title": "Menubar demo",
+      "description": "How to use menubar, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/menubar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/menubar-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/menubar-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "meter-demo",
+      "type": "registry:component",
+      "title": "Meter demo",
+      "description": "How to use meter, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/meter.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/meter-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/meter-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "micro-demo",
+      "type": "registry:component",
+      "title": "Micro-print demo",
+      "description": "How to use micro-print, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/micro.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/micro-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/micro-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "navbar-demo",
+      "type": "registry:component",
+      "title": "Navbar demo",
+      "description": "How to use navbar, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/navbar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/navbar-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/navbar-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "otp-input-demo",
+      "type": "registry:component",
+      "title": "OTP input demo",
+      "description": "How to use otp input, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/otp-input.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/otp-input-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/otp-input-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "pagination-demo",
+      "type": "registry:component",
+      "title": "Pagination demo",
+      "description": "How to use pagination, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/pagination.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/pagination-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/pagination-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "panel-demo",
+      "type": "registry:component",
+      "title": "Panel demo",
+      "description": "How to use panel, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/panel-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/panel-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "password-input-demo",
+      "type": "registry:component",
+      "title": "Password input demo",
+      "description": "How to use password input, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/password-input.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/password-input-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/password-input-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "popover-demo",
+      "type": "registry:component",
+      "title": "Popover demo",
+      "description": "How to use popover, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/popover.json",
+        "https://cyberspec.vercel.app/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/popover-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/popover-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "progress-demo",
+      "type": "registry:component",
+      "title": "Progress demo",
+      "description": "How to use progress, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/progress.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/progress-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/progress-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "radio-group-demo",
+      "type": "registry:component",
+      "title": "Radio group demo",
+      "description": "How to use radio group, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/radio-group.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/radio-group-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/radio-group-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "rating-demo",
+      "type": "registry:component",
+      "title": "Rating demo",
+      "description": "How to use rating, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/rating.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/rating-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/rating-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "readout-demo",
+      "type": "registry:component",
+      "title": "Readout demo",
+      "description": "How to use readout, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/readout.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/readout-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/readout-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "resizable-demo",
+      "type": "registry:component",
+      "title": "Resizable demo",
+      "description": "How to use resizable, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/resizable.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/resizable-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/resizable-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "reticle-demo",
+      "type": "registry:component",
+      "title": "Reticle demo",
+      "description": "How to use reticle, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/reticle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/reticle-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/reticle-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "scroll-area-demo",
+      "type": "registry:component",
+      "title": "Scroll area demo",
+      "description": "How to use scroll area, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/scroll-area.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/scroll-area-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/scroll-area-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "segmented-control-demo",
+      "type": "registry:component",
+      "title": "Segmented control demo",
+      "description": "How to use segmented control, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/segmented-control-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/segmented-control-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "select-demo",
+      "type": "registry:component",
+      "title": "Select demo",
+      "description": "How to use select, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/select.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/select-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/select-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "separator-demo",
+      "type": "registry:component",
+      "title": "Separator demo",
+      "description": "How to use separator, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/separator.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/separator-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/separator-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "side-tabs-demo",
+      "type": "registry:component",
+      "title": "Side tabs demo",
+      "description": "How to use side tabs, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/side-tabs.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/side-tabs-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/side-tabs-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "signal-graph-demo",
+      "type": "registry:component",
+      "title": "Signal graph demo",
+      "description": "How to use signal graph, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/signal-graph.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/signal-graph-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/signal-graph-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "skeleton-demo",
+      "type": "registry:component",
+      "title": "Skeleton demo",
+      "description": "How to use skeleton, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/skeleton.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/skeleton-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/skeleton-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "slider-demo",
+      "type": "registry:component",
+      "title": "Slider demo",
+      "description": "How to use slider, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/slider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/slider-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/slider-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "stepper-demo",
+      "type": "registry:component",
+      "title": "Number stepper demo",
+      "description": "How to use number stepper, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/stepper.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/stepper-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/stepper-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "switch-demo",
+      "type": "registry:component",
+      "title": "Switch demo",
+      "description": "How to use switch, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/switch-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/switch-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "tabs-demo",
+      "type": "registry:component",
+      "title": "Tabs demo",
+      "description": "How to use tabs, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/tabs.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/tabs-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/tabs-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "terminal-demo",
+      "type": "registry:component",
+      "title": "Terminal demo",
+      "description": "How to use terminal, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/terminal.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/terminal-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/terminal-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "text-field-demo",
+      "type": "registry:component",
+      "title": "Text field demo",
+      "description": "How to use text field, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/text-field-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/text-field-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "textarea-demo",
+      "type": "registry:component",
+      "title": "Textarea demo",
+      "description": "How to use textarea, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/textarea.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/textarea-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/textarea-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "toast-demo",
+      "type": "registry:component",
+      "title": "Toast demo",
+      "description": "How to use toast, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/toast.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/toast-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/toast-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "toggle-demo",
+      "type": "registry:component",
+      "title": "Toggle demo",
+      "description": "How to use toggle, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/toggle-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/toggle-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "toggle-group-demo",
+      "type": "registry:component",
+      "title": "Toggle group demo",
+      "description": "How to use toggle group, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/toggle-group.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/toggle-group-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/toggle-group-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "toolbar-demo",
+      "type": "registry:component",
+      "title": "Toolbar demo",
+      "description": "How to use toolbar, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/toolbar.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/toolbar-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/toolbar-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "tooltip-demo",
+      "type": "registry:component",
+      "title": "Tooltip demo",
+      "description": "How to use tooltip, as the catalog shows it.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/tooltip.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/tooltip-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/tooltip-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "tree-demo",
+      "type": "registry:component",
+      "title": "Tree demo",
+      "description": "How to use tree, as the catalog shows it.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/tree.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/tree-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/tree-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
+      "name": "archive",
+      "type": "registry:block",
+      "title": "Archive",
+      "description": "A database of people, places and machines, one dossier each.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/breadcrumb.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/drawer.json",
+        "https://cyberspec.vercel.app/r/glitch-text.json",
+        "https://cyberspec.vercel.app/r/item-list.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/side-tabs.json",
+        "https://cyberspec.vercel.app/r/text-field.json",
+        "https://cyberspec.vercel.app/r/toaster.json",
+        "https://cyberspec.vercel.app/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/archive/archive.css",
+          "type": "registry:file",
+          "target": "@components/blocks/archive/archive.css"
+        },
+        {
+          "path": "registry/cyber/blocks/archive/archive.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/archive/archive.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/archive/art.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/archive/art.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/archive/data.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/archive/data.ts"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "augments",
+      "type": "registry:block",
+      "title": "Augments",
+      "description": "Five attributes on a hexagonal lattice, with points to spend and an info panel.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/alert-dialog.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/checkbox.json",
+        "https://cyberspec.vercel.app/r/feed.json",
+        "https://cyberspec.vercel.app/r/hex-stat.json",
+        "https://cyberspec.vercel.app/r/meter.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/stepper.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/augments/augments.css",
+          "type": "registry:file",
+          "target": "@components/blocks/augments/augments.css"
+        },
+        {
+          "path": "registry/cyber/blocks/augments/augments.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/augments/augments.tsx"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "comms",
+      "type": "registry:block",
+      "title": "Comms",
+      "description": "Contacts, a message thread, and replies to choose from.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/avatar.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/choice-list.json",
+        "https://cyberspec.vercel.app/r/feed.json",
+        "https://cyberspec.vercel.app/r/glitch-text.json",
+        "https://cyberspec.vercel.app/r/item-list.json",
+        "https://cyberspec.vercel.app/r/meter.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/scroll-area.json",
+        "https://cyberspec.vercel.app/r/switch.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/comms/comms.css",
+          "type": "registry:file",
+          "target": "@components/blocks/comms/comms.css"
+        },
+        {
+          "path": "registry/cyber/blocks/comms/comms.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/comms/comms.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/comms/data.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/comms/data.ts"
+        },
+        {
+          "path": "registry/cyber/blocks/comms/portrait.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/comms/portrait.tsx"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "daemon",
+      "type": "registry:block",
+      "title": "Daemon",
+      "description": "An agent console: what the agent sees, what it does, a permission prompt, and undo.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/checkbox.json",
+        "https://cyberspec.vercel.app/r/dialog.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/radio-group.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/select.json",
+        "https://cyberspec.vercel.app/r/slider.json",
+        "https://cyberspec.vercel.app/r/stepper.json",
+        "https://cyberspec.vercel.app/r/switch.json",
+        "https://cyberspec.vercel.app/r/terminal.json",
+        "https://cyberspec.vercel.app/r/text-field.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/daemon/agent-prompt.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/daemon/agent-prompt.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/daemon/bridge.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/daemon/bridge.ts"
+        },
+        {
+          "path": "registry/cyber/blocks/daemon/daemon.css",
+          "type": "registry:file",
+          "target": "@components/blocks/daemon/daemon.css"
+        },
+        {
+          "path": "registry/cyber/blocks/daemon/daemon.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/daemon/daemon.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/daemon/engine.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/daemon/engine.ts"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:block",
+      "title": "Grid",
+      "description": "A generated district map with filters, markers and a route.",
+      "dependencies": [
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/button-group.json",
+        "https://cyberspec.vercel.app/r/collapsible.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/reticle.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/toaster.json",
+        "https://cyberspec.vercel.app/r/toggle-group.json",
+        "https://cyberspec.vercel.app/r/tooltip.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/grid/city.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/grid/city.ts"
+        },
+        {
+          "path": "registry/cyber/blocks/grid/grid.css",
+          "type": "registry:file",
+          "target": "@components/blocks/grid/grid.css"
+        },
+        {
+          "path": "registry/cyber/blocks/grid/grid.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/grid/grid.tsx"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "jobs",
+      "type": "registry:block",
+      "title": "Jobs",
+      "description": "A job board: tabs, a list of jobs, objectives to tick off, and the brief.",
+      "dependencies": [
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@^1.73.0"
+      ],
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/alert-dialog.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/card.json",
+        "https://cyberspec.vercel.app/r/checkbox.json",
+        "https://cyberspec.vercel.app/r/glitch-text.json",
+        "https://cyberspec.vercel.app/r/hover-card.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/progress.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/tabs.json",
+        "https://cyberspec.vercel.app/r/toaster.json",
+        "https://cyberspec.vercel.app/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/jobs/art.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/jobs/art.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/jobs/data.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/jobs/data.ts"
+        },
+        {
+          "path": "registry/cyber/blocks/jobs/jobs.css",
+          "type": "registry:file",
+          "target": "@components/blocks/jobs/jobs.css"
+        },
+        {
+          "path": "registry/cyber/blocks/jobs/jobs.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/jobs/jobs.tsx"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    },
+    {
+      "name": "loadout",
+      "type": "registry:block",
+      "title": "Loadout",
+      "description": "Gear slots, a weapon's sheet with its stats, and what's in the pack.",
+      "registryDependencies": [
+        "https://cyberspec.vercel.app/r/cyber.json",
+        "https://cyberspec.vercel.app/r/alert-dialog.json",
+        "https://cyberspec.vercel.app/r/badge.json",
+        "https://cyberspec.vercel.app/r/button.json",
+        "https://cyberspec.vercel.app/r/dialog.json",
+        "https://cyberspec.vercel.app/r/item-slot.json",
+        "https://cyberspec.vercel.app/r/meter.json",
+        "https://cyberspec.vercel.app/r/micro.json",
+        "https://cyberspec.vercel.app/r/panel.json",
+        "https://cyberspec.vercel.app/r/readout.json",
+        "https://cyberspec.vercel.app/r/screen.json",
+        "https://cyberspec.vercel.app/r/segmented-control.json",
+        "https://cyberspec.vercel.app/r/tabs.json",
+        "https://cyberspec.vercel.app/r/toaster.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/blocks/loadout/figure.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/loadout/figure.tsx"
+        },
+        {
+          "path": "registry/cyber/blocks/loadout/gear.ts",
+          "type": "registry:component",
+          "target": "@components/blocks/loadout/gear.ts"
+        },
+        {
+          "path": "registry/cyber/blocks/loadout/loadout.css",
+          "type": "registry:file",
+          "target": "@components/blocks/loadout/loadout.css"
+        },
+        {
+          "path": "registry/cyber/blocks/loadout/loadout.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/loadout/loadout.tsx"
+        }
+      ],
+      "categories": [
+        "screen"
+      ]
+    }
+  ]
+}

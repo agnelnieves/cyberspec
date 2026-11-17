@@ -1,0 +1,314 @@
+{
+  "components": {
+    "accordion": [
+      "Accordion",
+      "Stacked sections that open from numbered headings, each with a glyph that turns."
+    ],
+    "alert": [
+      "Alert",
+      "An inline notice on a spined frame: info, success, warning or danger, each with its own glyph."
+    ],
+    "alert-dialog": [
+      "Alert dialog",
+      "A flagged confirmation that has to be answered, and that an agent has to ask a person about."
+    ],
+    "avatar": [
+      "Avatar",
+      "A portrait in a cut frame, with initials over a generated scanline field when there's no image."
+    ],
+    "badge": [
+      "Badge",
+      "A small cut label in seven tones, with count and status variants."
+    ],
+    "breadcrumb": [
+      "Breadcrumb",
+      "A trail of pages, the current one in the signal color."
+    ],
+    "button": [
+      "Button",
+      "A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed."
+    ],
+    "button-group": [
+      "Button group",
+      "Keys joined in one strip, horizontal or vertical, with hold-to-repeat."
+    ],
+    "calendar": [
+      "Calendar",
+      "A month grid with today marked and the chosen day lit."
+    ],
+    "card": [
+      "Card",
+      "A content card with a scanlined media slot, plain or interactive."
+    ],
+    "carousel": [
+      "Carousel",
+      "A viewer: slides in a cut frame, with keys, segment indicators and a position readout."
+    ],
+    "checkbox": [
+      "Checkbox",
+      "A cut box that fills and marks when checked, with an indeterminate state."
+    ],
+    "choice-list": [
+      "Choice list",
+      "Replies to choose from: rows in the signal color, the chosen one a solid yellow bar."
+    ],
+    "code-block": [
+      "Code block",
+      "Highlighted code with line numbers, a filename tab and a copy key. No highlighting dependency."
+    ],
+    "collapsible": [
+      "Collapsible",
+      "One section behind a key that shows and hides it."
+    ],
+    "combobox": [
+      "Combobox",
+      "A text control that filters a list of options as you type."
+    ],
+    "command-palette": [
+      "Command palette",
+      "A searchable list of commands behind a prompt, in a dialog."
+    ],
+    "context-menu": [
+      "Context menu",
+      "An area that opens a menu on right-click, a long press, or the keyboard."
+    ],
+    "data-table": [
+      "Data table",
+      "Rows with selection, sortable columns, status badges and a menu per row."
+    ],
+    "date-picker": [
+      "Date picker",
+      "A date field with a calendar that opens beside it."
+    ],
+    "dialog": [
+      "Dialog",
+      "A modal panel on a spined frame that tears in over a dimmed page, with its answers on keys below."
+    ],
+    "drawer": [
+      "Drawer",
+      "A sheet that slides in from the edge of the page, and can be dragged."
+    ],
+    "feed": [
+      "Feed",
+      "Dated events in order on a vertical rule: who did what, and when."
+    ],
+    "fieldset": [
+      "Fieldset",
+      "A spined frame grouping several fields under a legend."
+    ],
+    "glitch-text": [
+      "Glitch text",
+      "Text that decodes itself into place and tears for a moment, with a stable copy for screen readers."
+    ],
+    "hex-stat": [
+      "Hex stat",
+      "An attribute as a hexagon holding an icon, a value and a name, and a honeycomb to lay several out."
+    ],
+    "holo-card": [
+      "Holo card",
+      "A surface that tilts toward the pointer in 3D, with a sheen and layers at different depths."
+    ],
+    "hover-card": [
+      "Hover card",
+      "A name that previews a small dossier on hover or focus."
+    ],
+    "item-list": [
+      "Item list",
+      "An always-visible list of rows in columns, the selected row a solid signal bar."
+    ],
+    "item-slot": [
+      "Item slot",
+      "A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state."
+    ],
+    "key-hint": [
+      "Key hint",
+      "An input hint: a key glyph and what it does, optionally pressable."
+    ],
+    "loader": [
+      "Loader",
+      "A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line."
+    ],
+    "menu": [
+      "Menu",
+      "A key that opens a menu of actions, with checkable items, groups and a submenu."
+    ],
+    "menubar": [
+      "Menubar",
+      "A bar of menus with one tab stop."
+    ],
+    "meter": [
+      "Meter",
+      "A segmented gauge with thresholds that change its tone and print a word."
+    ],
+    "micro": [
+      "Micro-print",
+      "The printed decoration around frames: micro-print lines, barcodes, rulers, data streams and corner brackets."
+    ],
+    "navbar": [
+      "Navbar",
+      "A navigation bar with status readouts, page links and trailing content."
+    ],
+    "otp-input": [
+      "OTP input",
+      "One cut cell per character of a code, with a blinking caret in the active one."
+    ],
+    "pagination": [
+      "Pagination",
+      "Page keys with previous, next and ellipses, and a position readout."
+    ],
+    "panel": [
+      "Panel",
+      "The kit's container: a frame with a spine or a title bar, a heading, micro-print and a body."
+    ],
+    "password-input": [
+      "Password input",
+      "A password field with a key to show or hide it."
+    ],
+    "popover": [
+      "Popover",
+      "A key that opens a framed surface beside it, with a title, description and body."
+    ],
+    "progress": [
+      "Progress",
+      "A segmented bar with a percentage readout, and an indeterminate state."
+    ],
+    "radio-group": [
+      "Radio group",
+      "Options where one is chosen, each with a diamond indicator."
+    ],
+    "rating": [
+      "Rating",
+      "A level picked from a row of diamond pips."
+    ],
+    "readout": [
+      "Readout",
+      "A large numeral with a unit and a label that counts to its new value when it changes."
+    ],
+    "resizable": [
+      "Resizable",
+      "Panels split by a handle that drags or steps with keys."
+    ],
+    "reticle": [
+      "Reticle",
+      "A lock-on bracket that snaps onto whatever it wraps when hovered, focused or active."
+    ],
+    "screen": [
+      "Screen",
+      "The chrome every full screen shares: a status strip, the content, and a foot with key hints."
+    ],
+    "scroll-area": [
+      "Scroll area",
+      "A scrolling region with a thin scrollbar and edge indicators."
+    ],
+    "segmented-control": [
+      "Segmented control",
+      "A row of segments with an indicator that slides to the choice."
+    ],
+    "select": [
+      "Select",
+      "A labelled trigger that opens a list of options to choose from."
+    ],
+    "separator": [
+      "Separator",
+      "A rule with tick marks, plain, labelled or vertical."
+    ],
+    "side-tabs": [
+      "Side tabs",
+      "Icon keys stacked down the edge, with a panel beside them."
+    ],
+    "signal-graph": [
+      "Signal graph",
+      "A compact live graph, as a trace or a spectrum, with a text summary."
+    ],
+    "skeleton": [
+      "Skeleton",
+      "Placeholder lines and blocks for content that's loading."
+    ],
+    "slider": [
+      "Slider",
+      "A ticked track with a cut thumb and a value readout, single or range."
+    ],
+    "stepper": [
+      "Number stepper",
+      "A value on a readout between minus and plus keys, with MIN and MAX tags."
+    ],
+    "switch": [
+      "Switch",
+      "A block that slides across a cut track and lights, with its state printed beside it."
+    ],
+    "tabs": [
+      "Tabs",
+      "Tabs over panels with a sliding indicator, or as cut keys."
+    ],
+    "terminal": [
+      "Terminal",
+      "A console log with tagged lines, a prompt with history, and a follow-the-end scroll."
+    ],
+    "text-field": [
+      "Text field",
+      "A labelled text input in a cut frame, with a hint, an error and an optional icon."
+    ],
+    "textarea": [
+      "Textarea",
+      "A labelled multi-line input with a character count."
+    ],
+    "toast": [
+      "Toast",
+      "Keys that raise a notification in each tone."
+    ],
+    "toaster": [
+      "Toaster",
+      "The page's notification region and a notify() helper."
+    ],
+    "toggle": [
+      "Toggle",
+      "A latching key that stays lit while pressed."
+    ],
+    "toggle-group": [
+      "Toggle group",
+      "Toggles that share one value, one or several at a time."
+    ],
+    "toolbar": [
+      "Toolbar",
+      "Keys, toggles and separators in one bar, moved through with arrow keys."
+    ],
+    "tooltip": [
+      "Tooltip",
+      "A small cut label that appears on hover or focus."
+    ],
+    "tree": [
+      "Tree",
+      "A hierarchy with connector lines and branches that open."
+    ]
+  },
+  "blocks": {
+    "loadout": [
+      "Loadout",
+      "Gear slots, a weapon's sheet with its stats, and what's in the pack."
+    ],
+    "augments": [
+      "Augments",
+      "Five attributes on a hexagonal lattice, with points to spend and an info panel."
+    ],
+    "jobs": [
+      "Jobs",
+      "A job board: tabs, a list of jobs, objectives to tick off, and the brief."
+    ],
+    "comms": [
+      "Comms",
+      "Contacts, a message thread, and replies to choose from."
+    ],
+    "archive": [
+      "Archive",
+      "A database of people, places and machines, one dossier each."
+    ],
+    "grid": [
+      "Grid",
+      "A generated district map with filters, markers and a route."
+    ],
+    "daemon": [
+      "Daemon",
+      "An agent console: what the agent sees, what it does, a permission prompt, and undo."
+    ]
+  }
+}

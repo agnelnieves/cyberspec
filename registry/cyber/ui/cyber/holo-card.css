@@ -1,0 +1,151 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The root is the lens: it holds the perspective and takes the pointer,
+     and never turns itself, so what the pointer is over stays put. The
+     script writes where the pointer is as --holo-x and --holo-y (-1 to 1
+     from the surface's centre) and sets data-live; everything that moves
+     is derived from those two numbers here.
+
+       --holo-tilt  the most the surface turns
+       --holo-lift  how far one step of depth slides at full tilt
+       --holo-step  how far apart the ghost layers stand
+       --holo-cut   the cut corner the sheen is trimmed to, to match the
+                    frame inside (0px for a square one) */
+  [data-skin="cyber"] [data-kit="holo-card"] {
+    --holo-tilt: 8deg;
+    --holo-lift: 4px;
+    --holo-step: 7px;
+    --holo-stack: 0;
+    --holo-cut: var(--cy-cut);
+    /* Which way the ghosts stand off. */
+    --_dir: 1;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    perspective: 720px;
+    /* Room for the ghosts, so a stack never hangs out of its column. */
+    padding-block-start: calc(var(--holo-stack) * var(--holo-step));
+    padding-inline-end: calc(var(--holo-stack) * var(--holo-step));
+
+    &:dir(rtl) {
+      --_dir: -1;
+    }
+  }
+
+  /* The surface. At rest it has no transform at all, so text stays crisp;
+     live, it turns to face the pointer, chasing it with a short ease, and
+     when the pointer leaves it settles back more slowly. No overshoot. */
+  [data-skin="cyber"] [data-kit="holo-card-tilt"] {
+    position: relative;
+    transition: transform var(--cy-t-slow) var(--cy-ease-snap);
+  }
+
+  [data-skin="cyber"] [data-kit="holo-card"][data-live] > [data-kit="holo-card-tilt"] {
+    transform: rotateX(calc(var(--holo-y, 0) * -1 * var(--holo-tilt))) rotateY(calc(var(--holo-x, 0) * var(--holo-tilt)));
+    transition: transform var(--cy-t) var(--cy-ease-out);
+    will-change: transform;
+  }
+
+  [data-skin="cyber"] [data-kit="holo-card-content"] {
+    position: relative;
+    min-width: 0;
+  }
+
+  /* Ghosts: empty frames the size of the card, each a step further up and
+     along. They're behind the surface, so as it turns they slide the other
+     way from the pointer. */
+  [data-skin="cyber"] [data-kit="holo-card-ghost"] {
+    --frame-cut: var(--holo-cut);
+    --frame-line: var(--cy-line-deco);
+    --frame-fill: color-mix(in srgb, var(--cy-accent) 4%, transparent);
+    --frame-image: none;
+
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: calc(1 - var(--holo-n) * 0.22);
+    translate: calc(var(--holo-n) * (var(--_dir) * var(--holo-step) - var(--holo-x, 0) * var(--holo-lift)))
+      calc(var(--holo-n) * (-1 * var(--holo-step) - var(--holo-y, 0) * var(--holo-lift)));
+    transition: translate var(--cy-t) var(--cy-ease-out);
+  }
+
+  /* Depth. A frame clips, and anything clipped is flattened, so a layer
+     can't truly stand off the surface in 3D. It slides toward the pointer
+     instead, by as much as a raised thing would appear to once the surface
+     has turned, which works at any depth of nesting. */
+  [data-skin="cyber"] [data-kit="holo-card"] :is([data-depth], [data-kit="holo-layer"]) {
+    translate: calc(var(--holo-x, 0) * var(--holo-depth, 1) * var(--holo-lift)) calc(var(--holo-y, 0) * var(--holo-depth, 1) * var(--holo-lift));
+    transition: translate var(--cy-t) var(--cy-ease-out);
+  }
+
+  [data-skin="cyber"] [data-kit="holo-card"] [data-depth] {
+    --holo-depth: 1;
+
+    &[data-depth="-1"] {
+      --holo-depth: -1;
+    }
+    &[data-depth="0"] {
+      --holo-depth: 0;
+    }
+    &[data-depth="2"] {
+      --holo-depth: 2;
+    }
+    &[data-depth="3"] {
+      --holo-depth: 3;
+    }
+  }
+
+  /* The sheen: a soft light under the pointer and a hard streak beside it,
+     trimmed to the card's cut corner. Both are painted once and only
+     ever translated, so nothing is repainted as they move. Hidden until
+     the surface is live. */
+  [data-skin="cyber"] [data-kit="holo-card-sheen"] {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    container-type: size;
+    pointer-events: none;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--holo-cut)), calc(100% - var(--holo-cut)) 100%, 0 100%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity var(--cy-t-slow) linear;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--cy-signal) 20%, transparent), transparent);
+      translate: calc(var(--holo-x, 0) * 50cqw) calc(var(--holo-y, 0) * 50cqh);
+      transition: translate var(--cy-t) var(--cy-ease-out);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0 -100%;
+      background: linear-gradient(
+        112deg,
+        transparent 47%,
+        color-mix(in srgb, var(--cy-ink-hi) 14%, transparent) 49%,
+        color-mix(in srgb, var(--cy-ink-hi) 14%, transparent) 50.5%,
+        transparent 52.5%
+      );
+      translate: calc(var(--holo-x, 0) * 70cqw) 0;
+      transition: translate var(--cy-t) var(--cy-ease-out);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="holo-card"][data-live] [data-kit="holo-card-sheen"] {
+    opacity: 1;
+  }
+
+  /* Blending and trimming mean nothing to a forced palette. */
+  @media (forced-colors: active) {
+    [data-skin="cyber"] [data-kit="holo-card-sheen"] {
+      display: none;
+    }
+  }
+}

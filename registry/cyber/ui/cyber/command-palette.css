@@ -1,0 +1,245 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* The key is the shared button, the page behind is the dialog's backdrop and
+   the rows are the shared popup's (button.css, dialog.css, popup.css); this
+   is the palette's own frame, its prompt line and its foot. */
+@layer cyber.ui {
+  /* The chip on the key that prints its shortcut. */
+  [data-skin="cyber"] [data-kit="command-palette-kbd"] {
+    margin-inline: 2px -6px;
+    padding: 2px 5px;
+    border: 1px solid var(--cy-line-deco);
+    font-family: var(--cy-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-transform: none;
+    color: var(--cy-ink-mute);
+
+    &:empty {
+      display: none;
+    }
+
+    :is([data-open], :active) > & {
+      border-color: var(--cy-line-ctl);
+      color: var(--cy-ink-hi);
+    }
+  }
+
+  /* The palette is a column: a line of micro-print, then the frame. It hangs
+     from a fixed point near the top rather than centering, so the prompt
+     stays put while the list under it grows and shrinks. */
+  [data-skin="cyber"] [data-kit="command-palette"] {
+    --top: clamp(16px, 14dvh, 120px);
+
+    position: fixed;
+    inset-block: var(--top) auto;
+    inset-inline: 0;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(520px, calc(100vw - 32px));
+    max-height: calc(100dvh - var(--top) - 16px);
+
+    &[data-open] {
+      animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+    }
+    &[data-ending-style] {
+      animation: var(--cy-fx-out) 130ms var(--cy-ease-snap) both;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-surface"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-hot);
+    --frame-fill: var(--cy-panel);
+    /* The prompt line's tint. It's painted by the frame, under its edges,
+       because a background on the prompt itself would cover the cut corner's
+       stroke. */
+    --frame-image: linear-gradient(to bottom, var(--cy-fill-hover) 0 48px, transparent 48px);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-command"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* The prompt: a ">" in the signal color, the search text, and the key that
+     leaves. Its rule lights while the input has keyboard focus. */
+  [data-skin="cyber"] [data-kit="command-palette-prompt"] {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+    padding-inline: 16px 22px;
+    border-block-end: 1px solid var(--cy-line-deco);
+    transition: border-color var(--cy-t-fast) linear;
+
+    &:has(:focus-visible) {
+      border-block-end-color: var(--cy-signal);
+      box-shadow: inset 0 -1px 0 var(--cy-signal);
+    }
+
+    & input {
+      flex: 1;
+      min-width: 0;
+      height: 46px;
+      padding: 0;
+      border: 0;
+      background: none;
+      font-size: var(--cy-text-lg);
+      font-weight: 500;
+      color: var(--cy-ink-hi);
+      caret-color: var(--cy-signal);
+      outline: none;
+
+      &::placeholder {
+        color: var(--cy-ink-mute);
+        opacity: 1;
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-glyph"] {
+    flex: none;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-lg);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--cy-signal);
+
+    &:dir(rtl) {
+      scale: -1 1;
+    }
+  }
+
+  /* A key cap, for the hints in the prompt and the foot. */
+  [data-skin="cyber"] [data-kit="command-palette-key"] {
+    flex: none;
+    padding: 1px 5px;
+    border: 1px solid var(--cy-line-deco);
+    font-family: var(--cy-mono);
+    font-size: 10px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--cy-ink-mute);
+  }
+
+  /* The empty part is a live region that stays in the page, so it's never
+     hidden: it has no height of its own until its line is put in it. */
+  [data-skin="cyber"] [data-kit="command-palette-empty"] {
+    padding-inline: 6px;
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-list"] {
+    flex: 1;
+    min-height: 0;
+    max-height: min(320px, 48dvh);
+    padding: 6px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block: 6px;
+    font-size: var(--cy-text-sm);
+    outline: none;
+
+    &:empty {
+      display: none;
+    }
+
+    /* A command still running: a bar along the foot of its row. */
+    & [data-pending] {
+      cursor: progress;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--cy-signal) 50%, transparent) 0 0 / 300% 100% no-repeat;
+        animation: var(--cy-fx-sweep) 900ms linear infinite;
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-group"] {
+    display: grid;
+  }
+
+  /* Every row keeps an icon column, so names line up with or without one. */
+  [data-skin="cyber"] [data-kit="command-palette-icon"] {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    color: var(--cy-ink-mute);
+
+    [data-highlighted] > & {
+      color: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-text"] {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The letters that matched: the signal color, and underlined, so the
+     emphasis doesn't rest on color. */
+  [data-skin="cyber"] [data-kit="command-palette-match"] {
+    background: none;
+    color: var(--cy-signal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* The foot: how many commands are left, and the keys that work here. */
+  [data-skin="cyber"] [data-kit="command-palette-foot"] {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 30px;
+    padding-inline: 22px 14px;
+    border-block-start: 1px solid var(--cy-line-deco);
+    font-family: var(--cy-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cy-ink-mute);
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-status"] {
+    min-width: 0;
+    white-space: nowrap;
+
+    & [data-kit="value"] {
+      font-size: inherit;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="command-palette-hints"] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-inline-start: auto;
+    white-space: nowrap;
+
+    & kbd:not(:first-child) {
+      margin-inline-start: 8px;
+    }
+  }
+}

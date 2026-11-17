@@ -1,0 +1,319 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  /* Three columns: the counters and the sheet down the left, the lattice
+     in the middle with the reset under it, what it all adds up to on the
+     right. The sheet is the tall one, so the lattice's stage takes the
+     height that's over and centers in it. */
+  [data-skin="cyber"] [data-kit="augments"] {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr) minmax(0, 284px);
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "points stage side"
+      "sheet  stage side"
+      "sheet  reset side";
+    gap: 20px 24px;
+    align-items: start;
+    min-width: 0;
+
+    @media (max-width: 1180px) {
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      grid-template-areas:
+        "points stage"
+        "sheet  stage"
+        "sheet  reset"
+        "side   side";
+    }
+
+    /* One column, in the order it's used: what there is to spend, where
+       it goes, what it does, what it added up to. */
+    @media (max-width: 760px) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      grid-template-areas:
+        "points"
+        "stage"
+        "sheet"
+        "reset"
+        "side";
+    }
+  }
+
+  /* ── Status strip ──────────────────────────────────────────────────── */
+
+  /* The currency mark stands before the figure, on its baseline. */
+  [data-skin="cyber"] [data-augments-credits] {
+    display: flex;
+    align-items: end;
+    gap: 6px;
+  }
+
+  [data-skin="cyber"] [data-augments-currency] {
+    padding-block-end: 8px;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--cy-flag);
+  }
+
+  /* ── Counters ──────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-augments-points] {
+    grid-area: points;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+  }
+
+  /* ── The lattice ───────────────────────────────────────────────────── */
+
+  /* The stage the lattice stands on: registration marks at its corners,
+     a schematic behind, print in its margins. */
+  [data-skin="cyber"] [data-augments-stage] {
+    --hex-stat-size: 196px;
+
+    grid-area: stage;
+    position: relative;
+    display: grid;
+    align-self: stretch;
+    align-content: center;
+    gap: 22px;
+    min-width: 0;
+    padding: 44px 16px 18px;
+    isolation: isolate;
+
+    @media (max-width: 760px) {
+      padding-block-start: 30px;
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-schematic] {
+    position: absolute;
+    z-index: -1;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    width: min(100%, 620px);
+    aspect-ratio: 1;
+    translate: -50% -54%;
+    pointer-events: none;
+    overflow: visible;
+
+    &:dir(rtl) {
+      translate: 50% -54%;
+    }
+
+    & :is(polygon, line) {
+      fill: none;
+      stroke: var(--cy-line-deco);
+      stroke-width: 1px;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.55;
+    }
+
+    & [data-tick] {
+      stroke: var(--cy-line-ctl);
+      opacity: 0.5;
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-print="head"] {
+    position: absolute;
+    inset-block-start: 14px;
+    inset-inline-start: 22px;
+    max-width: calc(100% - 44px);
+    overflow: hidden;
+  }
+
+  [data-skin="cyber"] [data-augments-print="side"] {
+    /* Physical sides: the line is set vertically, and its own logical
+       sides turn with it. */
+    position: absolute;
+    top: 44px;
+    right: 4px;
+  }
+
+  [data-skin="cyber"] [data-augments-stream] {
+    position: absolute;
+    inset-block-start: 40px;
+    inset-inline-start: 22px;
+  }
+
+  /* The margins have no room for print on a phone. */
+  @media (max-width: 760px) {
+    [data-skin="cyber"] :is([data-augments-print="side"], [data-augments-stream]) {
+      display: none;
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-stage-foot] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: center;
+    gap: 10px 20px;
+  }
+
+  [data-skin="cyber"] [data-augments-ruler] {
+    opacity: 0.7;
+  }
+
+  /* ── The sheet ─────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-augments-sheet-panel] {
+    grid-area: sheet;
+  }
+
+  /* The tear skews the sheet, and a skewed tall block reaches well past
+     its own sides: the wrapper clips that, a few pixels out so focus
+     rings at the edge survive. */
+  [data-skin="cyber"] [data-augments-sheet-clip] {
+    min-width: 0;
+    margin: -4px;
+    padding: 4px;
+    overflow: clip;
+  }
+
+  /* No forward fill: a transform animation that's still filling keeps
+     its reach in the page's scrollable width after it has ended. */
+  [data-skin="cyber"] [data-augments-sheet] {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+
+    & > h3 {
+      margin-block-start: 6px;
+      padding-block-start: 10px;
+      border-block-start: 1px solid var(--cy-line-deco);
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-upgrades] {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  /* An upgrade: its box and what it does, then what it costs. */
+  [data-skin="cyber"] [data-augments-upgrade] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+  }
+
+  [data-skin="cyber"] [data-augments-upgrade-tags] {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 4px;
+    padding-block-start: 3px;
+    white-space: nowrap;
+  }
+
+  /* ── Reset ─────────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-augments-reset] {
+    grid-area: reset;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 12px 24px;
+    min-width: 0;
+    padding-block-start: 14px;
+    border-block-start: 1px solid var(--cy-line-deco);
+  }
+
+  [data-skin="cyber"] [data-augments-reset-key] {
+    flex: 1 1 240px;
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+    min-width: 0;
+
+    & [data-kit="button"] {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+
+  /* The fee, at the far end of the key. */
+  [data-skin="cyber"] [data-augments-fee] {
+    margin-inline-start: auto;
+    padding-inline-start: 12px;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-sm);
+    color: var(--cy-flag);
+
+    [data-disabled] > &,
+    :disabled > & {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* ── What it adds up to ────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-augments-side] {
+    grid-area: side;
+    display: grid;
+    gap: 22px;
+    align-content: start;
+    min-width: 0;
+
+    @media (min-width: 761px) and (max-width: 1180px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px 28px;
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-stats] {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  /* A gauge, with the attribute it reads from printed in its margin. The
+     ones the selected attribute feeds carry the signal bar. */
+  [data-skin="cyber"] [data-augments-stat] {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding-inline-start: 7px;
+    border-inline-start: 3px solid transparent;
+    transition: border-color var(--cy-t) var(--cy-ease-snap);
+
+    &[data-fed] {
+      border-inline-start-color: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-source] {
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cy-ink-mute);
+
+    [data-fed] > & {
+      color: var(--cy-ink-hi);
+    }
+  }
+
+  [data-skin="cyber"] [data-augments-log] {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-augments-heading] {
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+  }
+}

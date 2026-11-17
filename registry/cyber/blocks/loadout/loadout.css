@@ -1,0 +1,436 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  /* The views on the left, the sheet for what's selected on the right. The
+     sheet drops under the views when there isn't room for the body's three
+     columns beside it. */
+  [data-skin="cyber"] [data-kit="loadout"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px 28px;
+    align-items: start;
+    min-width: 0;
+
+    @media (max-width: 1240px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* A region's name, the way the body's sections are headed. */
+  [data-skin="cyber"] [data-loadout-heading] {
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+  }
+
+  /* ── Status strip ──────────────────────────────────────────────────── */
+
+  /* The currency mark stands before the figure, on its baseline. */
+  [data-skin="cyber"] [data-loadout-credits] {
+    display: flex;
+    align-items: end;
+    gap: 6px;
+  }
+
+  [data-skin="cyber"] [data-loadout-currency] {
+    padding-block-end: 8px;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--cy-flag);
+  }
+
+  /* ── Fitted: weapons, the runner, gear by region ───────────────────── */
+
+  [data-skin="cyber"] [data-loadout-fitted] {
+    display: grid;
+    grid-template-columns: minmax(0, 250px) minmax(140px, 1fr) auto;
+    gap: 24px;
+    align-items: start;
+    padding-block-start: 10px;
+
+    @media (max-width: 760px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-weapons] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    min-width: 0;
+
+    & ul {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    & li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+  }
+
+  /* What a tile holds, printed beside it. */
+  [data-skin="cyber"] [data-loadout-caption] {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+
+    & [data-kit="label"] {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    & [data-kit="hint"] {
+      font-size: var(--cy-text-xs);
+    }
+
+    & [data-loadout-figure-of] {
+      margin-block-start: 2px;
+      font-size: var(--cy-text-md);
+    }
+  }
+
+  /* The stage the wireframe stands on: brackets on its corners, a rule
+     down its leading edge, print at its head and foot. */
+  [data-skin="cyber"] [data-loadout-figure] {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 12px 12px 10px 20px;
+    color: var(--cy-line-ctl);
+
+    & > svg {
+      display: block;
+      width: 100%;
+      max-width: 190px;
+      height: auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1;
+      stroke-linejoin: miter;
+    }
+
+    & [data-part] {
+      fill: color-mix(in srgb, var(--cy-accent) 7%, transparent);
+      transition:
+        stroke var(--cy-t) linear,
+        fill var(--cy-t) linear;
+    }
+
+    & [data-part="stage"] {
+      fill: none;
+      stroke: var(--cy-line-deco);
+    }
+
+    /* The region the selection belongs to. */
+    &[data-region="weapon"] [data-part~="weapon"],
+    &[data-region="head"] [data-part~="head"],
+    &[data-region="chest"] [data-part~="chest"],
+    &[data-region="legs"] [data-part~="legs"],
+    &[data-region="outfit"] [data-part~="outfit"],
+    &[data-region="deck"] [data-part~="deck"],
+    &[data-region="quick"] [data-part~="quick"] {
+      stroke: var(--cy-signal);
+      fill: var(--cy-signal-fill);
+    }
+
+    @media (max-width: 760px) {
+      display: none;
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-figure-rule] {
+    position: absolute;
+    inset-block: 14px;
+    inset-inline-start: 4px;
+    height: auto;
+  }
+
+  [data-skin="cyber"] [data-loadout-figure-code] {
+    justify-self: start;
+  }
+
+  [data-skin="cyber"] [data-loadout-vitals] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-block-start: 8px;
+    padding-block-start: 14px;
+    border-block-start: 1px solid var(--cy-line-deco);
+  }
+
+  [data-skin="cyber"] [data-loadout-gear] {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 20px 28px;
+    justify-content: start;
+    min-width: 0;
+
+    & section {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    & [data-kit="hint"] {
+      font-size: var(--cy-text-xs);
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-slots] {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ── Pack ──────────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-loadout-pack] {
+    display: grid;
+    gap: 14px;
+    padding-block-start: 10px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-loadout-pack-head] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 10px 20px;
+  }
+
+  [data-skin="cyber"] [data-loadout-pack-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 236px), 1fr));
+    gap: 12px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      padding-block-end: 12px;
+      border-block-end: 1px solid var(--cy-line-deco);
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-none] {
+    padding: 28px 0;
+    color: var(--cy-ink-mute);
+  }
+
+  /* ── The sheet ─────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-loadout-sheet] {
+    min-width: 0;
+
+    @media (max-width: 1240px) {
+      width: min(100%, 560px);
+    }
+  }
+
+  /* It tears in each time the selection changes (the element is keyed by
+     what's selected). */
+  [data-skin="cyber"] [data-loadout-sheet-body] {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+  }
+
+  [data-skin="cyber"] [data-loadout-line] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+  }
+
+  [data-skin="cyber"] [data-loadout-meters] {
+    display: grid;
+    gap: 10px;
+  }
+
+  [data-skin="cyber"] [data-loadout-mods] {
+    display: grid;
+    gap: 6px;
+
+    & h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    & ol {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    & li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--cy-text-sm);
+      color: var(--cy-ink-mute);
+
+      &[data-fitted] {
+        color: var(--cy-ink-hi);
+      }
+    }
+  }
+
+  /* A socket: solid when something's fitted in it, hollow when it's free. */
+  [data-skin="cyber"] [data-loadout-socket] {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--cy-signal-dim);
+
+    [data-fitted] > & {
+      border-color: var(--cy-signal);
+      background: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-note] {
+    font-size: var(--cy-text-sm);
+    color: var(--cy-ink-hi);
+    text-wrap: pretty;
+  }
+
+  [data-skin="cyber"] [data-loadout-facts] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin: 0;
+    padding-block-start: 10px;
+    border-block-start: 1px solid var(--cy-line-deco);
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink);
+    }
+
+    & dd {
+      margin: 0;
+      font-family: var(--cy-mono);
+      font-size: var(--cy-text-md);
+      color: var(--cy-signal);
+      white-space: nowrap;
+    }
+  }
+
+  /* The panel sets a list with dashes; this only lays each row out. */
+  [data-skin="cyber"] [data-loadout-fits] {
+    margin: 0;
+    font-size: var(--cy-text-sm);
+    color: var(--cy-ink-hi);
+
+    & li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2px 12px;
+    }
+  }
+
+  /* ── The viewer ────────────────────────────────────────────────────── */
+
+  /* The item on a plate of registration marks, with its serial as a code
+     strip down the trailing side. */
+  [data-skin="cyber"] [data-loadout-viewer] {
+    --viewer-ink: var(--cy-accent);
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    min-width: 0;
+
+    &[data-rarity="rare"] {
+      --viewer-ink: var(--cy-rare);
+    }
+    &[data-rarity="epic"] {
+      --viewer-ink: var(--cy-epic);
+    }
+    &[data-rarity="legend"] {
+      --viewer-ink: var(--cy-flag);
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-viewer-plate] {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: 4px;
+    min-height: 230px;
+    padding: 8px 28px;
+    border: 1px solid var(--cy-line-deco);
+    background-color: var(--cy-void);
+
+    & > [data-loadout-viewer-marks] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: var(--cy-line-deco);
+      stroke-width: 1;
+    }
+
+    & > [data-loadout-viewer-art] {
+      position: relative;
+      align-self: center;
+      display: block;
+      width: min(72%, 230px);
+      height: auto;
+      fill: color-mix(in srgb, var(--viewer-ink) 16%, transparent);
+      stroke: var(--viewer-ink);
+      stroke-width: 1.25;
+      stroke-linejoin: miter;
+      filter: drop-shadow(0 0 calc(10px * var(--cy-fx)) color-mix(in srgb, var(--viewer-ink) 45%, transparent));
+    }
+
+    & > [data-micro] {
+      position: relative;
+      justify-self: start;
+      max-width: 100%;
+      padding-inline: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* Print sits on the plate, not on the marks behind it. */
+      background: var(--cy-void);
+      opacity: 1;
+    }
+  }
+
+  [data-skin="cyber"] [data-loadout-viewer-strip] {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    max-height: 250px;
+    overflow: hidden;
+    color: var(--cy-line-ctl);
+  }
+}

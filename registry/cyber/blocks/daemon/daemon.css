@@ -1,0 +1,115 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  [data-skin="cyber"] [data-kit="daemon"] {
+    display: grid;
+    gap: 28px;
+  }
+
+  /* The deck and the console side by side; stacked when there isn't room
+     for both to be usable. */
+  [data-skin="cyber"] [data-daemon-columns] {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 24px;
+    align-items: start;
+
+    @media (max-width: 980px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  [data-skin="cyber"] [data-daemon-form] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 18px 20px;
+    align-items: start;
+  }
+
+  [data-skin="cyber"] [data-daemon-latches] {
+    display: grid;
+    gap: 6px;
+  }
+
+  [data-skin="cyber"] [data-daemon-actions] {
+    margin-block-start: 20px;
+    padding-block-start: 16px;
+    border-block-start: 1px solid var(--cy-line-deco);
+  }
+
+  [data-skin="cyber"] [data-daemon-console-body] {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-daemon-programs] {
+    display: grid;
+    gap: 8px;
+
+    & [data-daemon-program] {
+      display: grid;
+      grid-template-columns: 136px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+
+    & [data-kit="button"] {
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    @media (max-width: 520px) {
+      & [data-daemon-program] {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px;
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-daemon-status] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* What the screen is showing, in five short notes. */
+  [data-skin="cyber"] [data-daemon-notes] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 18px 24px;
+    margin: 0;
+
+    & div {
+      padding-inline-start: 12px;
+      border-inline-start: 1px solid var(--cy-line-ctl);
+    }
+
+    & dt {
+      font-size: var(--cy-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-signal);
+    }
+
+    & dd {
+      margin: 4px 0 0;
+      font-size: var(--cy-text-sm);
+      color: var(--cy-ink-hi);
+      text-wrap: pretty;
+    }
+  }
+
+  /* The permission prompt is a dialog flagged in yellow. */
+  [data-skin="cyber"] [data-kit="dialog-surface"][data-tone="flag"] {
+    --frame-line: var(--cy-flag);
+    --frame-fill: var(--cy-flag-fill);
+
+    & [data-kit="dialog-title"] {
+      color: var(--cy-flag);
+    }
+  }
+}

@@ -1,0 +1,143 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* An OTP input is a row of cut cells with one invisible input laid over
+   them. The input takes focus but draws nothing, so the cell typing goes to
+   stands in for the focus ring: it takes the ring's own look, a doubled
+   edge in the signal color. */
+@layer cyber.ui {
+  [data-skin="cyber"] [data-kit="otp-input-head"] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+
+    & [data-kit="label"][data-disabled] {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* Cells filled, of how many. A value, so it's the signal color; it steps
+     as the code goes in. */
+  [data-skin="cyber"] [data-kit="otp-input-count"] {
+    flex: none;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--cy-signal);
+
+    [data-kit="otp-input-head"]:has([data-disabled]) > & {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* The SDK's root: as wide as its cells, so the input over it is too. */
+  [data-skin="cyber"] [data-kit="otp-input"] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    max-width: 100%;
+    min-width: 0;
+    cursor: text;
+
+    &[data-disabled] {
+      cursor: not-allowed;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="otp-input-group"] {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="otp-input-slot"] {
+    --frame-cut: 5px;
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+
+    flex: 0 1 38px;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    min-width: 22px;
+    height: var(--cy-h-lg);
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-lg);
+    font-weight: 500;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--cy-signal);
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear;
+
+    /* The input over the cells is what the pointer is on, so hover is read
+       from the root. */
+    @media (hover: hover) {
+      [data-kit="otp-input"]:hover:not([data-disabled]) & {
+        --frame-line: var(--cy-line-hot);
+      }
+    }
+
+    /* Where typing goes. Empty, it holds the caret; filled, the character
+       there is the one the next key replaces, so it's lit like a selection. */
+    &[data-active] {
+      --frame-line: var(--cy-signal);
+      --frame-fill: var(--cy-fill-hover);
+      box-shadow: inset 0 0 0 1px var(--cy-signal);
+
+      &[data-filled] {
+        --frame-fill: var(--cy-signal-fill);
+      }
+    }
+
+    /* The caret is a border, not a fill, so it survives forced colors. */
+    &[data-fake-caret]::after {
+      content: "";
+      height: 18px;
+      border-inline-start: 2px solid var(--cy-signal);
+      animation: var(--cy-fx-blink) 1.1s linear infinite;
+    }
+
+    /* Forced colors drop the doubled edge, so the cell typing goes to gets
+       a real outline there. */
+    @media (forced-colors: active) {
+      &[data-active] {
+        outline: 2px solid Highlight;
+        outline-offset: -2px;
+      }
+    }
+
+    /* Invalid: the flag edge on every cell. The message under the field
+       carries the mark and the words. */
+    [data-kit="otp-input"]:has([aria-invalid="true"]) &:not([data-active], [data-disabled]) {
+      --frame-line: var(--cy-flag);
+    }
+
+    &[data-disabled] {
+      --frame-line: var(--cy-line-deco);
+      --frame-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--cy-line-deco) 5px 6px);
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* The last cell filling: the whole code slips its channels, once. The
+     component marks the root for the length of it (lib/glitch.ts). */
+  [data-skin="cyber"] [data-kit="otp-input"][data-glitching] [data-kit="otp-input-group"] {
+    animation: var(--cy-fx-rgb) 320ms var(--cy-ease-snap);
+  }
+
+  /* A dash between groups. It's drawn, not typed. */
+  [data-skin="cyber"] [data-kit="otp-input-separator"] {
+    flex: none;
+    width: 8px;
+    border-block-start: 2px solid var(--cy-line-ctl);
+
+    &[data-disabled] {
+      border-color: var(--cy-line-deco);
+    }
+  }
+}

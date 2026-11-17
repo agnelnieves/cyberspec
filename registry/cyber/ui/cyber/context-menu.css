@@ -1,0 +1,138 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The area: a control, so its idle edge is the 70% line. Faint hatching
+     says the whole surface answers, not just the words on it. */
+  [data-skin="cyber"] [data-kit="context-menu"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel-a);
+    --frame-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 7px,
+      color-mix(in srgb, var(--cy-accent) 9%, transparent) 7px 8px
+    );
+
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 4px;
+    width: 100%;
+    min-height: 132px;
+    padding: 20px 16px 22px;
+    overflow: hidden;
+    text-align: center;
+    cursor: context-menu;
+    /* A long press opens the menu, so it shouldn't also select the words or
+       call up the system's own sheet. */
+    user-select: none;
+    -webkit-touch-callout: none;
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      &:hover {
+        --frame-line: var(--cy-line-hot);
+        --frame-fill: var(--cy-fill-hover);
+      }
+    }
+
+    /* Its menu is open. */
+    &:not([data-closed]) {
+      --frame-line: var(--cy-line-hot);
+      --frame-fill: var(--cy-fill-hover);
+    }
+
+    &[data-disabled] {
+      --frame-line: var(--cy-line-deco);
+      color: var(--cy-ink-mute);
+      cursor: not-allowed;
+    }
+
+    /* The print sits in the corner the frame doesn't cut. */
+    & > [data-micro] {
+      position: absolute;
+      inset-block-end: 6px;
+      inset-inline-start: 10px;
+    }
+  }
+
+  /* How to open it, said for the pointer in use. */
+  [data-skin="cyber"] [data-kit="context-menu-prompt"] {
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+
+    &[data-pointer="coarse"] {
+      display: none;
+    }
+
+    @media (pointer: coarse) {
+      &[data-pointer="fine"] {
+        display: none;
+      }
+      &[data-pointer="coarse"] {
+        display: inline;
+      }
+    }
+  }
+
+  /* The way in from the keyboard, with its keys as caps. */
+  [data-skin="cyber"] [data-kit="context-menu-keys"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 5px;
+    font-size: var(--cy-text-sm);
+    color: var(--cy-ink-mute);
+  }
+
+  [data-skin="cyber"] [data-kit="context-menu-combo"] {
+    display: inline-flex;
+    gap: 5px;
+  }
+
+  /* A key cap: a small frame, with what's printed on it in the signal
+     color, like any value. */
+  [data-skin="cyber"] [data-kit="context-menu-key"] {
+    --frame-cut: 4px;
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+
+    min-width: 20px;
+    padding: 2px 5px 1px;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    line-height: 1.2;
+    text-align: center;
+    color: var(--cy-signal);
+  }
+
+  /* The reticle: a cross and a box at the point the menu was opened from,
+     shown while it's open. The point is measured from the area's left
+     edge, in either reading direction. Opened from the keyboard there is
+     no point, so there's no reticle. */
+  [data-skin="cyber"] [data-kit="context-menu-reticle"] {
+    position: absolute;
+    top: var(--at-y, 50%);
+    left: var(--at-x, 50%);
+    width: 21px;
+    height: 21px;
+    margin: -10.5px;
+    border: 1px solid var(--cy-signal);
+    background:
+      linear-gradient(var(--cy-signal), var(--cy-signal)) center / 1px 9px no-repeat,
+      linear-gradient(var(--cy-signal), var(--cy-signal)) center / 9px 1px no-repeat;
+    opacity: 0;
+    pointer-events: none;
+
+    [data-pointed]:not([data-closed]) > & {
+      opacity: 1;
+      animation: var(--cy-fx-flicker) 2400ms linear infinite;
+    }
+  }
+}

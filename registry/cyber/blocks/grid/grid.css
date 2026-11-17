@@ -1,0 +1,576 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  [data-skin="cyber"] [data-kit="grid-map"] {
+    display: grid;
+    min-width: 0;
+  }
+
+  /* What's being tracked and what's in view, at the end of the status strip. */
+  [data-skin="cyber"] [data-grid-now] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin: 0;
+
+    & div {
+      display: grid;
+      gap: 4px;
+      justify-items: start;
+    }
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+  }
+
+  /* ── The stage ─────────────────────────────────────────────────────── */
+
+  /* The map fills the stage and the panels float over its edges, in the two
+     outer columns. --grid-l and --grid-r are how much of the map those
+     columns cover; the script reads them to find the clear middle. */
+  [data-skin="cyber"] [data-grid-stage] {
+    --grid-l: 252px;
+    --grid-r: 318px;
+
+    display: grid;
+    grid-template-columns: var(--grid-l) minmax(0, 1fr) var(--grid-r);
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 690px;
+    min-width: 0;
+
+    /* Narrower, the map takes the width and the panels follow it. */
+    @media (max-width: 1060px) {
+      --grid-l: 0px;
+      --grid-r: 0px;
+
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto;
+      gap: 16px;
+      height: auto;
+    }
+
+    @media (max-width: 680px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* The viewport: a window onto the sheet. Nothing in it scrolls; the sheet
+     is moved by transform, and what falls outside is clipped. The cut
+     corners match the frame laid over it. */
+  [data-skin="cyber"] [data-grid-view] {
+    --_cut: var(--cy-cut-lg);
+
+    grid-area: 1 / 1 / -1 / -1;
+    position: relative;
+    min-width: 0;
+    overflow: clip;
+    contain: layout paint;
+    clip-path: polygon(var(--_cut) 0, 100% 0, 100% calc(100% - var(--_cut)), calc(100% - var(--_cut)) 100%, 0 100%, 0 var(--_cut));
+    background: var(--cy-void);
+    cursor: grab;
+    user-select: none;
+    /* A finger still scrolls the page past the map, until the sheet is
+       tall enough to need panning that way too. */
+    touch-action: pan-y;
+
+    &[data-pan="both"] {
+      touch-action: none;
+    }
+
+    &[data-dragging] {
+      cursor: grabbing;
+    }
+
+    /* The sheet darkens toward the sides the panels sit on. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to right, color-mix(in srgb, var(--cy-void) 78%, transparent), transparent calc(var(--grid-l) + 90px)),
+        linear-gradient(to left, color-mix(in srgb, var(--cy-void) 78%, transparent), transparent calc(var(--grid-r) + 90px));
+    }
+
+    /* Its own outline would be clipped with the corners: the frame over it
+       lights instead (below). */
+    &:focus-visible {
+      outline: none;
+    }
+
+    @media (max-width: 1060px) {
+      height: clamp(380px, 112vw, 560px);
+
+      &::after {
+        content: none;
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-edge] {
+    --frame-cut: var(--cy-cut-lg);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: transparent;
+
+    grid-area: 1 / 1 / -1 / -1;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  [data-skin="cyber"] [data-grid-view]:focus-visible + [data-grid-edge] {
+    --frame-line: var(--cy-signal);
+    box-shadow: inset 0 0 0 1px var(--cy-signal);
+  }
+
+  /* The sheet, in its own units (1200 by 700), scaled and offset to the
+     view. A map doesn't mirror, so its positions are physical. */
+  [data-skin="cyber"] [data-grid-world] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 700px;
+    transform-origin: 0 0;
+    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--k, 1));
+    transition: transform 240ms var(--cy-ease-snap);
+
+    [data-dragging] > & {
+      transition: none;
+    }
+  }
+
+  [data-skin="cyber"] :is([data-grid-terrain], [data-grid-route]) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  /* ── The sheet's ink ───────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-grid-survey] path {
+    fill: none;
+    stroke: var(--cy-line-deco);
+    stroke-width: 1;
+    stroke-dasharray: 2 6;
+    opacity: 0.7;
+  }
+
+  [data-skin="cyber"] [data-grid-water] {
+    fill: none;
+    stroke: color-mix(in srgb, var(--cy-signal) 13%, var(--cy-void));
+    stroke-width: 32;
+    stroke-linejoin: bevel;
+
+    &[data-grid-water="bank"] {
+      stroke: var(--cy-signal-dim);
+      stroke-width: 35;
+    }
+    &[data-grid-water="flow"] {
+      stroke: var(--cy-signal-dim);
+      stroke-width: 1;
+      stroke-dasharray: 3 14;
+    }
+    &[data-grid-water="sample"] {
+      stroke: var(--cy-signal-dim);
+      stroke-width: 7;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-road] {
+    fill: none;
+    stroke: color-mix(in srgb, var(--cy-rare) 42%, var(--cy-void));
+    stroke-width: 2;
+    stroke-linecap: square;
+
+    &[data-grid-road="major"],
+    &[data-grid-road="bridge"] {
+      stroke: color-mix(in srgb, var(--cy-rare) 82%, var(--cy-void));
+      stroke-width: 3.5;
+    }
+    &[data-grid-road="bridge-bed"] {
+      stroke: var(--cy-void);
+      stroke-width: 9;
+      stroke-linecap: butt;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-block] {
+    fill: color-mix(in srgb, var(--cy-accent) 24%, var(--cy-void));
+
+    &[data-grid-block="1"] {
+      fill: color-mix(in srgb, var(--cy-accent) 40%, var(--cy-void));
+    }
+    &[data-grid-block="2"] {
+      fill: color-mix(in srgb, var(--cy-accent) 62%, var(--cy-void));
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-lot] {
+    fill: none;
+    stroke: var(--cy-line-deco);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+
+  [data-skin="cyber"] [data-grid-rail] {
+    fill: none;
+    stroke: var(--cy-signal);
+    stroke-width: 1.5;
+    stroke-linejoin: miter;
+
+    &[data-grid-rail="bed"] {
+      stroke: var(--cy-void);
+      stroke-width: 11;
+    }
+    &[data-grid-rail="ties"] {
+      stroke: var(--cy-signal-dim);
+      stroke-width: 7;
+      stroke-dasharray: 1.5 5;
+    }
+    &[data-grid-rail="station"] {
+      fill: var(--cy-void);
+      stroke-width: 2;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-landmark] path {
+    fill: var(--cy-panel);
+    stroke: var(--cy-ink);
+    stroke-width: 1.5;
+
+    &[data-grid-landmark-core] {
+      fill: var(--cy-accent);
+      stroke: none;
+    }
+  }
+
+  /* Print on the sheet: sector codes and landmark names in micro-print,
+     the districts' names large. All of it is decoration; the names that
+     matter are in the panels. */
+  [data-skin="cyber"] [data-grid-print] text {
+    font-family: var(--cy-mono);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    fill: var(--cy-line-ctl);
+    paint-order: stroke;
+    stroke: var(--cy-void);
+    stroke-width: 3px;
+  }
+
+  [data-skin="cyber"] [data-grid-name] {
+    font-family: var(--cy-font);
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    fill: var(--cy-ink-hi);
+    paint-order: stroke;
+    stroke: var(--cy-void);
+    stroke-width: 5px;
+    opacity: 0.9;
+
+    &[data-grid-name="water"] {
+      font-family: var(--cy-mono);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      fill: var(--cy-signal);
+      stroke-width: 3px;
+    }
+  }
+
+  /* The route: the one yellow line. It keeps its weight at any zoom. */
+  [data-skin="cyber"] [data-grid-route] {
+    animation: var(--cy-fx-in) 320ms var(--cy-ease-snap) backwards;
+
+    & path {
+      fill: none;
+      stroke: var(--cy-flag);
+      stroke-width: 3px;
+      stroke-linejoin: miter;
+      stroke-linecap: square;
+    }
+    & [data-grid-route-bed] {
+      stroke: var(--cy-void);
+      stroke-width: 7px;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-route-sample] {
+    fill: none;
+    stroke: var(--cy-flag);
+    stroke-width: 2.5;
+  }
+
+  /* ── Pins ──────────────────────────────────────────────────────────── */
+
+  /* A pin stands on a point of the sheet and is scaled back by the sheet's
+     own scale, so markers stay one size at every zoom. */
+  [data-skin="cyber"] [data-grid-pin] {
+    position: absolute;
+    left: calc(var(--x) * 1px);
+    top: calc(var(--y) * 1px);
+    display: grid;
+    transform: translate(-50%, -50%) scale(calc(1 / var(--k, 1)));
+    transition: transform 240ms var(--cy-ease-snap);
+
+    [data-dragging] & {
+      transition: none;
+    }
+
+    &:is([data-chosen], :focus-within) {
+      z-index: 1;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        z-index: 1;
+      }
+    }
+  }
+
+  /* The waypoint's pennant, so it isn't told apart by its yellow alone. */
+  [data-skin="cyber"] [data-grid-pennant] {
+    padding: 1px 4px 0;
+    font-family: var(--cy-mono);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    color: var(--cy-on-solid);
+    background: var(--cy-flag);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%);
+    pointer-events: none;
+
+    [data-grid-pin] > & {
+      position: absolute;
+      bottom: calc(100% + 3px);
+      left: 50%;
+      translate: -50% 0;
+    }
+  }
+
+  [data-skin="cyber"] :is([data-grid-you], [data-grid-you-sample]) {
+    pointer-events: none;
+
+    & path {
+      fill: var(--cy-ink-hi);
+    }
+    & [data-grid-you-ring] {
+      fill: color-mix(in srgb, var(--cy-accent) 45%, var(--cy-void));
+      stroke: var(--cy-ink-hi);
+      stroke-width: 2;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-you] svg {
+    display: block;
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0 0 calc(6px * var(--cy-fx)) var(--cy-glow));
+
+    /* A small lamp, breathing: this is where you are. */
+    & [data-grid-you-ring] {
+      animation: var(--cy-fx-pulse) 2.4s linear infinite;
+    }
+  }
+
+  /* Micro-print in the sheet's margins. */
+  [data-skin="cyber"] [data-grid-micro] {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+
+    &[data-grid-micro="top"] {
+      top: 9px;
+    }
+    &[data-grid-micro="bottom"] {
+      bottom: 9px;
+
+      /* The zoom keys sit there on a narrow screen. */
+      @media (max-width: 1060px) {
+        display: none;
+      }
+    }
+  }
+
+  /* ── Keys and panels over the sheet ────────────────────────────────── */
+
+  [data-skin="cyber"] [data-grid-zoom] {
+    grid-area: 2 / 1;
+    justify-self: start;
+    z-index: 2;
+    margin: 0 0 16px 16px;
+
+    @media (max-width: 1060px) {
+      grid-area: 1 / 1 / 2 / -1;
+      align-self: end;
+      margin: 0 0 12px 12px;
+    }
+  }
+
+  /* A rail takes no clicks itself, so the sheet can be dragged between and
+     beside its panels. */
+  [data-skin="cyber"] [data-grid-rail] {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    pointer-events: none;
+
+    & > * {
+      pointer-events: auto;
+    }
+
+    &[data-grid-rail="detail"] {
+      grid-area: 1 / 3 / -1 / 4;
+      justify-content: space-between;
+      padding: 16px 16px 16px 0;
+    }
+
+    &[data-grid-rail="filters"] {
+      grid-area: 1 / 1 / 2 / 2;
+      padding: 16px 0 0 16px;
+    }
+
+    @media (max-width: 1060px) {
+      &[data-grid-rail="detail"],
+      &[data-grid-rail="filters"] {
+        grid-area: auto;
+        justify-content: flex-start;
+        padding: 0;
+      }
+    }
+  }
+
+  /* The toggle strip and the legend fill the panel's width. */
+  [data-skin="cyber"] [data-grid-rail="filters"] [data-kit="panel-body"] {
+    gap: 14px;
+  }
+
+  /* ── The dossier ───────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-grid-dossier] {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+  }
+
+  [data-skin="cyber"] [data-grid-title] {
+    font-size: var(--cy-text-xl);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    color: var(--tone-ink, var(--cy-ink));
+  }
+
+  [data-skin="cyber"] [data-grid-figures] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 10px 16px;
+    padding-block: 10px;
+    border-block: 1px solid var(--cy-line-deco);
+
+    & > [data-grid-fact] {
+      grid-column: 1 / -1;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-fact] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 12px;
+    margin: 0;
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      color: var(--cy-ink-mute);
+    }
+    & dd {
+      margin: 0;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-here] {
+    display: grid;
+    gap: 2px;
+    font-size: var(--cy-text-lg);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink-hi);
+
+    & [data-kit="hint"] {
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-time] {
+    font-size: var(--cy-text-lg);
+  }
+
+  /* ── The legend ────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-grid-legend] {
+    display: grid;
+    gap: 5px;
+    padding-block-start: 4px;
+  }
+
+  [data-skin="cyber"] [data-grid-legend-row] {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 20px;
+    font-size: var(--cy-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+  }
+
+  [data-skin="cyber"] [data-grid-swatch] {
+    display: grid;
+    place-items: center;
+    color: var(--cy-signal);
+
+    & svg {
+      display: block;
+      width: 28px;
+      height: 12px;
+      overflow: visible;
+    }
+    & svg.lucide {
+      width: 14px;
+      height: 14px;
+    }
+    & [data-grid-you-sample] {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

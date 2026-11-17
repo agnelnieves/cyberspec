@@ -1,0 +1,268 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* A column: the micro-print, the frame with the slides in it, and a bar
+     with the segments, the readout and the keys. */
+  [data-skin="cyber"] [data-kit="carousel"] {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+    text-align: start;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-code"] {
+    align-self: flex-start;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* The frame holds still while the slides pass under it. Focus belongs to
+     the viewport inside, and the frame draws it (data-frame-focus). */
+  [data-skin="cyber"] [data-kit="carousel-frame"] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+    /* Frame variables inherit, and a surface behind may have set one. */
+    --frame-image: none;
+
+    min-width: 0;
+
+    /* A still fills the frame to its edges and covers the stroke the frame
+       paints along its top-right cut, so that stroke is drawn again over
+       the slides. It reads the frame's own line color and weight, which
+       turn to the focus color with the rest of the edge. */
+    &::after {
+      content: "";
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      width: var(--frame-cut);
+      height: var(--frame-cut);
+      background: linear-gradient(
+        to top right,
+        transparent calc(50% - var(--_w, 1px) - 0.5px),
+        var(--_line, var(--cy-line-ctl)) calc(50% - var(--_w, 1px))
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Likewise the focus ring: the frame draws it inside itself, where a
+       still would cover it, so it's drawn once more on top. */
+    &:has(:focus-visible)::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      box-shadow: inset 0 0 0 1px var(--frame-focus, var(--cy-signal));
+      pointer-events: none;
+    }
+  }
+
+  /* The viewport scrolls natively; its scrollbar is hidden, since the
+     segments under the frame say where you are. */
+  [data-skin="cyber"] [data-kit="carousel-viewport"] {
+    scrollbar-width: none;
+
+    @media (hover: hover) {
+      cursor: grab;
+    }
+    &[data-dragging] {
+      cursor: grabbing;
+    }
+  }
+
+  /* One slide to a view. */
+  [data-skin="cyber"] [data-kit="carousel-slide"] {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-figure"] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* The still. Whatever is put in it fills the 16:9 field; the scanlines
+     lie over the still only, so the caption under it stays clean. */
+  [data-skin="cyber"] [data-kit="carousel-media"] {
+    flex: none;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--cy-void);
+    color: var(--cy-accent);
+
+    & > :is(svg, img, video, canvas) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-caption"] {
+    flex: 1 1 auto;
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: 8px 12px 10px;
+    border-block-start: 1px solid var(--cy-line-deco);
+    user-select: none;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-title"] {
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    color: var(--cy-ink);
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-text"] {
+    font-size: var(--cy-text-sm);
+    line-height: 1.4;
+    color: var(--cy-ink-hi);
+    text-wrap: pretty;
+  }
+
+  /* Segments first, then the readout and the keys pushed to the far end.
+     On a narrow column the segments take a row of their own, with the
+     readout and the keys under them; they only narrow once there are too
+     many for that row. */
+  [data-skin="cyber"] [data-kit="carousel-bar"] {
+    container-type: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    min-width: 0;
+    padding-block-start: 2px;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-indicators"] {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+
+    @container (width < 300px) {
+      flex-basis: 100%;
+    }
+  }
+
+  /* A segment is a 24px-tall target, 24px from the next, with the mark
+     people see drawn inside it: a hollow dash.
+       idle     outline 70%
+       hover    outline 100%, fill 10%
+       current  solid accent, taller, twice as wide and with one end cut,
+                so it isn't told by color alone */
+  [data-skin="cyber"] [data-kit="carousel-indicator"] {
+    flex: 0 1 auto;
+    display: grid;
+    align-items: center;
+    width: 20px;
+    min-width: 8px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    /* The ring sits on the target's own edge, clear of its neighbours. */
+    &:focus-visible {
+      outline-offset: 0;
+    }
+
+    &::before {
+      content: "";
+      height: 6px;
+      border: 1px solid var(--cy-line-ctl);
+      transition:
+        background-color var(--cy-t-fast) linear,
+        border-color var(--cy-t-fast) linear;
+    }
+
+    @media (hover: hover) {
+      &:hover:not([data-selected])::before {
+        border-color: var(--cy-line-hot);
+        background: var(--cy-fill-hover);
+      }
+    }
+
+    &:active:not([data-selected])::before {
+      border-color: var(--cy-line-hot);
+      background: var(--cy-fill-active);
+    }
+
+    &[data-selected] {
+      width: 36px;
+      cursor: default;
+    }
+    &[data-selected]::before {
+      height: 8px;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+      border-color: var(--cy-line-hot);
+      background: var(--cy-line-hot);
+    }
+
+    @media (pointer: coarse) {
+      height: 44px;
+    }
+  }
+
+  /* 02 / 05: a readout, so it's in the signal color. The current figure
+     slips its channels as it steps. */
+  [data-skin="cyber"] [data-kit="carousel-readout"] {
+    flex: none;
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-xs);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: var(--cy-signal);
+    user-select: none;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-page"] {
+    display: inline-block;
+    font-size: var(--cy-text-md);
+    font-weight: 500;
+
+    &[data-stepped] {
+      animation: var(--cy-fx-rgb) 240ms var(--cy-ease-snap);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-steps"] {
+    flex: none;
+    display: flex;
+    gap: 4px;
+    margin-inline-start: auto;
+  }
+
+  [data-skin="cyber"] [data-kit="carousel-chevron"]:dir(rtl) {
+    scale: -1 1;
+  }
+
+  /* Forced colors drop fills: the current segment keeps its extra width
+     and height, and takes the system's highlight. */
+  @media (forced-colors: active) {
+    /* The frame's cuts come off, and the stroke over one goes with them. */
+    [data-skin="cyber"] [data-kit="carousel-frame"]::after {
+      display: none;
+    }
+    [data-skin="cyber"] [data-kit="carousel-indicator"]::before {
+      border-color: CanvasText;
+    }
+    [data-skin="cyber"] [data-kit="carousel-indicator"][data-selected]::before {
+      border-color: Highlight;
+      background: Highlight;
+    }
+  }
+}

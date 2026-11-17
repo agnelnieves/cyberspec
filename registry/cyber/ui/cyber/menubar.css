@@ -1,0 +1,142 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* A menubar is a spined bar holding one flat key per menu. The menus it
+   opens are the shared popup (popup.css) with a menu's rows (menu.css). */
+@layer cyber.ui {
+  /* The bar. It isn't a control itself, so its edge is the decorative line;
+     it comes up to a control's edge while one of its menus is open. */
+  [data-skin="cyber"] [data-kit="menubar"] {
+    --frame-cut: var(--cy-cut-sm);
+    --frame-line: var(--cy-line-deco);
+    --frame-fill: var(--cy-panel-a);
+    --frame-spine: 4px;
+
+    container: menubar / inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+    min-width: 0;
+    padding: 3px;
+    transition: border-color var(--cy-t-fast) linear;
+
+    &[data-open] {
+      --frame-line: var(--cy-line-ctl);
+    }
+
+    /* Stacked, it's a column as wide as its longest key, and the print
+       goes. A box that measures itself for container queries can't also
+       take its width from what's in it, so the measuring comes off. */
+    &[data-orientation="vertical"] {
+      container-type: normal;
+      flex-direction: column;
+      align-items: stretch;
+      width: fit-content;
+
+      & [data-kit="menubar-trigger"] {
+        justify-content: flex-start;
+      }
+      & [data-kit="menubar-status"] {
+        display: none;
+      }
+    }
+  }
+
+  /* A key on the bar, in the kit's state language with nothing drawn at
+     rest: hover brings the line and a 10% fill, open is the 40% fill. */
+  [data-skin="cyber"] [data-kit="menubar-trigger"] {
+    --frame-cut: var(--cy-cut-sm);
+    --frame-line: transparent;
+    --frame-fill: transparent;
+
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--cy-h);
+    padding-inline: 10px;
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--cy-ink);
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear,
+      color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      &:hover:not(:disabled, [aria-disabled="true"], [data-open]) {
+        --frame-line: var(--cy-line-hot);
+        --frame-fill: var(--cy-fill-hover);
+      }
+    }
+
+    &[data-open] {
+      --frame-line: var(--cy-line-hot);
+      --frame-fill: var(--cy-fill-active);
+      color: var(--cy-ink-hi);
+    }
+
+    /* Unavailable. It keeps its place in the arrow-key order, so it shows
+       an edge and hatching rather than fading out. */
+    &:is(:disabled, [aria-disabled="true"]) {
+      --frame-line: var(--cy-line-deco);
+      --frame-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--cy-line-deco) 5px 6px);
+      color: var(--cy-ink-mute);
+      cursor: not-allowed;
+    }
+  }
+
+  /* The far end of the bar: a lamp and a line of print. Closed, the lamp is
+     hollow and the print ends "IDLE"; with a menu open the lamp is lit and
+     it ends "OPEN". Decoration: the open key and its menu say the same. */
+  [data-skin="cyber"] [data-kit="menubar-status"] {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-inline-start: auto;
+    padding-inline: 10px 8px;
+
+    &::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border: 1px solid var(--cy-line-ctl);
+      rotate: 45deg;
+      transition:
+        background-color var(--cy-t-fast) linear,
+        border-color var(--cy-t-fast) linear;
+    }
+
+    &::after {
+      content: "// IDLE";
+    }
+
+    [data-open] > & {
+      color: var(--cy-signal);
+      opacity: 1;
+
+      &::before {
+        border-color: var(--cy-signal);
+        background: var(--cy-signal);
+        box-shadow: 0 0 calc(6px * var(--cy-fx)) var(--cy-signal);
+      }
+      &::after {
+        content: "// OPEN";
+      }
+    }
+  }
+
+  /* The print only shows where the bar has room to spare for it. */
+  @container menubar (min-width: 440px) {
+    [data-skin="cyber"] [data-kit="menubar-status"] {
+      display: flex;
+    }
+  }
+}

@@ -1,0 +1,150 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The group's name, with a rule running off it to the edge. */
+  [data-skin="cyber"] [data-kit="radio-legend"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+
+    &::after {
+      content: "";
+      flex: 1;
+      min-width: 12px;
+      height: 1px;
+      background: var(--cy-line-deco);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="radio-group"] {
+    display: grid;
+    min-width: 0;
+  }
+
+  /* A row: the diamond in a narrow column, the label and its hint beside it.
+     The label's box is stretched over the whole row, so anywhere on the row
+     picks it. */
+  [data-skin="cyber"] [data-kit="radio-row"] {
+    --pip: 14px;
+
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: 10px;
+    align-content: center;
+    min-height: var(--cy-h);
+    padding-block: 6px;
+
+    & > [data-kit="hint"] {
+      grid-column: 2;
+      margin-block-start: 1px;
+    }
+  }
+
+  /* The diamond: a square turned on its corner, so its edge and its focus
+     ring are real lines rather than a clipped shape. Never a circle. */
+  [data-skin="cyber"] [data-kit="radio"] {
+    grid-column: 1;
+    display: grid;
+    place-items: center;
+    width: var(--pip);
+    height: var(--pip);
+    margin: 3px;
+    padding: 0;
+    border: var(--cy-line) solid var(--cy-line-ctl);
+    background: var(--cy-panel);
+    rotate: 45deg;
+    cursor: pointer;
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      [data-kit="radio-row"]:hover > &:not([data-disabled], [data-readonly]) {
+        border-color: var(--cy-line-hot);
+        background: var(--cy-fill-hover);
+      }
+    }
+
+    &[data-checked] {
+      border-color: var(--cy-line-hot);
+      background: var(--cy-fill-active);
+    }
+
+    [data-kit="radio-group"][aria-invalid="true"] & {
+      border-color: var(--cy-flag);
+    }
+
+    &[data-readonly] {
+      cursor: default;
+    }
+
+    &[data-disabled] {
+      border-color: var(--cy-line-deco);
+      background: repeating-linear-gradient(90deg, transparent 0 3px, var(--cy-line-deco) 3px 4px);
+      cursor: not-allowed;
+    }
+  }
+
+  /* The pip, in the signal color like every selection mark. It's always in
+     the page: gone while its radio is off, faint while the pointer is on the
+     row, solid once chosen. */
+  [data-skin="cyber"] [data-kit="radio-indicator"] {
+    width: 6px;
+    height: 6px;
+    background: var(--cy-signal);
+    transition:
+      opacity var(--cy-t-fast) linear,
+      scale var(--cy-t) var(--cy-ease-step);
+
+    &[data-unchecked] {
+      opacity: 0;
+      scale: 0.2;
+    }
+
+    @media (hover: hover) {
+      [data-kit="radio-row"]:hover &[data-unchecked]:not([data-disabled], [data-readonly]) {
+        opacity: 0.45;
+        scale: 1;
+      }
+    }
+
+    &[data-disabled] {
+      background: var(--cy-ink-mute);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="radio-label"] {
+    grid-column: 2;
+    align-self: center;
+    font-size: var(--cy-text-md);
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+    cursor: pointer;
+    user-select: none;
+    transition: color var(--cy-t-fast) linear;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    [data-checked] ~ & {
+      color: var(--cy-ink-hi);
+    }
+
+    [data-readonly] ~ & {
+      cursor: default;
+    }
+
+    [data-disabled] ~ & {
+      color: var(--cy-ink-mute);
+      cursor: not-allowed;
+    }
+  }
+}

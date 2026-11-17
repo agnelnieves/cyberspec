@@ -1,0 +1,162 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+/* A stepper is three boxes in a row that read as one cut shape: a minus key
+   cut at its outer foot, the shared field box (field.css) uncut between
+   them as the readout, and a plus key cut at its outer foot. */
+@layer cyber.ui {
+  /* The SDK's root: the label's row over the keys and the readout. */
+  [data-skin="cyber"] [data-kit="stepper"] {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="stepper-head"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    min-height: 18px;
+
+    & [data-kit="label"][data-disabled] {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* MIN / MAX: an outlined tag, printed when the value is at a bound, so
+     the hatched key beside the readout is explained in a word. */
+  [data-skin="cyber"] [data-kit="stepper-tag"] {
+    flex: none;
+    padding: 3px 5px 2px;
+    border: 1px solid var(--cy-line-ctl);
+    font-family: var(--cy-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    color: var(--cy-ink);
+    background: var(--cy-fill-hover);
+    animation: var(--cy-fx-in) 200ms var(--cy-ease-snap) backwards;
+
+    [data-kit="stepper"][data-disabled] & {
+      border-color: var(--cy-line-deco);
+      color: var(--cy-ink-mute);
+      background: none;
+    }
+  }
+
+  /* Keys, readout, keys: three to four to three, and never narrower than a
+     target. */
+  [data-skin="cyber"] [data-kit="stepper-row"] {
+    display: grid;
+    grid-template-columns: minmax(var(--cy-h), 3fr) minmax(56px, 4fr) minmax(var(--cy-h), 3fr);
+    gap: 4px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-kit="stepper-key"] {
+    --frame-cut: var(--cy-cut-sm);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    min-height: var(--cy-h);
+    padding: 0;
+    color: var(--cy-ink);
+    cursor: pointer;
+    transition:
+      background-color var(--cy-t-fast) linear,
+      border-color var(--cy-t-fast) linear,
+      color var(--cy-t-fast) linear;
+
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        --frame-line: var(--cy-line-hot);
+        --frame-fill: var(--cy-fill-hover);
+      }
+    }
+
+    &:active:not([data-disabled]) {
+      --frame-line: var(--cy-line-hot);
+      --frame-fill: var(--cy-fill-active);
+      color: var(--cy-ink-hi);
+    }
+
+    /* Can't step: the field is disabled, or the value is at this key's
+       bound. Hatched either way, as everything unavailable is. */
+    &[data-disabled] {
+      --frame-line: var(--cy-line-deco);
+      --frame-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--cy-line-deco) 5px 6px);
+      color: var(--cy-ink-mute);
+      cursor: not-allowed;
+    }
+  }
+
+  /* The readout's box sits between two cut keys, so it keeps its corners. */
+  [data-skin="cyber"] [data-kit="stepper-row"] > [data-kit="control"] {
+    --frame-cut: 0px;
+
+    padding-inline: 4px;
+  }
+
+  /* The value: a readout, so mono and the signal color. Named with its
+     element so the color wins over the shared box's own input rule. */
+  [data-skin="cyber"] [data-kit="control"] input[data-kit="stepper-value"] {
+    font-family: var(--cy-mono);
+    font-size: var(--cy-text-lg);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--cy-signal);
+
+    /* The box shows focus for the input (data-frame-focus="within"), so the
+       input's own ring is cut off rather than drawn twice. */
+    clip-path: inset(0);
+
+    &[data-disabled] {
+      color: var(--cy-ink-mute);
+    }
+  }
+
+  /* How far through its range the value is: a rail along the foot of the
+     readout, filled from the leading end. It moves in steps, as the value
+     does. */
+  [data-skin="cyber"] [data-kit="stepper-rail"] {
+    position: absolute;
+    inset: auto 4px 3px;
+    height: 2px;
+    background: var(--cy-signal-dim);
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--cy-signal);
+      transform-origin: 0 50%;
+      scale: var(--through, 0) 1;
+      transition: scale var(--cy-t) var(--cy-ease-step);
+    }
+
+    :dir(rtl) &::after {
+      transform-origin: 100% 50%;
+    }
+
+    [data-kit="stepper"][data-disabled] & {
+      background: var(--cy-line-deco);
+
+      &::after {
+        background: var(--cy-ink-mute);
+      }
+    }
+  }
+}

@@ -1,0 +1,493 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  /* Three columns: the board, the chosen job's sheet, its linked records.
+     The records drop under the other two when there isn't room for three,
+     and everything stacks on a phone. */
+  [data-skin="cyber"] [data-kit="jobs"] {
+    display: grid;
+    grid-template-columns: minmax(0, 350px) minmax(0, 1fr) minmax(0, 236px);
+    gap: 28px 32px;
+    align-items: start;
+
+    @media (max-width: 1180px) {
+      grid-template-columns: minmax(0, 330px) minmax(0, 1fr);
+    }
+
+    @media (max-width: 800px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ── Status strip ──────────────────────────────────────────────────── */
+
+  /* What's tracked and where the waypoint is, at the far end of the strip. */
+  [data-skin="cyber"] [data-jobs-now] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin: 0;
+
+    & div {
+      display: grid;
+      gap: 4px;
+      justify-items: start;
+    }
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  /* ── The board ─────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-jobs-board] {
+    display: grid;
+    gap: 26px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-jobs-list] {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+    outline: none;
+  }
+
+  [data-skin="cyber"] [data-jobs-group] {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  /* A group's name over a rule, with how many rows it holds and a hot tick
+     at the rule's leading end. */
+  [data-skin="cyber"] :is([data-jobs-group-label], [data-jobs-rule]) {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    padding: 0 2px 5px;
+    border-block-end: 1px solid var(--cy-line-deco);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-end: -1px;
+      inset-inline-start: 0;
+      width: 28px;
+      height: 3px;
+      background: var(--cy-accent);
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-group-label] {
+    margin-block-end: 2px;
+  }
+
+  /* A job: its type in a cut tile, its name over its difficulty, and what
+     marks it (new, tracked) over how far away it is. The row follows the
+     kit's state language through its frame. */
+  [data-skin="cyber"] [data-jobs-row] {
+    --frame-cut: var(--cy-cut-sm);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel-a);
+
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "glyph name tags"
+      "glyph level distance";
+    align-items: center;
+    gap: 3px 12px;
+    min-height: 54px;
+    padding: 7px 12px 7px 10px;
+    color: var(--cy-ink);
+    cursor: default;
+    user-select: none;
+    transition: color var(--cy-t-fast) linear;
+
+    @media (hover: hover) {
+      &:hover:not([data-selected]) {
+        --frame-line: var(--cy-line-hot);
+        --frame-fill: var(--cy-fill-hover);
+      }
+    }
+
+    /* Where the keyboard is, on a row that isn't the chosen one. */
+    &[data-highlighted]:not([data-selected]) {
+      --frame-fill: var(--cy-fill-active);
+      color: var(--cy-ink-hi);
+      box-shadow: inset 3px 0 0 var(--cy-signal);
+
+      &:dir(rtl) {
+        box-shadow: inset -3px 0 0 var(--cy-signal);
+      }
+    }
+
+    /* The chosen row is lit, and a pointer appears at its far end. */
+    &[data-selected] {
+      --frame-line: var(--cy-line-hot);
+      --frame-fill: var(--cy-fill-active);
+      color: var(--cy-ink-hi);
+    }
+
+    /* The tracked job: a yellow edge and a solid bar down its leading side,
+       beside the badge that says so. */
+    &[data-tracked] {
+      --frame-line: var(--cy-flag);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block: -1px;
+        inset-inline-start: -1px;
+        width: 4px;
+        background: var(--cy-flag);
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-glyph] {
+    grid-area: glyph;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: var(--cy-ink);
+    background: var(--cy-panel-2);
+    border: 1px solid var(--cy-line-deco);
+    clip-path: polygon(7px 0, 100% 0, 100% 100%, 0 100%, 0 7px);
+
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    [data-selected] > & {
+      color: var(--cy-signal);
+      border-color: var(--cy-signal-dim);
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-name] {
+    grid-area: name;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--cy-text-lg);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+  }
+
+  [data-skin="cyber"] [data-jobs-tags] {
+    grid-area: tags;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    min-height: 18px;
+
+    & [data-kit="badge"] svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-pointer] {
+    display: grid;
+    place-items: center;
+    color: var(--cy-signal);
+    animation: var(--cy-fx-in) 200ms var(--cy-ease-snap) backwards;
+
+    & svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+    }
+
+    &:dir(rtl) svg {
+      scale: -1 1;
+    }
+  }
+
+  /* A difficulty: the word, after three pips of which one, two or three are
+     lit. The word and the count carry it; the color only agrees. */
+  [data-skin="cyber"] [data-jobs-level] {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--cy-text-sm);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--cy-ink);
+
+    &[data-jobs-level="low"] {
+      color: var(--cy-ok);
+    }
+
+    &[data-jobs-level="dangerous"] {
+      color: var(--cy-ink-hi);
+    }
+
+    [data-jobs-row] > & {
+      grid-area: level;
+    }
+
+    [data-jobs-row]:is([data-selected], [data-highlighted]) > &[data-jobs-level="moderate"] {
+      color: var(--cy-ink-hi);
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-pips] {
+    display: inline-flex;
+    gap: 2px;
+
+    & span {
+      width: 5px;
+      height: 9px;
+      border: 1px solid currentColor;
+      opacity: 0.55;
+
+      &[data-on] {
+        background: currentColor;
+        opacity: 1;
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-distance] {
+    grid-area: distance;
+    justify-self: end;
+    white-space: nowrap;
+
+    &::before {
+      content: "[";
+    }
+    &::after {
+      content: "]";
+    }
+  }
+
+  /* The offer that's come in: the terms as a short sheet, the way a fixer
+     sends them. */
+  [data-skin="cyber"] [data-jobs-offer] {
+    animation: var(--cy-fx-in) 280ms var(--cy-ease-snap) backwards;
+  }
+
+  [data-skin="cyber"] [data-jobs-terms] {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+
+    & div {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 10px;
+      align-items: baseline;
+    }
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      margin: 0;
+      font-size: var(--cy-text-sm);
+      color: var(--cy-ink-hi);
+    }
+  }
+
+  /* ── The sheet ─────────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-jobs-sheet] {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-jobs-head] {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    padding-block-end: 14px;
+    border-block-end: 1px solid var(--cy-line-ctl);
+  }
+
+  [data-skin="cyber"] [data-jobs-serial] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  [data-skin="cyber"] [data-jobs-title] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 20px;
+
+    & h2 {
+      font-size: var(--cy-text-2xl);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink);
+      overflow-wrap: anywhere;
+    }
+
+    & [data-jobs-level] {
+      font-size: var(--cy-text-md);
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-meta] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+  }
+
+  [data-skin="cyber"] [data-jobs-marks] {
+    display: flex;
+    gap: 6px;
+    min-height: 18px;
+  }
+
+  /* Everything about the job that changes with the selection tears in
+     together. */
+  [data-skin="cyber"] :is([data-jobs-body], [data-jobs-cards]) {
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+  }
+
+  [data-skin="cyber"] [data-jobs-body] {
+    display: grid;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-jobs-objectives] {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* The bar that follows the ticks, and what the job pays beside it. */
+  [data-skin="cyber"] [data-jobs-progress] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px 28px;
+
+    & [data-kit="progress"] {
+      flex: 1 1 220px;
+      min-width: 0;
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-brief] {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+
+    & p {
+      max-width: 64ch;
+      padding-inline-start: 14px;
+      border-inline-start: 2px solid var(--cy-line-deco);
+      font-size: var(--cy-text-md);
+      line-height: 1.45;
+      color: var(--cy-ink-hi);
+      text-wrap: pretty;
+    }
+
+    /* The first paragraph is the job; the rest is how. */
+    & p:first-of-type {
+      border-inline-start-color: var(--cy-accent);
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-rule] [data-micro] {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  [data-skin="cyber"] [data-jobs-actions] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    padding-block-start: 16px;
+    border-block-start: 1px solid var(--cy-line-deco);
+
+    & > p {
+      flex: 1 1 200px;
+    }
+  }
+
+  /* Nothing left on the board. */
+  [data-skin="cyber"] [data-jobs-clear] {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+    padding-block: 12px 32px;
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+
+    & h2 {
+      font-size: var(--cy-text-2xl);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink);
+    }
+
+    & p {
+      max-width: 48ch;
+    }
+  }
+
+  /* ── Linked records ────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-jobs-records] {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+
+    @media (max-width: 1180px) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  [data-skin="cyber"] [data-jobs-cards] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 14px;
+    align-items: start;
+    min-width: 0;
+  }
+}

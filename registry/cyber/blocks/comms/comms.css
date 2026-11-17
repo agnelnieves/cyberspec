@@ -1,0 +1,300 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  /* Three columns: who, their record, the thread. The line panel sits under
+     the list, where the list leaves room. Narrower, the thread drops under
+     the other two; on a phone everything is one column, in the order it's
+     used: the list, the record, the thread, then the line. */
+  [data-skin="cyber"] [data-kit="comms"] {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) minmax(0, 264px) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "list record thread"
+      "deck record thread";
+    align-items: start;
+    gap: 22px 28px;
+
+    @media (max-width: 1120px) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      grid-template-areas:
+        "list record"
+        "deck record"
+        "thread thread";
+    }
+
+    @media (max-width: 700px) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      grid-template-areas: "list" "record" "thread" "deck";
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-list] {
+    grid-area: list;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-comms-deck] {
+    grid-area: deck;
+    min-width: 0;
+  }
+
+  /* The status strip's trailing end: what the line is doing, and the key
+     that puts the inbox back. */
+  [data-skin="cyber"] [data-comms-line] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+
+  /* ── The record ───────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-comms-record] {
+    grid-area: record;
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-comms-record-head] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding-block-end: 6px;
+    border-block-end: 1px solid var(--cy-line-deco);
+
+    & h2 {
+      margin: 0;
+    }
+  }
+
+  /* The viewer: a plate that tears in when the contact changes. */
+  [data-skin="cyber"] [data-comms-plate] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+
+    display: grid;
+    aspect-ratio: 7 / 6;
+    max-height: 280px;
+    width: 100%;
+    animation: var(--cy-fx-in) 260ms var(--cy-ease-snap) backwards;
+
+    & [data-comms-portrait] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-plate-code] {
+    position: absolute;
+    inset-block-start: 9px;
+    inset-inline-start: 26px;
+  }
+
+  [data-skin="cyber"] [data-comms-plate-bars] {
+    position: absolute;
+    inset-block-start: 18px;
+    inset-inline-end: 10px;
+  }
+
+  [data-skin="cyber"] [data-comms-who] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2px 10px;
+  }
+
+  [data-skin="cyber"] [data-comms-name] {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: var(--cy-text-xl);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink-hi);
+  }
+
+  [data-skin="cyber"] [data-comms-role] {
+    margin: 0;
+    font-size: var(--cy-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--cy-ink);
+  }
+
+  /* Label on the left, reading on the right, a rule under each. */
+  [data-skin="cyber"] [data-comms-facts] {
+    display: grid;
+    margin: 0;
+
+    & div {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-block: 5px;
+      border-block-end: 1px solid var(--cy-line-deco);
+    }
+
+    & dt {
+      font-size: var(--cy-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      margin: 0;
+      font-family: var(--cy-mono);
+      font-size: var(--cy-text-xs);
+      text-align: end;
+      color: var(--cy-signal);
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-call] {
+    width: 100%;
+  }
+
+  /* ── The thread ───────────────────────────────────────────────────── */
+
+  [data-skin="cyber"] [data-comms-thread] {
+    grid-area: thread;
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+    animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+  }
+
+  /* The brief: a frame inside the panel, edged in yellow while the offer is
+     open and in the resting line once it's been answered. */
+  [data-skin="cyber"] [data-comms-brief] {
+    --frame-cut: var(--cy-cut);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+    --brief-ink: var(--cy-ink);
+
+    display: grid;
+    gap: 8px;
+    padding: 10px 14px 12px;
+
+    &[data-state="open"] {
+      --frame-line: var(--cy-flag);
+      --frame-fill: var(--cy-flag-fill);
+      --brief-ink: var(--cy-flag);
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-brief-head] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 12px;
+
+    & [data-kit="hint"] {
+      font-family: var(--cy-mono);
+      font-size: var(--cy-text-xs);
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-brief-title] {
+    margin: 0;
+    font-size: var(--cy-text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--cy-track);
+    text-transform: uppercase;
+    color: var(--brief-ink);
+  }
+
+  [data-skin="cyber"] [data-comms-terms] {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+
+    & div {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      align-items: baseline;
+      gap: 2px 12px;
+    }
+
+    & dt {
+      font-size: var(--cy-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--brief-ink);
+    }
+
+    & dd {
+      margin: 0;
+      font-size: var(--cy-text-md);
+      color: var(--cy-ink-hi);
+      text-wrap: pretty;
+    }
+
+    @media (max-width: 520px) {
+      & div {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-brief-foot] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid color-mix(in srgb, var(--frame-line) 40%, transparent);
+  }
+
+  [data-skin="cyber"] [data-comms-pay] {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+
+    & [data-kit="value"] {
+      font-size: var(--cy-text-md);
+    }
+  }
+
+  /* Under the panel: what the thread is doing, the replies, the Send key.
+     It keeps its height while the replies are away, so the foot of the
+     screen doesn't jump each time one is sent. */
+  [data-skin="cyber"] [data-comms-answer] {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-height: 236px;
+
+    & [data-kit="actions"] {
+      justify-content: flex-end;
+    }
+  }
+
+  [data-skin="cyber"] [data-comms-state] {
+    margin: 0;
+    padding-inline-start: 10px;
+    border-inline-start: 2px solid var(--cy-signal-dim);
+    font-size: var(--cy-text-sm);
+    color: var(--cy-ink-mute);
+  }
+
+  [data-skin="cyber"] [data-comms-replies] {
+    min-width: 0;
+  }
+}

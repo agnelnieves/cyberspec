@@ -1,0 +1,307 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  /* The screen is measured, so the section inside it can go from three
+     columns to one by the room it has rather than the window's. */
+  [data-skin="cyber"] [data-kit="archive"] {
+    container: archive / inline-size;
+    min-width: 0;
+  }
+
+  /* What's tracked, at the far end of the status strip. */
+  [data-skin="cyber"] [data-archive-now] {
+    display: flex;
+    margin: 0;
+
+    & div {
+      display: grid;
+      gap: 4px;
+      justify-items: start;
+    }
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      font-size: var(--cy-text-md);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink-mute);
+
+      /* The one yellow thing on the screen, with a mark so it isn't yellow
+         alone. */
+      &[data-tracked] {
+        color: var(--cy-flag);
+
+        &::before {
+          content: "";
+          width: 7px;
+          height: 7px;
+          margin-inline-end: 8px;
+          background: var(--cy-flag);
+          rotate: 45deg;
+        }
+      }
+    }
+  }
+
+  /* ── A section: the index beside the dossier ───────────────────────── */
+
+  [data-skin="cyber"] [data-archive-section] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    padding-block: 8px 4px;
+    min-width: 0;
+
+    @container archive (min-width: 760px) {
+      grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+      gap: 28px;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-index] {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-archive-empty] {
+    padding: 10px 12px;
+    border-inline-start: 1px solid var(--cy-line-ctl);
+    text-wrap: pretty;
+  }
+
+  [data-skin="cyber"] [data-archive-index-foot] {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* ── The dossier: a plate and the record's sheet ───────────────────── */
+
+  [data-skin="cyber"] [data-archive-dossier] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    min-width: 0;
+
+    @container archive (min-width: 1040px) {
+      grid-template-columns: minmax(260px, 5fr) minmax(0, 6fr);
+      gap: 28px;
+    }
+  }
+
+  /* The plate: a still behind scanlines, with print in its margins. */
+  [data-skin="cyber"] [data-archive-plate] {
+    --frame-cut: var(--cy-cut-lg);
+    --frame-line: var(--cy-line-ctl);
+    --frame-fill: var(--cy-panel);
+    --frame-image: linear-gradient(to top, var(--cy-fill-hover), transparent 55%);
+
+    display: grid;
+    gap: 6px;
+    padding: 10px 12px 12px;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] :is([data-archive-plate-head], [data-archive-plate-foot]) {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  [data-skin="cyber"] [data-archive-plate-head] {
+    padding-inline-start: var(--cy-cut-lg);
+  }
+
+  [data-skin="cyber"] [data-archive-plate-foot] {
+    align-items: end;
+    padding-inline-end: var(--cy-cut-lg);
+  }
+
+  [data-skin="cyber"] [data-archive-still] {
+    overflow: hidden;
+    /* Short on a narrow screen, so the record's name is still in view under
+       it; the drawing keeps its proportions and sits in the middle. */
+    aspect-ratio: 1;
+
+    @container archive (min-width: 1040px) {
+      aspect-ratio: 4 / 5;
+    }
+
+    /* A new record is read onto the plate: it tears in, and one band
+       passes down it. */
+    &[data-swap] {
+      animation: var(--cy-fx-in) 260ms var(--cy-ease-snap) backwards;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        transparent 40%,
+        color-mix(in srgb, var(--cy-signal) 10%, transparent) 94%,
+        color-mix(in srgb, var(--cy-signal) 70%, transparent) 98%,
+        transparent
+      );
+      opacity: 0;
+    }
+
+    &[data-swap]::before {
+      opacity: var(--cy-fx);
+      animation: var(--cy-fx-scan) 620ms linear 120ms both;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-art] {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  [data-skin="cyber"] [data-archive-sheet] {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-archive-entry] {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+
+    &[data-swap] {
+      animation: var(--cy-fx-in) 240ms var(--cy-ease-snap) backwards;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-name] {
+    display: grid;
+    gap: 8px;
+    padding-block-end: 12px;
+    border-block-end: 1px solid var(--cy-line-ctl);
+
+    & h2 {
+      font-size: var(--cy-text-2xl);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      text-wrap: balance;
+      color: var(--cy-ink);
+      /* It takes focus when a linked record is followed. */
+      outline-offset: 4px;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-tags] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* The line of facts: labels in ink, what they read in the signal color. */
+  [data-skin="cyber"] [data-archive-facts] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    gap: 10px 16px;
+    margin: 0;
+
+    & div {
+      display: grid;
+      gap: 1px;
+      padding-inline-start: 8px;
+      border-inline-start: 1px solid var(--cy-line-deco);
+      min-width: 0;
+    }
+
+    & dt {
+      font-size: var(--cy-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--cy-track);
+      text-transform: uppercase;
+      color: var(--cy-ink-mute);
+    }
+
+    & dd {
+      font-size: var(--cy-text-md);
+      font-weight: 600;
+      color: var(--cy-signal);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-text] {
+    display: grid;
+    gap: 10px;
+    max-width: 62ch;
+    font-size: var(--cy-text-md);
+    line-height: 1.45;
+    color: var(--cy-ink-hi);
+    text-wrap: pretty;
+  }
+
+  [data-skin="cyber"] [data-archive-actions] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cy-gap);
+  }
+
+  [data-skin="cyber"] [data-archive-links] {
+    display: grid;
+    gap: 8px;
+    padding-block-start: 12px;
+    border-block-start: 1px solid var(--cy-line-deco);
+
+    & ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--cy-gap);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-sheet-foot] {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+
+    & > div {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+  }
+
+  /* The foot of the full record, on the sheet. */
+  [data-skin="cyber"] [data-archive-record-foot] {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block-start: 4px;
+    overflow: hidden;
+  }
+}

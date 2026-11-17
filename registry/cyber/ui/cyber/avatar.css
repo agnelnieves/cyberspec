@@ -1,0 +1,203 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.ui {
+  /* The root is only a box the size of the portrait: it isn't clipped, so
+     the status lamp can sit on its corner. Inside it are two layers cut to
+     the same shape, one a pixel inside the other: the outer is the edge, the
+     inner the face. That draws an outline around a shape a border can't
+     follow, and it's the same construction for the cut frame and the hexagon. */
+  [data-skin="cyber"] [data-kit="avatar"] {
+    --size: 40px;
+    --cut: 8px;
+    --lamp: 9px;
+
+    position: relative;
+    display: inline-block;
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    vertical-align: middle;
+    font-size: calc(var(--size) * 0.36);
+
+    &[data-size="sm"] {
+      --size: 28px;
+      --cut: 6px;
+      --lamp: 7px;
+    }
+    &[data-size="lg"] {
+      --size: 56px;
+      --cut: 11px;
+      --lamp: 11px;
+    }
+
+    /* A regular hexagon standing on a point is narrower than it is tall. */
+    &[data-shape="hex"] {
+      width: calc(var(--size) * 0.94);
+      height: calc(var(--size) * 1.085);
+    }
+  }
+
+  [data-skin="cyber"] :is([data-kit="avatar-frame"], [data-kit="avatar-face"]) {
+    position: absolute;
+    clip-path: polygon(var(--c) 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 var(--c));
+
+    [data-shape="hex"] > &,
+    [data-shape="hex"] > * > & {
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="avatar-frame"] {
+    --c: var(--cut);
+    inset: 0;
+    background: var(--cy-line-ctl);
+  }
+
+  [data-skin="cyber"] [data-kit="avatar-face"] {
+    /* A touch less than the outer cut, so the diagonal edge is as thin as
+       the straight ones. */
+    --c: calc(var(--cut) - 0.6px);
+    inset: 1px;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--cy-accent) 12%, var(--cy-panel));
+    color: var(--cy-ink-hi);
+  }
+
+  /* A loaded picture is drawn in two tones: greyscale, multiplied onto a
+     bright plate of the accent, with scanlines over it. Until it loads, the
+     SDK keeps it out of sight with inline styles, which these leave alone. */
+  [data-skin="cyber"] [data-kit="avatar"][data-loading-status="loaded"] [data-kit="avatar-face"] {
+    background: color-mix(in srgb, var(--cy-accent) 72%, var(--cy-ink-hi));
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0 2px, color-mix(in srgb, var(--cy-void) 42%, transparent) 2px 3px);
+    }
+  }
+
+  [data-skin="cyber"] [data-kit="avatar-image"][data-loading-status="loaded"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.15);
+    mix-blend-mode: multiply;
+  }
+
+  [data-skin="cyber"] [data-kit="avatar-fallback"] {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  /* The generated ghost: thin lines of the accent, behind the initials. */
+  [data-skin="cyber"] [data-kit="avatar-field"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: var(--cy-accent);
+    opacity: 0.62;
+    shape-rendering: crispEdges;
+  }
+
+  [data-skin="cyber"] [data-kit="avatar-initials"] {
+    position: relative;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    /* A dark halo keeps the letters clear of the lines behind them. */
+    text-shadow:
+      0 0 3px var(--cy-panel),
+      0 0 6px var(--cy-panel),
+      0 1px 0 var(--cy-panel);
+  }
+
+  /* The lamp. Each state is its own mark, so it reads without its color:
+     online a solid square, busy a solid diamond, away a hollow square,
+     offline a flat bar. */
+  [data-skin="cyber"] [data-kit="avatar-status"] {
+    position: absolute;
+    inset-block-end: -2px;
+    inset-inline-end: -2px;
+    width: var(--lamp);
+    height: var(--lamp);
+    background: var(--cy-ok);
+    /* A gap of the void between the lamp and the portrait. */
+    box-shadow: 0 0 0 2px var(--cy-void);
+
+    &[data-status="busy"] {
+      background: var(--cy-flag);
+      rotate: 45deg;
+    }
+    &[data-status="away"] {
+      background: var(--cy-void);
+      border: 2px solid var(--cy-flag);
+    }
+    &[data-status="offline"] {
+      height: 3px;
+      inset-block-end: 1px;
+      background: var(--cy-ink-mute);
+    }
+  }
+
+  /* The tile that counts the rest of a stack. */
+  [data-skin="cyber"] [data-kit="avatar"][data-more] {
+    & [data-kit="avatar-frame"] {
+      background: var(--cy-line-deco);
+    }
+    & [data-kit="avatar-face"] {
+      background: var(--cy-panel);
+      color: var(--cy-signal);
+      font-family: var(--cy-mono);
+      font-size: 0.86em;
+    }
+    & [data-kit="avatar-initials"] {
+      font-weight: 500;
+      letter-spacing: 0;
+      text-shadow: none;
+    }
+  }
+
+  /* A row of portraits, each over the edge of the one before, with a sliver
+     of the void between them that follows their shape. */
+  [data-skin="cyber"] [data-kit="avatar-stack"] {
+    display: inline-flex;
+    align-items: center;
+    padding-inline-start: 2px;
+
+    & > [data-kit="avatar"] {
+      filter: drop-shadow(-2px 0 0 var(--cy-void));
+
+      &:not(:first-child) {
+        margin-inline-start: calc(var(--size) * -0.12);
+      }
+
+      &:dir(rtl) {
+        filter: drop-shadow(2px 0 0 var(--cy-void));
+      }
+    }
+  }
+
+  /* Forced colors drop backgrounds, and the edge here is one: a real border
+     takes its place, square. */
+  @media (forced-colors: active) {
+    [data-skin="cyber"] :is([data-kit="avatar-frame"], [data-kit="avatar-face"]) {
+      clip-path: none;
+    }
+    [data-skin="cyber"] [data-kit="avatar-frame"] {
+      border: 1px solid CanvasText;
+    }
+    [data-skin="cyber"] [data-kit="avatar-status"] {
+      border: 1px solid CanvasText;
+    }
+  }
+}
