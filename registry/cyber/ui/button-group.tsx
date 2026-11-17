@@ -14,8 +14,10 @@ type GroupKey = {
   icon?: React.ReactNode
   /** Anything else to show in place of the label, like a readout. Keep any text it shows in `label` too. */
   content?: React.ReactNode
-  /** Return `false` from a repeating key to stop the hold, like at a bound. */
+  /** Return `false` when nothing changes; this also stops a repeating hold. */
   onPress?: () => boolean | void
+  /** A value-changing key's direction, independent of its label or icon. */
+  action?: "increment" | "decrement"
   /** Keeps stepping while held: once on the press, then every 80ms after 380ms. */
   repeat?: boolean
   disabled?: boolean
@@ -43,10 +45,12 @@ function Key({ spec, frame, tone, size }: KeyProps) {
       data-tone={tone}
       data-size={size}
       data-icon={spec.icon != null ? "" : undefined}
+      data-sfx={spec.action ? "none" : undefined}
       aria-label={named(spec)}
       disabled={spec.disabled}
       onClick={() => {
-        spec.onPress?.()
+        if (spec.disabled || !spec.onPress) return
+        if (spec.onPress() !== false && spec.action) sfx(spec.action)
       }}
     >
       {face(spec)}
@@ -55,13 +59,13 @@ function Key({ spec, frame, tone, size }: KeyProps) {
 }
 
 // A key that keeps stepping while it's held, through core's bindRepeat. It
-// ticks for every step, so it silences the page's own press sound, and the
+// sounds for every accepted step, so it silences the page's own press sound, and the
 // marks in its corner light while it runs. It stays focusable when disabled:
 // a stepper that reaches its bound mustn't drop the focus that got it there.
 function RepeatKey({ spec, frame, tone, size }: KeyProps) {
   const el = React.useRef<HTMLButtonElement>(null)
   const latest = React.useRef(spec)
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     latest.current = spec
   })
   React.useEffect(() => {
@@ -76,12 +80,13 @@ function RepeatKey({ spec, frame, tone, size }: KeyProps) {
       keys: [],
       disabled: () => Boolean(latest.current.disabled),
       onStep: ({ count }) => {
-        sfx("tick")
+        const current = latest.current
+        if (current.disabled || !current.onPress || current.onPress() === false) return false
+        sfx(current.action ?? "tick")
         if (count > 1) {
           haptic("selection")
           node.setAttribute("data-repeating", "")
         }
-        return latest.current.onPress?.()
       },
       onEnd: rest,
     })

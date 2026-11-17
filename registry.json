@@ -7,7 +7,7 @@
       "name": "cyber",
       "type": "registry:item",
       "title": "Cyber",
-      "description": "Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).",
+      "description": "Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, sampled and synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).",
       "dependencies": [
         "@ui-sdk/core@0.1.0-beta.5"
       ],
@@ -76,6 +76,11 @@
           "path": "registry/cyber/lib/install.ts",
           "type": "registry:lib",
           "target": "@lib/install.ts"
+        },
+        {
+          "path": "registry/cyber/lib/sound-samples.ts",
+          "type": "registry:lib",
+          "target": "@lib/sound-samples.ts"
         },
         {
           "path": "registry/cyber/lib/sound.ts",

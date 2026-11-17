@@ -2,6 +2,7 @@ import * as React from "react"
 import { Button as SdkButton } from "@ui-sdk/react/button"
 import { Plus } from "lucide-react"
 import { burst } from "@/registry/cyber/lib/glitch"
+import { sfx } from "@/registry/cyber/lib/sound"
 import "@/registry/cyber/ui/cyber/hex-stat.css"
 
 // One attribute, as a node on a lattice: a flat-topped hexagon holding its
@@ -28,7 +29,8 @@ function HexStat({
   icon?: React.ReactNode
   selected?: boolean
   max?: number
-  onRaise?: () => void
+  /** Return false if the increase is refused. */
+  onRaise?: () => boolean | void
 }) {
   const numeral = React.useRef<HTMLSpanElement>(null)
   const last = React.useRef(value)
@@ -59,7 +61,16 @@ function HexStat({
         </span>
       </SdkButton>
       {raisable && (
-        <SdkButton data-kit="hex-stat-raise" data-frame="tl br" data-press-flash="" data-sfx="tick" aria-label={`Raise ${name}`} onClick={onRaise}>
+        <SdkButton
+          data-kit="hex-stat-raise"
+          data-frame="tl br"
+          data-press-flash=""
+          data-sfx="none"
+          aria-label={`Raise ${name}`}
+          onClick={() => {
+            if (raisable && onRaise && onRaise() !== false) sfx("increment")
+          }}
+        >
           <Plus aria-hidden />
         </SdkButton>
       )}

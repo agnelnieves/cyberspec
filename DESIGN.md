@@ -198,23 +198,41 @@ arriving, something an agent changed, a heading decoding.
 
 ## 6. Sound and haptics
 
-`lib/sound.ts` synthesizes every sound; it's off until the person turns it
-on. Page-wide listeners already cover presses, options, tabs, switches,
-typing and popups opening, from roles and `data-slot`s. A component only
-needs code for what those can't know:
+`lib/sound.ts` mixes recordings and synthesized sounds through Web Audio;
+it's off until the person turns it on. The compact PCM recordings live in
+`lib/sound-samples.ts`, which travels with the installable registry. Page-wide
+listeners already cover hover, presses, options, tabs, switches, typing and
+popups opening, from roles and `data-slot`s. A component only needs code for
+what those can't know:
 
 ```ts
-import { sfx } from "@/registry/cyber/lib/sound"
+import { createAdjustmentSound, sfx } from "@/registry/cyber/lib/sound"
 import { haptic, crosses } from "@/registry/cyber/lib/haptics"
 
-sfx("tick")              // a value stepping: a slider, a stepper, a dial
+sfx("increment")         // a successful plus/up step
+sfx("decrement")         // a successful minus/down step
+sfx("tick")              // the original navigation tick
 sfx("success")           // outcomes: "success" | "warning" | "error" | "deny"
 sfx("glitch")            // interference
 haptic("selection")      // "selection" | "light" | "medium" | "heavy" | "success" | "warning" | "error"
 ```
 
-Set `data-sfx="none"` on an element to silence the automatic sound when you
-play your own, or `data-sfx="confirm"` (any voice) to choose it.
+Set `data-sfx="none"` on an element to silence its automatic click sound when
+you play your own, or `data-sfx="confirm"` (any voice) to choose it. Click
+suppression does not suppress the shared hover tick. Use explicit action
+metadata for directional controls; never infer direction from an icon or label.
+Use `data-sfx-hover="none"` to opt out of hover itself.
+Play directional sounds only after a change succeeds, including repeats and
+keyboard changes. Disabled controls, canceled changes and bounds must not
+produce a successful-step sound.
+
+For continuous adjustments, retain one `createAdjustmentSound()` instance per
+component. Call `move()` after each actual accepted movement and `stop()` on
+release, cancellation, loss of focus and unmount. The engine also stops on
+inactivity and mute. Sliders use this ticking recording, not directional
+samples. Discrete slider and resize keyboard changes use one complete
+recorded tick (`sfx("hover")`) because their commit can be synchronous.
+See [the sound guide](./docs/SOUNDS.md) for mappings and untouched voices.
 
 ## 7. Accessibility
 

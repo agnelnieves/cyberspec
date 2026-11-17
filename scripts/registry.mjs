@@ -113,10 +113,12 @@ items.push(
     "cyber",
     "registry:item",
     "Cyber",
-    "Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).",
+    "Sets a project up for the cyberspec kit: the <Cyber> root, the foundation stylesheets (tokens, the cut-corner frame system, effects, shared field and popup looks), the fonts, and the page-wide behaviors the components rely on (the FX level, sampled and synthesized interface sounds, haptics, keyboard-or-pointer focus tracking, and the signal shown when an agent changes something).",
     [
       file(`${reg}/ui/cyber.tsx`, "registry:ui"),
       ...foundation.map((f) => file(`${reg}/ui/cyber/${f}`, "registry:file")),
+      // Includes sound-samples.ts: recordings travel with the code, with no
+      // app-specific public path or request to the registry host at runtime.
       ...list(`${reg}/lib`, (f) => f.endsWith(".ts")).map((f) => file(`${reg}/lib/${f}`, "registry:lib")),
     ],
     {
@@ -186,7 +188,7 @@ const byType = (type, category) => items.filter((i) => i.type === type && (!cate
 const line = (i) => `- [${i.title}](${itemUrl(i.name)}): ${i.description}`
 const llms = `# CYBERSPEC
 
-> A cyberpunk theme for ui-sdk (https://ui-sdk.dev): ${byType("registry:ui").length} components and ${byType("registry:block").length} screens with cut-corner frames, glitch and scan effects that respect reduced motion, synthesized interface sounds, and a visible signal when an agent changes something. Plain CSS, React, installable from a shadcn registry.
+> A cyberpunk theme for ui-sdk (https://ui-sdk.dev): ${byType("registry:ui").length} components and ${byType("registry:block").length} screens with cut-corner frames, glitch and scan effects that respect reduced motion, sampled and synthesized interface sounds, and a visible signal when an agent changes something. Plain CSS, React, installable from a shadcn registry.
 
 Every control is a ui-sdk component underneath (\`@ui-sdk/react\`, \`@ui-sdk/core\`), so keyboard behavior, ARIA and the ui-sdk agent bridge come with it.
 
@@ -219,7 +221,7 @@ export function App() {
 - Shape comes from \`data-frame\` (\`"tr bl"\`, \`"notch br"\`, \`"spine br"\`), configured with \`--frame-cut\`, \`--frame-line\`, \`--frame-fill\`. Don't set \`border-color\`, \`clip-path\` or \`background-image\` on a framed element, and don't round anything.
 - Colors are tokens (\`--cy-accent\`, \`--cy-ink\`, \`--cy-signal\`, \`--cy-flag\`, \`--cy-line-ctl\`, \`--cy-fill-active\` ...). Red is the resting color, so errors are yellow (\`--cy-flag\`) with a glyph and words.
 - Effects are tokens too: \`animation: var(--cy-fx-in) 200ms var(--cy-ease-snap) both\`. They resolve to nothing when effects are off.
-- Sound is off until the person turns it on: \`setSoundEnabled(true)\` from \`lib/sound\`; \`sfx("tick")\` plays one.
+- Sound is off until the person turns it on: \`setSoundEnabled(true)\` from \`lib/sound\`. Hover uses one recorded tick; plus/minus use \`sfx("increment")\` / \`sfx("decrement")\` after accepted changes. Sliders, resizers and scrubbing use \`createAdjustmentSound()\`: call \`move()\` on accepted movement and \`stop()\` when interaction ends. Samples are embedded in \`lib/sound-samples.ts\` and install with the kit.
 - Give every control an accessible name. An agent finds controls by those names.
 
 ## Agents on the page

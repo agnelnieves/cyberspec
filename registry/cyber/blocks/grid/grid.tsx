@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Briefcase, House, LocateFixed, MessageSquare, Minus, Navigation, Plus, Store } from "lucide-react"
+import { sfx } from "@/registry/cyber/lib/sound"
 import {
   H,
   SECTOR_H,
@@ -262,7 +263,12 @@ export default function Grid() {
       return { zoom: next.zoom, x: to.x, y: to.y }
     })
   const pan = (dx: number, dy: number) => move((now) => ({ ...now, x: now.x + dx / latest.current.k, y: now.y + dy / latest.current.k }))
-  const zoomBy = (step: number) => move((now) => ({ ...now, zoom: clamp(now.zoom + step, 0, zooms.length - 1) }))
+  const zoomBy = (step: number) => {
+    const zoom = clamp(view.zoom + step, 0, zooms.length - 1)
+    if (zoom === view.zoom) return false
+    move((now) => ({ ...now, zoom }))
+    return true
+  }
   const centerOn = (point: { x: number; y: number }) => move((now) => ({ ...now, x: point.x, y: point.y }))
 
   const waypoint = markers.find((marker) => marker.id === waypointId) ?? tracked
@@ -323,10 +329,10 @@ export default function Grid() {
       ArrowRight: () => pan(step, 0),
       ArrowUp: () => pan(0, -step),
       ArrowDown: () => pan(0, step),
-      "+": () => zoomBy(1),
-      "=": () => zoomBy(1),
-      "-": () => zoomBy(-1),
-      _: () => zoomBy(-1),
+      "+": () => { if (zoomBy(1)) sfx("increment") },
+      "=": () => { if (zoomBy(1)) sfx("increment") },
+      "-": () => { if (zoomBy(-1)) sfx("decrement") },
+      _: () => { if (zoomBy(-1)) sfx("decrement") },
       "0": () => move((now) => ({ ...now, zoom: START_ZOOM })),
       Home: () => centerOn(city.you),
       w: () => {
@@ -459,13 +465,13 @@ export default function Grid() {
             label="Map zoom"
             data-grid-zoom=""
             keys={[
-              { label: "Zoom out", icon: <Minus aria-hidden />, disabled: view.zoom === 0, onPress: () => zoomBy(-1) },
+              { label: "Zoom out", icon: <Minus aria-hidden />, action: "decrement", disabled: view.zoom === 0, onPress: () => zoomBy(-1) },
               {
                 label: `Reset zoom, ${percent}%`,
                 content: <span data-kit="value">{percent}%</span>,
                 onPress: () => move((now) => ({ ...now, zoom: START_ZOOM })),
               },
-              { label: "Zoom in", icon: <Plus aria-hidden />, disabled: view.zoom === zooms.length - 1, onPress: () => zoomBy(1) },
+              { label: "Zoom in", icon: <Plus aria-hidden />, action: "increment", disabled: view.zoom === zooms.length - 1, onPress: () => zoomBy(1) },
               { label: "Center on my position", icon: <LocateFixed aria-hidden />, onPress: () => centerOn(city.you) },
             ]}
           />

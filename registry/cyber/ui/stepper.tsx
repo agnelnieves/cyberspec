@@ -10,18 +10,19 @@ import {
 } from "@ui-sdk/react/number-input"
 import { Minus, Plus } from "lucide-react"
 import { haptic } from "@/registry/cyber/lib/haptics"
-import { sfx } from "@/registry/cyber/lib/sound"
+import { createAdjustmentSound, sfx } from "@/registry/cyber/lib/sound"
 import "@/registry/cyber/ui/cyber/stepper.css"
 
-// The changes that are a step, and so tick. Typing a number has the sound of
-// typing already, and a reset or a controller is not the person's hand.
+// Typing already has its own sound, and resets and controller updates are
+// not the person's hand. Buttons and keys get a directional sample; wheel
+// and scrub movement use the same ticking as sliders and resize handles.
 const steps: ReadonlySet<NumberInputValueChangeReason> = new Set(["step-key", "increment-press", "decrement-press", "wheel", "scrub"])
 
 // A number set one step at a time: a minus key, the value on a readout, a
-// plus key. Each step ticks. With both bounds set, a rail along the foot of
-// the readout shows how far through the range the value is, and a MIN or
-// MAX tag prints beside the label when it gets there; the key that can't go
-// further is hatched.
+// plus key. Each step sounds in its direction. With both bounds set, a rail
+// along the foot of the readout shows how far through the range the value
+// is, and a MIN or MAX tag prints beside the label when it gets there; the
+// key that can't go further is hatched.
 //
 // The readout is a text input, so a number can be typed too; arrow keys,
 // Page Up and Down, Home and End step it. The keys stay out of the Tab
@@ -39,25 +40,58 @@ function Stepper({
   min,
   max,
   onValueChange,
+  onValueCommit,
   ...props
 }: Omit<React.ComponentProps<typeof NumberInput>, "children"> & {
   label: string
   hint?: React.ReactNode
   error?: string
 }) {
+  const adjustment = React.useMemo(createAdjustmentSound, [])
+  React.useEffect(() => adjustment.stop, [adjustment])
+  React.useEffect(() => {
+    if (disabled || props.readOnly) adjustment.stop()
+  }, [adjustment, disabled, props.readOnly])
+
   return (
     <Field data-kit="field" disabled={disabled} invalid={error ? true : undefined}>
       <NumberInput
         data-kit="stepper"
         min={min}
         max={max}
+        {...props}
         onValueChange={(value, details) => {
           onValueChange?.(value, details)
-          if (details.canceled || !steps.has(details.reason)) return
-          sfx("tick")
+          if (details.canceled) return adjustment.stop()
+          if (!steps.has(details.reason)) return adjustment.stop()
+          if (details.reason === "wheel" || details.reason === "scrub") {
+            adjustment.move()
+          } else {
+            adjustment.stop()
+            // Use the action itself, including keys that jump to a bound.
+            // An empty or partly typed input has no useful prior value.
+            const key = details.event && "key" in details.event ? details.event.key : undefined
+            const increment = details.reason === "increment-press" || (details.reason === "step-key" && (key === "ArrowUp" || key === "PageUp" || key === "End"))
+            sfx(increment ? "increment" : "decrement")
+          }
           haptic("selection")
         }}
-        {...props}
+        onValueCommit={(value, details) => {
+          adjustment.stop()
+          onValueCommit?.(value, details)
+        }}
+        onBlur={(event) => {
+          adjustment.stop()
+          props.onBlur?.(event)
+        }}
+        onPointerCancel={(event) => {
+          adjustment.stop()
+          props.onPointerCancel?.(event)
+        }}
+        onLostPointerCapture={(event) => {
+          adjustment.stop()
+          props.onLostPointerCapture?.(event)
+        }}
       >
         {(state) => {
           const atMin = min != null && state.value != null && state.value <= min
@@ -75,7 +109,7 @@ function Stepper({
                 )}
               </div>
               <NumberInputGroup data-kit="stepper-row">
-                {/* The keys play no press of their own: the step ticks. */}
+                {/* Accepted changes play the directional sound themselves. */}
                 <NumberInputDecrement data-kit="stepper-key" data-frame="bl" data-press-flash="" data-sfx="none" aria-label={`Decrease ${label}`}>
                   <Minus aria-hidden />
                 </NumberInputDecrement>

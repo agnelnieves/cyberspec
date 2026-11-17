@@ -113,7 +113,7 @@ function Masthead() {
           <a href="https://ui-sdk.dev" target="_blank" rel="noreferrer" data-kit="link">
             ui-sdk
           </a>
-          : cut-corner frames, glitches that know when to stop, synthesized sound, and an agent bridge you can watch work.
+          : cut-corner frames, glitches that know when to stop, interface sounds, and an agent bridge you can watch work.
           Every control here is a ui-sdk component underneath.
         </p>
         <div data-masthead-stats="">

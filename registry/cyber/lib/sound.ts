@@ -1,7 +1,8 @@
-// The kit's interface sounds: every one is synthesized with the Web Audio
-// API as it plays, so there are no audio files. They're the sounds of a
-// display rather than of a mechanism: short sine and square blips, a little
-// filtered noise for a glitch, two-note chimes for outcomes.
+import { soundSamples } from "@/registry/cyber/lib/sound-samples"
+
+// Recorded ticks, button presses, toggles and modal cues share the Web Audio
+// bus with the remaining synthesized voices. PCM lives in a registry module so installed
+// components work without a hosted asset URL or an asynchronous first play.
 //
 // Sound is off until someone turns it on, and the choice is remembered.
 // `sfx(voice)` plays one; components call it from their handlers, and
@@ -9,13 +10,17 @@
 // plain button, option or tab sounds without any code of its own.
 type Voice =
   | "hover" // the pointer arriving on something pressable
+  | "increment" // a successful plus/up action
+  | "decrement" // a successful minus/down action
+  | "modal-open" // a dialog, alert dialog or drawer appearing
+  | "modal-close" // the same recording reversed as it closes
   | "press" // a button going down
   | "confirm" // a primary action
   | "select" // an option, a tab, a row chosen
-  | "tick" // one step of a value: a slider, a stepper
+  | "tick" // original synthesized tick: pagination and carousel navigation
   | "on" // a switch or a checkbox turning on
   | "off" // ...and off
-  | "open" // a popup, a dialog, a drawer appearing
+  | "open" // a small popup or an informational toast appearing
   | "close" // ...and leaving
   | "type" // a key in a text field
   | "glitch" // a burst of interference
@@ -40,6 +45,11 @@ function setSoundEnabled(on: boolean) {
     localStorage.setItem(storageKey, on ? "on" : "off")
   } catch {}
   if (on) unlock()
+  else {
+    stopAdjustments()
+    for (const stop of modalPlayback.values()) stop()
+  }
+  if (ctx && master) master.gain.setValueAtTime(on ? 0.5 : 0, ctx.currentTime)
   listeners.forEach((listener) => listener(on))
 }
 
@@ -53,6 +63,131 @@ function onSoundChange(listener: (on: boolean) => void) {
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
 let noise: AudioBuffer | null = null
+const reversedSamples = {
+  modalClose: "modalCloseBase",
+  drawerClose: "drawerCloseBase",
+  drawerCloseShort: "drawerCloseShortBase",
+} as const
+type Sample = keyof typeof soundSamples | keyof typeof reversedSamples
+const buffers = new Map<Sample, AudioBuffer>()
+const adjustments = new Set<() => void>()
+const modalPlayback = new Map<Element, () => void>()
+
+function stopAdjustments() {
+  for (const stop of adjustments) stop()
+}
+
+function sampleBuffer(name: Sample) {
+  if (!ctx) return null
+  let buffer = buffers.get(name)
+  if (!buffer) {
+    // Closing uses the same cue, time-compressed to the exit duration and
+    // reversed. Cache it once; playback never shifts the recording's pitch.
+    if (Object.hasOwn(reversedSamples, name)) {
+      const forward = sampleBuffer(reversedSamples[name as keyof typeof reversedSamples])
+      if (!forward) return null
+      buffer = ctx.createBuffer(1, forward.length, forward.sampleRate)
+      const original = forward.getChannelData(0)
+      const reversed = buffer.getChannelData(0)
+      for (let i = 0; i < original.length; i++) reversed[i] = original[original.length - 1 - i]
+      buffers.set(name, buffer)
+      return buffer
+    }
+    const { pcm, sampleRate } = soundSamples[name as keyof typeof soundSamples]
+    const bytes = atob(pcm)
+    buffer = ctx.createBuffer(1, bytes.length / 2, sampleRate)
+    const channel = buffer.getChannelData(0)
+    for (let i = 0; i < channel.length; i++) {
+      const value = bytes.charCodeAt(i * 2) | (bytes.charCodeAt(i * 2 + 1) << 8)
+      channel[i] = (value >= 0x8000 ? value - 0x10000 : value) / 0x8000
+    }
+    buffers.set(name, buffer)
+  }
+  return buffer
+}
+
+function sample(name: Sample, at: number, level: number, owner?: Element) {
+  if (!ctx || !master) return
+  if (owner) modalPlayback.get(owner)?.()
+  const source = ctx.createBufferSource()
+  const gain = ctx.createGain()
+  source.buffer = sampleBuffer(name)
+  gain.gain.value = level
+  source.connect(gain).connect(master)
+  const stop = () => {
+    if (!ctx) return
+    if (owner && modalPlayback.get(owner) === stop) modalPlayback.delete(owner)
+    gain.gain.cancelScheduledValues(ctx.currentTime)
+    gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime)
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.004)
+    source.stop(ctx.currentTime + 0.005)
+  }
+  source.onended = () => {
+    if (owner && modalPlayback.get(owner) === stop) modalPlayback.delete(owner)
+    source.disconnect()
+    gain.disconnect()
+  }
+  if (owner) modalPlayback.set(owner, stop)
+  source.start(at)
+}
+
+function modalSample(owner: Element | undefined, opening: boolean): Sample {
+  // Keep sound brief when the visual is instant or reduced to a small fade.
+  const quietMotion = owner && (owner.closest('[data-skin="cyber"]')?.getAttribute("data-fx") === "off" || matchMedia("(prefers-reduced-motion: reduce)").matches)
+  if (quietMotion) return opening ? "modalCloseBase" : "modalClose"
+  if (owner?.getAttribute("data-slot") === "drawer-content") {
+    if (opening) return "drawerOpen"
+    const side = owner.getAttribute("data-side")
+    return side === "bottom" || side === "top" ? "drawerCloseShort" : "drawerClose"
+  }
+  return opening ? "modalOpen" : "modalClose"
+}
+
+// One owner per adjustment control. Only actual accepted movement renews
+// the loop; holding still never leaves it ticking. Stop is also safe to use
+// for unmount, commit, disabled state and cancellation cleanup.
+function createAdjustmentSound() {
+  let source: AudioBufferSourceNode | null = null
+  let gain: GainNode | null = null
+  let idle: ReturnType<typeof setTimeout> | undefined
+  const stop = () => {
+    clearTimeout(idle)
+    idle = undefined
+    adjustments.delete(stop)
+    if (source && gain && ctx) {
+      const ending = source
+      const endingGain = gain
+      endingGain.gain.cancelScheduledValues(ctx.currentTime)
+      endingGain.gain.setValueAtTime(endingGain.gain.value, ctx.currentTime)
+      endingGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.004)
+      ending.stop(ctx.currentTime + 0.005)
+      ending.onended = () => {
+        ending.disconnect()
+        endingGain.disconnect()
+      }
+    }
+    source = null
+    gain = null
+  }
+  const move = () => {
+    if (!enabled) return stop()
+    unlock()
+    if (!ctx || !master || ctx.state !== "running") return
+    if (!source) {
+      source = ctx.createBufferSource()
+      gain = ctx.createGain()
+      source.buffer = sampleBuffer("adjust")
+      source.loop = true
+      gain.gain.value = 0.065
+      source.connect(gain).connect(master)
+      source.start(ctx.currentTime + 0.001)
+      adjustments.add(stop)
+    }
+    clearTimeout(idle)
+    idle = setTimeout(stop, 100)
+  }
+  return { move, stop }
+}
 
 // Browsers only start audio inside a gesture, so the context is made (and
 // resumed) on the first press or key.
@@ -113,26 +248,21 @@ function hiss(at: number, { freq, q = 2, length, level }: { freq: number; q?: nu
 // No two plays are identical: pitch drifts a few percent each time.
 const drift = (hz: number, amount = 0.03) => hz * (1 + (Math.random() * 2 - 1) * amount)
 
-const voices: Record<Voice, (at: number) => void> = {
-  hover: (at) => tone(at, { from: drift(2400), length: 0.025, level: 0.035 }),
-  press: (at) => {
-    tone(at, { type: "square", from: drift(520), to: 260, length: 0.05, level: 0.06 })
-    hiss(at, { freq: 3200, length: 0.02, level: 0.05 })
-  },
+const voices: Record<Voice, (at: number, owner?: Element) => void> = {
+  hover: (at) => sample("hover", at, 0.07),
+  increment: (at) => sample("increment", at, 0.14),
+  decrement: (at) => sample("decrement", at, 0.14),
+  "modal-open": (at, owner) => sample(modalSample(owner, true), at, 0.1, owner),
+  "modal-close": (at, owner) => sample(modalSample(owner, false), at, 0.1, owner),
+  press: (at) => sample("press", at, 0.14),
   confirm: (at) => {
     tone(at, { type: "square", from: drift(440), to: 220, length: 0.07, level: 0.07 })
     tone(at + 0.045, { from: drift(1320), length: 0.09, level: 0.07 })
   },
   select: (at) => tone(at, { from: drift(1480), to: 1760, length: 0.045, level: 0.07 }),
   tick: (at) => tone(at, { type: "triangle", from: drift(1900, 0.05), length: 0.018, level: 0.05 }),
-  on: (at) => {
-    tone(at, { from: drift(880), length: 0.04, level: 0.07 })
-    tone(at + 0.04, { from: drift(1320), length: 0.06, level: 0.07 })
-  },
-  off: (at) => {
-    tone(at, { from: drift(1100), length: 0.04, level: 0.06 })
-    tone(at + 0.04, { from: drift(660), length: 0.06, level: 0.06 })
-  },
+  on: (at) => sample("on", at, 0.12),
+  off: (at) => sample("off", at, 0.12),
   open: (at) => {
     hiss(at, { freq: 1800, q: 0.8, length: 0.07, level: 0.05 })
     tone(at, { from: drift(300), to: 900, length: 0.09, level: 0.05 })
@@ -170,7 +300,7 @@ const voices: Record<Voice, (at: number) => void> = {
 let lastAt = 0
 let lastVoice: Voice | null = null
 
-function sfx(voice: Voice) {
+function sfx(voice: Voice, owner?: Element) {
   if (!enabled) return
   unlock()
   if (!ctx || ctx.state !== "running") return
@@ -180,20 +310,21 @@ function sfx(voice: Voice) {
   if (voice === lastVoice && now - lastAt < 25) return
   lastAt = now
   lastVoice = voice
-  voices[voice](ctx.currentTime + 0.001)
+  voices[voice](ctx.currentTime + 0.001, owner)
 }
 
 const disabled = ':disabled, [aria-disabled="true"], [data-disabled]'
 const typing =
   'textarea, [contenteditable="true"], input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"], input[type="number"]'
-const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"]'
+const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"]'
+const hoverable = `${pressable}, [role="slider"], [role="separator"][aria-valuenow], input:not([type="hidden"]), textarea, select, summary`
 
 // What a click on something sounds like, from what it is. A component can
 // say otherwise with `data-sfx="<voice>"`, or "none" to stay quiet and play
 // its own.
 function voiceFor(el: Element): Voice | null {
   const own = el.closest<HTMLElement>("[data-sfx]")?.dataset.sfx
-  if (own) return own === "none" ? null : (own as Voice)
+  if (own) return Object.hasOwn(voices, own) ? (own as Voice) : null
   const role = el.getAttribute("role")
   if (role === "switch" || role === "checkbox" || role === "menuitemcheckbox") {
     const on = el.getAttribute("aria-checked") === "true" || el.hasAttribute("data-checked")
@@ -202,13 +333,22 @@ function voiceFor(el: Element): Voice | null {
   }
   if (role === "option" || role === "tab" || role === "radio" || role === "menuitem" || role === "menuitemradio" || role === "gridcell" || role === "treeitem") return "select"
   if (el.matches('[data-tone="primary"]')) return "confirm"
+  // The transition owns this feedback. A long generic button recording
+  // underneath it would keep sounding after the modal has finished moving.
+  if (/^(dialog|alert-dialog|drawer)-(trigger|close)$/.test(el.getAttribute("data-slot") ?? "")) return null
   return "press"
 }
 
 function installSound() {
   for (const type of ["pointerdown", "keydown"]) document.addEventListener(type, unlock, { capture: true, passive: true })
+  for (const type of ["pointerup", "pointercancel", "keyup"]) document.addEventListener(type, stopAdjustments, true)
+  window.addEventListener("blur", stopAdjustments)
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") stopAdjustments()
+  }, true)
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && ctx && ctx.state !== "running") ctx.resume().catch(() => {})
+    if (document.visibilityState !== "visible") stopAdjustments()
+    else if (enabled && ctx && ctx.state !== "running") ctx.resume().catch(() => {})
   })
 
   document.addEventListener(
@@ -230,40 +370,80 @@ function installSound() {
     "pointerover",
     (event) => {
       if (!enabled || event.pointerType !== "mouse") return
-      const el = (event.target as Element | null)?.closest?.(pressable) ?? null
+      const el = (event.target as Element | null)?.closest?.(hoverable) ?? null
       if (el === hovered) return
       hovered = el
-      if (el && el.closest('[data-skin="cyber"]') && !el.matches(disabled) && el.closest<HTMLElement>("[data-sfx]")?.dataset.sfx !== "none") sfx("hover")
+      // data-sfx="none" suppresses automatic clicks, never hover coverage.
+      // An explicit hover opt-out is separate for controls that need it.
+      if (el && el.closest('[data-skin="cyber"]') && !el.closest(disabled) && el.closest<HTMLElement>("[data-sfx-hover]")?.dataset.sfxHover !== "none") sfx("hover")
     },
     { capture: true, passive: true },
   )
+  document.addEventListener("pointerout", (event) => {
+    if (hovered && (!(event.relatedTarget instanceof Node) || !hovered.contains(event.relatedTarget))) hovered = null
+  }, { capture: true, passive: true })
 
   document.addEventListener(
     "keydown",
     (event) => {
       if (!enabled || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return
       const target = event.target as Element | null
+      // Menu checkboxes handle Enter/Space directly without a click. Wait
+      // for the resulting state so canceled changes stay silent as well.
+      const check = target?.closest?.('[role="menuitemcheckbox"]')
+      if (check && check.closest('[data-skin="cyber"]') && !check.matches(disabled) && (event.key === " " || event.key === "Enter")) {
+        const before = check.getAttribute("aria-checked")
+        const voice = voiceFor(check)
+        requestAnimationFrame(() => {
+          if (voice && check.getAttribute("aria-checked") !== before) sfx(voice)
+        })
+        return
+      }
       if (!target?.closest?.(typing) || !target.closest('[data-skin="cyber"]')) return
       if (event.key.length === 1 || event.key === "Backspace" || event.key === "Enter" || event.key === "Unidentified") sfx("type")
     },
     true,
   )
 
-  // Popups: anything from the SDK gaining or losing data-open.
+  // A popup's content owns its sound. Backdrops, viewports and triggers can
+  // share data-open, but none represents another opening. New content may
+  // arrive already open, so attribute observation alone misses its entrance.
+  const content = '[data-slot$="-content"]'
+  const modalSlots = new Set(["dialog-content", "alert-dialog-content", "drawer-content"])
+  const popupState = new WeakMap<Element, boolean>()
+  for (const el of document.querySelectorAll(content)) {
+    if (el.closest('[data-skin="cyber"]')) popupState.set(el, el.hasAttribute("data-open"))
+  }
   new MutationObserver((records) => {
-    if (!enabled) return
-    for (const record of records) {
-      const el = record.target as HTMLElement
-      if (!el.matches?.("[data-slot]") || !el.closest('[data-skin="cyber"]')) continue
-      // Only content parts: a trigger carries data-open too, and already
-      // sounded when it was pressed.
-      if (el.matches("button, [role='button'], [role='tab'], summary")) continue
-      const open = el.hasAttribute("data-open")
-      if (open === (record.oldValue !== null)) continue
-      return sfx(open ? "open" : "close")
+    const changed = new Set<Element>()
+    const collect = (node: Node) => {
+      if (!(node instanceof Element)) return
+      if (node.matches(content)) changed.add(node)
+      node.querySelectorAll(content).forEach((el) => changed.add(el))
     }
-  }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["data-open"], attributeOldValue: true })
+    for (const record of records) {
+      if (record.type === "attributes") {
+        if (record.target instanceof Element && record.target.matches(content)) changed.add(record.target)
+      } else {
+        record.addedNodes.forEach(collect)
+        record.removedNodes.forEach(collect)
+      }
+    }
+    for (const el of changed) {
+      const inSkin = el.isConnected && Boolean(el.closest('[data-skin="cyber"]'))
+      if (!inSkin && !popupState.has(el)) continue
+      const before = popupState.get(el) ?? false
+      const open = inSkin && el.hasAttribute("data-open")
+      if (el.hasAttribute("data-dragging")) modalPlayback.get(el)?.()
+      // Track while muted too, and read the final state of a mutation batch.
+      // An exit transition followed by removal is still just one close.
+      popupState.set(el, open)
+      if (open === before) continue
+      const modal = modalSlots.has(el.getAttribute("data-slot") ?? "")
+      sfx(modal ? (open ? "modal-open" : "modal-close") : (open ? "open" : "close"), modal ? el : undefined)
+    }
+  }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-open", "data-dragging"] })
 }
 
-export { installSound, onSoundChange, setSoundEnabled, sfx, soundEnabled }
+export { createAdjustmentSound, installSound, onSoundChange, setSoundEnabled, sfx, soundEnabled }
 export type { Voice }

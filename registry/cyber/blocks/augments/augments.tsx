@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Activity, Brain, Cpu, RotateCcw, Shield, Zap } from "lucide-react"
+import { sfx } from "@/registry/cyber/lib/sound"
 import { AlertDialog } from "@/registry/cyber/ui/alert-dialog"
 import { Badge } from "@/registry/cyber/ui/badge"
 import { Button } from "@/registry/cyber/ui/button"
@@ -249,7 +250,7 @@ export default function Augments() {
           id: "augments-points",
         })
       }
-      return
+      return false
     }
     setLevels({ ...levels, [id]: next })
     setAttributePoints(attributePoints - (next - current))
@@ -268,6 +269,7 @@ export default function Augments() {
     } else {
       record(target.name, `Raised to level ${next}.`)
     }
+    return true
   }
 
   const raise = (id: AttributeId) => setLevel(id, levels[id] + 1)
@@ -319,7 +321,7 @@ export default function Augments() {
       const key = event.key.toLowerCase()
       if (key === "q") keys.current.step(-1)
       else if (key === "e") keys.current.step(1)
-      else if (key === "r") keys.current.raise(keys.current.selected)
+      else if (key === "r" && keys.current.raise(keys.current.selected)) sfx("increment")
     }
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
@@ -371,7 +373,7 @@ export default function Augments() {
       hints={[
         { keys: "Q", label: "Previous attribute", onPress: () => step(-1) },
         { keys: "E", label: "Next attribute", onPress: () => step(1) },
-        { keys: "R", label: "Spend point", onPress: () => raise(selected) },
+        { keys: "R", label: "Spend point", action: "increment", disabled: attributePoints === 0 || level >= cap, onPress: () => raise(selected) },
       ]}
     >
       <div ref={root} data-kit="augments">
@@ -406,7 +408,7 @@ export default function Augments() {
                     ? () => {
                         refocus.current = each.id
                         setSelected(each.id)
-                        raise(each.id)
+                        return raise(each.id)
                       }
                     : undefined
                 }
@@ -442,9 +444,9 @@ export default function Augments() {
                 label={`${attribute.name} level`}
                 value={level}
                 min={attribute.base}
-                max={cap}
-                onValueChange={(value) => {
-                  if (value != null) setLevel(attribute.id, value)
+                max={Math.min(cap, level + attributePoints)}
+                onValueChange={(value, details) => {
+                  if (value == null || !setLevel(attribute.id, value)) details.cancel()
                 }}
                 hint={
                   level >= cap

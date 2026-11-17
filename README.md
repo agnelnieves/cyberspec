@@ -6,7 +6,7 @@ A component kit in the style of a machine from a darker future: a blue-black
 void lit in hot red, cyan for anything that's a value or a signal, yellow for
 the one thing to look at, corners cut rather than rounded, micro-print in the
 margins, and interference that tears things in and out. Every control is
-built on [ui-sdk](https://ui-sdk.dev) behaviors, with synthesized interface
+built on [ui-sdk](https://ui-sdk.dev) behaviors, with sampled and synthesized interface
 sounds, haptics, and a visible signal when an agent changes something.
 
 It's a sibling of [SPEC-01](https://github.com/shuding/spec-01), which themes
@@ -58,8 +58,10 @@ export function App() {
   component ships its own stylesheet.
 - **Type:** Rajdhani and JetBrains Mono. Installing `cyber` adds their Google
   Fonts `@import` to the top of your CSS file.
-- **Sound:** synthesized with Web Audio, off until someone turns it on
-  (`setSoundEnabled(true)` in `lib/sound`).
+- **Sound:** samples and synthesis through Web Audio, off until someone turns
+  it on (`setSoundEnabled(true)` in `lib/sound`). The samples ship inside the
+  registry's `lib/sound-samples.ts`; no separately hosted audio is needed.
+  [Sound mappings and replacement guide](./docs/SOUNDS.md).
 
 ## What makes it this kit
 
@@ -94,6 +96,7 @@ bun run dev              # http://localhost:5720
 bun run build            # builds the registry, then the site
 bun run registry:build   # just the registry, into public/r, and public/llms.txt
 bun run typecheck
+bun scripts/sound-check.mjs    # sound mappings and stop behavior, in headless Chrome
 node scripts/shot.mjs slider   # screenshot one component in headless Chrome
 node scripts/sheet.mjs         # a contact sheet of every catalog group
 node scripts/audit.mjs         # axe-core, motion, agent names and phone layout, every page

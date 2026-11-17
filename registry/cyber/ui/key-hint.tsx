@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Button as SdkButton } from "@ui-sdk/react/button"
+import { sfx } from "@/registry/cyber/lib/sound"
 import "@/registry/cyber/ui/cyber/key-hint.css"
 
 // Glyphs a screen reader would skip or misread, and what to say instead.
@@ -95,7 +96,9 @@ type KeyHintSpec = {
   /** What it does: "Answer". */
   label: string
   /** Makes the hint a button that does the same thing, for a pointer or a finger. */
-  onPress?: () => void
+  onPress?: () => boolean | void
+  /** Directional feedback for a hint that changes a value. */
+  action?: "increment" | "decrement"
   disabled?: boolean
 }
 
@@ -108,7 +111,7 @@ type KeyHintSpec = {
 // - The glyph lights while its key is held on the keyboard, so the screen
 //   answers the press. The hint only shows the key: binding it to the
 //   action is the screen's job.
-function KeyHint({ keys, label, onPress, disabled, ...props }: KeyHintSpec & Omit<React.ComponentProps<"span">, "children">) {
+function KeyHint({ keys, label, onPress, action, disabled, ...props }: KeyHintSpec & Omit<React.ComponentProps<"span">, "children">) {
   const glyphs = Array.isArray(keys) ? keys : [keys]
   const held = useHeld(glyphs)
   const content = (
@@ -138,7 +141,15 @@ function KeyHint({ keys, label, onPress, disabled, ...props }: KeyHintSpec & Omi
       </span>
     )
   return (
-    <SdkButton data-kit="key-hint" disabled={disabled} onClick={() => onPress()} {...(props as React.ComponentProps<typeof SdkButton>)}>
+    <SdkButton
+      data-kit="key-hint"
+      data-sfx={action ? "none" : undefined}
+      disabled={disabled}
+      onClick={() => {
+        if (!disabled && onPress() !== false && action) sfx(action)
+      }}
+      {...(props as React.ComponentProps<typeof SdkButton>)}
+    >
       {content}
     </SdkButton>
   )
