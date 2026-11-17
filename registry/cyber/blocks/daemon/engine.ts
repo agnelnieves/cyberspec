@@ -162,7 +162,9 @@ function showHistory() {
 type Beat = { say: string } | { scan: string | true } | { find: string; within?: string } | { step: AgentStep }
 type Program = { name: string; task: string; beats: Beat[] }
 
-const programs: Program[] = [
+// The programs for the Daemon screen's own form. A host with a different
+// page swaps in its own with `daemon.use(...)`.
+let programs: Program[] = [
   {
     name: "ghostwrite",
     task: "Set the deck up for a quiet run through Glasswater and commit the route.",
@@ -233,7 +235,7 @@ function stop() {
 
 // ── Commands ───────────────────────────────────────────────────────────────
 
-const help = [
+const help = () => [
   "scan [kind]              what the agent sees: snapshot()",
   "find <text>              components and choices matching text: query()",
   'list "<label>"           the choices inside a select, list or group',
@@ -241,7 +243,7 @@ const help = [
   'on | off "<label>"       a switch or a checkbox',
   'press "<label>"          a button',
   'do "<label>" <action> [args]   any action a component lists',
-  "run <program>            ghostwrite · deadlock · null-ping",
+  `run <program>            ${programs.map((entry) => entry.name).join(" · ")}`,
   "undo                     put back everything the agent changed",
   "history · stop · clear",
 ]
@@ -264,7 +266,7 @@ async function run(text: string) {
   switch (verb.toLowerCase()) {
     case "help":
     case "?":
-      return help.forEach((line) => print("sys", line))
+      return help().forEach((line) => print("sys", line))
     case "scan":
     case "snapshot":
       return void scan(rest[0])
@@ -306,7 +308,7 @@ async function run(text: string) {
 }
 
 print("sys", "DAEMON v0.1 // bridge up. An agent on this page can read and operate every ui-sdk component on it.")
-print("sys", "Run a program below, or type help.")
+print("sys", "Run a program, or type help.")
 
 const daemon = {
   subscribe: (listener: () => void) => {
@@ -321,8 +323,15 @@ const daemon = {
   stop,
   answer,
   undoAgent,
-  programs: programs.map(({ name, task }) => ({ name, task })),
+  // Replace the programs with ones written for another page's controls.
+  use: (next: Program[]) => {
+    programs = next
+    set({})
+  },
+  get programs() {
+    return programs.map(({ name, task }) => ({ name, task }))
+  },
 }
 
 export { daemon }
-export type { Hold, Line, LineKind, State as DaemonState }
+export type { Beat, Hold, Line, LineKind, Program, State as DaemonState }
