@@ -4,3 +4,5 @@ public/r
 .DS_Store
 shots
 .vercel
+output/social/og-*
+output/social/.frames*

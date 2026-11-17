@@ -98,11 +98,36 @@ node scripts/shot.mjs slider   # screenshot one component in headless Chrome
 node scripts/sheet.mjs         # a contact sheet of every catalog group
 node scripts/audit.mjs         # axe-core, motion, agent names and phone layout, every page
 node scripts/thumbs.mjs        # the Examples page's thumbnails, into public/examples
-node scripts/og.mjs            # the link-preview image, public/og.png
+bun run social:build           # the branded social images and video
 ```
 
-The three scripts need the dev server running and a local Chrome. They write
-to `shots/`, which is ignored.
+The screenshot scripts need the dev server running and a local Chrome. They
+write to `shots/`, which is ignored.
+
+### Social assets
+
+The social artwork follows the red terminal and wireframe CYBERSPEC identity.
+Rebuild it with `bun run social:build` (local Chrome and `ffmpeg` required), or
+`bun run social:build --stills` for just the PNG images. No dev server is needed.
+Use `bun run social:build --video` to rebuild the CRT/glitch loop without
+touching the PNGs, or `bun run social:build --preview` to inspect six motion
+frames before encoding. The loop runs for eight seconds at 30 fps; its GIF
+and a review page with playback controls are written to `output/social/`.
+These generated review exports are ignored by Git.
+The review page shows the static card instead of autoplaying when reduced
+motion is enabled, with an explicit option to play.
+`index.html` references `public/og-v2.png` (1200 × 630) and
+`public/og-video-v3.mp4` (1200 × 630). `public/og-square-v2.png` is a square
+variant for social posts. The original `public/og.png` and earlier video
+exports are preserved.
+
+Link previews retain a static image fallback; support for the optional Open
+Graph video depends on the consuming service. Twitter uses a large-image card.
+
+AI-generated phone and post-apocalyptic desk concepts are kept in
+`output/social/` for review, alongside their generation prompts. They are not
+referenced in metadata. In particular, keep the desk experiment out of the
+meta tags unless it is explicitly selected later.
 
 ### Pages
 

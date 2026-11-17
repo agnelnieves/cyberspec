@@ -6,6 +6,7 @@
     "dev": "vite --port ${PORT:-5720}",
     "build": "node scripts/registry.mjs && vite build",
     "registry:build": "node scripts/registry.mjs",
+    "social:build": "bun scripts/og.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "preview": "vite preview --port ${PORT:-5721}"
   },
