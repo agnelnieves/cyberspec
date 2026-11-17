@@ -5,6 +5,8 @@ import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
 import { onSoundChange, setSoundEnabled, sfx, soundEnabled } from "@/registry/cyber/lib/sound"
 import { GlitchText } from "@/registry/cyber/ui/glitch-text"
+import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
+import { Examples, examples } from "./Examples"
 import { AgentPrompt } from "@/registry/cyber/blocks/daemon/agent-prompt"
 import { Button } from "@/registry/cyber/ui/button"
 import { CodeBlock } from "@/registry/cyber/ui/code-block"
@@ -18,15 +20,11 @@ import { Toasts, notify } from "@/registry/cyber/ui/toaster"
 const blocks = import.meta.glob<{ default: React.ComponentType }>("/registry/cyber/blocks/*/*.tsx")
 const blockOf = (name: string) => blocks[`/registry/cyber/blocks/${name}/${name}.tsx`]
 
-const pages = [
+// The bar's sections. The example screens live under Examples rather than
+// each taking a place in the bar.
+const sections = [
   { route: "", title: "Components", line: "Every part of the kit, one panel each." },
-  { route: "loadout", title: "Loadout", line: "Gear slots, a weapon's sheet and what's in the pack." },
-  { route: "augments", title: "Augments", line: "Five attributes on a lattice, and points to spend on them." },
-  { route: "jobs", title: "Jobs", line: "The job board: what's open, what's tracked, and the brief." },
-  { route: "comms", title: "Comms", line: "Contacts, a message thread, and how you answer." },
-  { route: "archive", title: "Archive", line: "The database: people, places and machines, one dossier each." },
-  { route: "grid", title: "Grid", line: "The district from above, with filters and a route." },
-  { route: "daemon", title: "Daemon", line: "An agent on the page: what it sees, what it does, and how to stop it." },
+  { route: "examples", title: "Examples", line: "The kit composed into whole screens. Each one works: open it and use it." },
 ]
 
 // The accent, as OKLCH lightness, chroma and hue.
@@ -94,7 +92,7 @@ function Masthead() {
         </p>
         <div data-masthead-stats="">
           <Readout value={panels.length} label="Components" size="lg" />
-          <Readout value={pages.length - 1} label="Screens" size="lg" />
+          <Readout value={examples.length} label="Screens" size="lg" />
           <Readout value={3} label="FX levels" size="lg" tone="flag" />
         </div>
       </div>
@@ -121,6 +119,7 @@ function Masthead() {
 
 function Page({ route }: { route: string }) {
   if (route.startsWith("preview/")) return <Preview name={route.slice("preview/".length)} />
+  if (route === "examples") return <Examples />
   if (route) return <Screen name={route} />
   return (
     <>
@@ -201,9 +200,37 @@ function AccentPicker({ root }: { root: React.RefObject<HTMLDivElement | null> }
   )
 }
 
+// Previous and next screen, at the foot of each example.
+function ExamplePager({ index }: { index: number }) {
+  const previous = examples[index - 1]
+  const next = examples[index + 1]
+  return (
+    <nav aria-label="More examples" data-site-pager>
+      {previous ? (
+        <a href={`/${previous.route}`} rel="prev">
+          <span aria-hidden>←</span> {previous.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      <a href="/examples">All examples</a>
+      {next ? (
+        <a href={`/${next.route}`} rel="next">
+          {next.title} <span aria-hidden>→</span>
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
 function Site({ route }: { route: string }) {
   const preview = route.startsWith("preview/")
-  const current = pages.find((page) => page.route === route) ?? pages[0]
+  const exampleIndex = examples.findIndex((example) => example.route === route)
+  const example = examples[exampleIndex]
+  // An example screen belongs to the Examples section.
+  const section = example ? sections[1] : (sections.find((entry) => entry.route === route) ?? sections[0])
   const root = React.useRef<HTMLDivElement>(null)
   const level = React.useSyncExternalStore(onFxChange, fxLevel)
   return (
@@ -215,10 +242,24 @@ function Site({ route }: { route: string }) {
         <a href="/" data-site-brand aria-label="Cyberspec, home">
           <span aria-hidden>◤</span> CYBERSPEC
         </a>
-        <nav aria-label="Pages" data-site-nav>
-          {pages.map((page) => (
-            <a key={page.route} href={`/${page.route}`} aria-current={page === current ? "page" : undefined}>
-              {page.title}
+        <nav aria-label="Sections" data-site-nav>
+          {sections.map((entry) => (
+            <a
+              key={entry.route}
+              href={`/${entry.route}`}
+              // The section is current on its own page; on a screen inside it,
+              // the link is marked but the page is the screen.
+              aria-current={entry === section && !preview ? (example ? "true" : "page") : undefined}
+            >
+              {entry.title}
+              {entry.route === "examples" && (
+                <>
+                  <span data-site-count aria-hidden>
+                    {examples.length}
+                  </span>
+                  <span data-sr-only>, {examples.length} screens</span>
+                </>
+              )}
             </a>
           ))}
         </nav>
@@ -228,14 +269,21 @@ function Site({ route }: { route: string }) {
           <SoundToggle />
         </div>
       </header>
-      <main id="main" tabIndex={-1} data-site-page={preview ? "preview" : current.route || "components"}>
-        {current.route && !preview && (
+      <main id="main" tabIndex={-1} data-site-page={preview ? "preview" : example ? example.route : section.route || "components"}>
+        {!preview && (example || section.route) && (
           <header data-kit="page-head">
-            <h1>{current.title}</h1>
-            <p>{current.line}</p>
+            {example && (
+              <Breadcrumb
+                label="You are here"
+                items={[{ label: "Examples", href: "/examples" }, { label: example.title }]}
+              />
+            )}
+            <h1>{example ? example.title : section.title}</h1>
+            <p>{example ? example.line : section.line}</p>
           </header>
         )}
-        <Page route={preview ? route : current.route} />
+        <Page route={preview ? route : example ? example.route : section.route} />
+        {example && <ExamplePager index={exampleIndex} />}
       </main>
       <footer data-site-footer>
         <span data-micro aria-hidden>
@@ -259,4 +307,4 @@ function Site({ route }: { route: string }) {
   )
 }
 
-export { Site, pages }
+export { Site, sections }

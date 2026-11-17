@@ -15,7 +15,7 @@ import puppeteer from "puppeteer-core"
 const root = new URL("..", import.meta.url).pathname
 const axe = readFileSync(`${root}node_modules/axe-core/axe.min.js`, "utf8")
 const asked = process.argv.slice(2).filter((arg) => arg.startsWith("/"))
-const routes = asked.length ? asked : ["/", "/loadout", "/augments", "/jobs", "/comms", "/archive", "/grid", "/daemon"]
+const routes = asked.length ? asked : ["/", "/examples", "/loadout", "/augments", "/jobs", "/comms", "/archive", "/grid", "/daemon"]
 
 async function findServer() {
   if (process.env.CYBERSPEC_URL) return process.env.CYBERSPEC_URL.replace(/\/$/, "")
