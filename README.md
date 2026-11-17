@@ -16,18 +16,56 @@ shows every component and the screens built from them, which is also a
 
 ## Install from the registry
 
-Add the registry to `components.json` and install what you need. The ui-sdk
-packages the components are built on, `@ui-sdk/core` and `@ui-sdk/react`,
-install from npm along with them:
+Use a **React 19** project with shadcn configured and a working `@/` import
+alias. TypeScript projects need `@types/react >=19.2.10`. The underlying
+SDK does not support React 18. The exact `@ui-sdk/core@0.1.0-beta.5` and
+`@ui-sdk/react@0.1.0-beta.5` dependencies install automatically from public
+npm; no token, private registry or GitHub access is required.
+
+From that project's directory, add the registry and install what you need:
 
 ```sh
-npx shadcn@latest registry add @cyberspec=https://www.cyberspec.dev/r/{name}.json
-npx shadcn@latest add @cyberspec/slider @cyberspec/panel
+bunx --bun shadcn@latest registry add '@cyberspec=https://www.cyberspec.dev/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec/slider @cyberspec/panel
 ```
 
 (`https://www.cyberspec.dev` is the kit's site and the registry's default
 address; `cyberspec.dev` redirects to it. For another host, build with
 `REGISTRY_URL=https://your.domain bun run registry:build`.)
+
+An individual item also installs directly:
+
+```sh
+bunx --bun shadcn@latest add https://www.cyberspec.dev/r/slider.json
+```
+
+For an existing shadcn project, keep its `components.json` and aliases.
+For a plain React/Vite project without Tailwind, create this minimal
+`components.json`; `src/index.css` is your ordinary CSS entry file:
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": { "config": "", "css": "src/index.css", "baseColor": "neutral", "cssVariables": true },
+  "aliases": {
+    "components": "@/components", "ui": "@/components/ui",
+    "lib": "@/lib", "utils": "@/lib/utils", "hooks": "@/hooks"
+  }
+}
+```
+
+Map `@/*` to `./src/*` in TypeScript and `@` to your `src` directory in
+Vite's `resolve.alias`. Import `src/index.css` once from your app entry.
+The `tailwind` configuration key belongs to the installer; CyberSpec's
+styles are plain CSS and do not require Tailwind.
+
+For **Next.js App Router**, use `rsc: true` and point `tailwind.css` at your
+global stylesheet. Installed TSX includes `"use client"` boundaries. Keep
+state, event handlers and render callbacks in a Client Component; props
+passed from a Server Component must be serializable.
 
 Every item depends on `cyber`, which sets the project up for the kit: the
 foundation stylesheets, a `<Cyber>` root, the fonts, and the page-wide
@@ -96,6 +134,8 @@ bun run dev              # http://localhost:5720
 bun run build            # builds the registry, then the site
 bun run registry:build   # just the registry, into public/r, and public/llms.txt
 bun run typecheck
+bun scripts/consumer-check.mjs # fresh Vite + Next.js installs from the generated registry
+bun scripts/install-check.mjs  # Copy Prompt and clipboard fallbacks, with the dev server
 bun scripts/sound-check.mjs    # sound mappings and stop behavior, in headless Chrome
 node scripts/shot.mjs slider   # screenshot one component in headless Chrome
 node scripts/sheet.mjs         # a contact sheet of every catalog group
@@ -106,6 +146,11 @@ bun run social:build           # the branded social images and video
 
 The screenshot scripts need the dev server running and a local Chrome. They
 write to `shots/`, which is ignored.
+
+The consumer check creates an isolated temporary project, installs public
+npm dependencies and registry items, then compiles representative components
+and screens in Vite and Next.js App Router. Run `bun run registry:build`
+first, or pass `--url https://www.cyberspec.dev` to check the published registry.
 
 ### Social assets
 
@@ -171,12 +216,18 @@ meta tags unless it is explicitly selected later.
 
 ## Credits and license
 
+CyberSpec's original code is [MIT-licensed](./LICENSE). The bundled sound
+recordings are excluded from MIT and have separate licensing requirements;
+see [third-party notices](./THIRD_PARTY_NOTICES.md) before reusing them.
+Registry installs include both notices alongside the shared library files.
+
 Built on [ui-sdk](https://ui-sdk.dev). The structure (thin wrappers, a
 scoped skin, a registry that is also the site) and the iOS haptics technique
 follow [SPEC-01](https://github.com/shuding/spec-01) by Shu Ding, MIT.
 
 The fonts are [Rajdhani](https://fonts.google.com/specimen/Rajdhani) and
 [JetBrains Mono](https://www.jetbrains.com/lp/mono/), both under the SIL
-Open Font License 1.1. Icons are [Lucide](https://lucide.dev), ISC.
+Open Font License 1.1. Icons are [Lucide](https://lucide.dev), ISC with MIT
+notices for Feather-derived icons.
 
 All names, places and text in the examples and screens are original fiction.

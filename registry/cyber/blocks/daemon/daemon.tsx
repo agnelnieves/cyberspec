@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Play, RotateCcw, Square } from "lucide-react"
-import { daemon } from "@/registry/cyber/blocks/daemon/engine"
+import { daemon, type DaemonState } from "@/registry/cyber/blocks/daemon/engine"
 import { Badge } from "@/registry/cyber/ui/badge"
 import { Button } from "@/registry/cyber/ui/button"
 import { Checkbox } from "@/registry/cyber/ui/checkbox"
@@ -94,8 +94,13 @@ function Deck() {
   )
 }
 
+// Server renders and the first hydration pass have no browser session. Keep
+// this snapshot stable, without reading the engine's mutable, timestamped log.
+const serverState: DaemonState = { lines: [], busy: false, hold: null, agentChanges: 0 }
+const getServerState = () => serverState
+
 function Console() {
-  const state = React.useSyncExternalStore(daemon.subscribe, daemon.getState)
+  const state = React.useSyncExternalStore(daemon.subscribe, daemon.getState, getServerState)
   return (
     <Panel
       title="Daemon console"

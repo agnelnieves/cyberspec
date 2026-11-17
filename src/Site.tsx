@@ -4,6 +4,8 @@ import { CatalogGrid, Preview } from "./catalog/Catalog"
 import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
 import { onSoundChange, setSoundEnabled, sfx, soundEnabled } from "@/registry/cyber/lib/sound"
+import { copyText } from "@/registry/cyber/lib/clipboard"
+import { installationPrompt, installCommands, repositoryUrl } from "./install"
 import { Brand } from "./Brand"
 import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
 import { Examples, examples } from "./Examples"
@@ -12,7 +14,7 @@ import { Button } from "@/registry/cyber/ui/button"
 import { CodeBlock } from "@/registry/cyber/ui/code-block"
 import { Ruler } from "@/registry/cyber/ui/micro"
 import { Panel } from "@/registry/cyber/ui/panel"
-import { Popover } from "@/registry/cyber/ui/popover"
+import { Textarea } from "@/registry/cyber/ui/textarea"
 import { Readout } from "@/registry/cyber/ui/readout"
 import { Toasts, notify } from "@/registry/cyber/ui/toaster"
 
@@ -53,50 +55,60 @@ function Screen({ name }: { name: string }) {
   )
 }
 
-// What to tell a coding agent to install the kit: the registry, the root
-// everything sits in, and where the rules are.
-const agentPrompt = (origin: string) =>
-  `Install components from the CYBERSPEC shadcn registry, ${origin}/r/registry.json. Read ${origin}/llms.txt first. They are built on UI SDK (@ui-sdk/react); wrap the app in <Cyber> from components/ui/cyber.`
-
-// The prompt, shown in full in a popover from the install panel, with a key
-// that copies it.
-function InstallPrompt({ origin }: { origin: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(agentPrompt(origin)).then(
-      () => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-        notify("Prompt copied", { tone: "success", description: "Paste it into your coding agent." })
-      },
-      () => notify("Couldn't copy", { tone: "error", description: "The clipboard wasn't available." }),
-    )
+function InstallPrompt() {
+  const [state, setState] = React.useState<"idle" | "copied" | "manual">("idle")
+  const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const manual = React.useRef<HTMLTextAreaElement>(null)
+  const mounted = React.useRef(true)
+  React.useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      clearTimeout(timer.current)
+    }
+  }, [])
+  React.useEffect(() => {
+    if (state === "manual") {
+      manual.current?.focus()
+      manual.current?.select()
+    }
+  }, [state])
+  const copy = async () => {
+    clearTimeout(timer.current)
+    try {
+      await copyText(installationPrompt)
+      if (!mounted.current) return
+      setState("copied")
+      notify("Prompt copied", { tone: "success", description: "Paste it into your coding agent." })
+      timer.current = setTimeout(() => setState("idle"), 2000)
+    } catch {
+      if (!mounted.current) return
+      setState("manual")
+      // A retry can fail while the fallback is already mounted.
+      manual.current?.focus()
+      manual.current?.select()
+    }
   }
   return (
-    <Popover
-      trigger="Installation prompt"
-      triggerTone="primary"
-      title="Prompt for a coding agent"
-      side="bottom"
-      align="end"
-      code="PROMPT // REGISTRY + LLMS.TXT"
-    >
-      <p data-install-prompt="">
-        {agentPrompt(origin)}
-        <span data-install-caret="" aria-hidden />
-      </p>
+    <>
       <div data-kit="actions">
-        <Button tone="flag" onClick={copy} data-sfx="none">
-          {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
-          {copied ? "Copied" : "Copy"}
+        <a href={repositoryUrl} target="_blank" rel="noreferrer" data-kit="link">GitHub</a>
+        <Button tone="primary" onClick={copy} data-copy-prompt="" data-sfx="none">
+          {state === "copied" ? <Check aria-hidden /> : <Copy aria-hidden />}
+          {state === "copied" ? "Prompt copied" : "Copy Prompt"}
         </Button>
       </div>
-    </Popover>
+      {state === "manual" && (
+        <div data-install-fallback="">
+          <p role="alert">Clipboard access is blocked. The prompt is selected below; copy it and paste it into your coding agent.</p>
+          <Textarea ref={manual} label="Installation prompt" value={installationPrompt} readOnly autoResize={false} rows={7} data-install-prompt="" />
+        </div>
+      )}
+    </>
   )
 }
 
 function Masthead() {
-  const origin = typeof location === "undefined" ? "" : location.origin
   return (
     <header data-kit="masthead">
       <div data-masthead-lead="">
@@ -128,11 +140,9 @@ function Masthead() {
           filename="terminal"
           label="Install commands"
           numbers={false}
-          code={`npx shadcn@latest registry add @cyberspec=${origin}/r/{name}.json\nnpx shadcn@latest add @cyberspec/cyber @cyberspec/button`}
+          code={installCommands}
         />
-        <div data-kit="actions">
-          <InstallPrompt origin={origin} />
-        </div>
+        <InstallPrompt />
       </Panel>
     </header>
   )

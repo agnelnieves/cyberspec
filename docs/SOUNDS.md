@@ -3,6 +3,10 @@
 Enable **Interface sounds** in the header on any test route. The choice is
 remembered in local storage, including on `/preview/<component>` routes.
 
+The recorded samples are bundled but are not covered by CyberSpec's MIT code
+license. See [third-party notices](../THIRD_PARTY_NOTICES.md) for their sources
+and separate licensing requirements before reusing or redistributing them.
+
 ## Recordings in this pass
 
 | Interaction | Recording | Where to try it |

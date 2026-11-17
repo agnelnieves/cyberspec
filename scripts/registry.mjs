@@ -35,6 +35,17 @@ const itemUrl = (name) => `${base}/r/${name}.json`
 // The stylesheets that make up the skin itself, rather than one component.
 const foundation = ["skin.css", "tokens.css", "base.css", "fx.css", "field.css", "popup.css"]
 const versions = { ...pkg.dependencies, ...pkg.devDependencies }
+const installedVersions = new Map()
+function dependencyVersion(name, file) {
+  if (!versions[name]) throw new Error(`${file}: ${name} isn't a dependency in package.json`)
+  if (!installedVersions.has(name)) {
+    // Publish the version this build actually checked, not a range that
+    // might install a different SDK or icon API for the next consumer.
+    const installed = JSON.parse(readFileSync(join(root, "node_modules", name, "package.json"), "utf8"))
+    installedVersions.set(name, installed.version)
+  }
+  return installedVersions.get(name)
+}
 
 // Which registry item a `@/registry/cyber/...` import belongs to.
 function ownerOf(spec, file) {
@@ -65,9 +76,7 @@ function dependenciesOf(files, self) {
       } else if (!spec.startsWith(".") && !spec.startsWith("@/")) {
         const name = spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0]
         if (name === "react" || name === "react-dom") continue
-        const version = versions[name]
-        if (!version) throw new Error(`${file}: ${name} isn't a dependency in package.json`)
-        npm.add(`${name}@${version}`)
+        npm.add(`${name}@${dependencyVersion(name, file)}`)
       }
     }
   }
@@ -120,6 +129,8 @@ items.push(
       // Includes sound-samples.ts: recordings travel with the code, with no
       // app-specific public path or request to the registry host at runtime.
       ...list(`${reg}/lib`, (f) => f.endsWith(".ts")).map((f) => file(`${reg}/lib/${f}`, "registry:lib")),
+      { path: "LICENSE", type: "registry:file", target: "@lib/cyberspec/LICENSE" },
+      { path: "THIRD_PARTY_NOTICES.md", type: "registry:file", target: "@lib/cyberspec/THIRD_PARTY_NOTICES.md" },
     ],
     {
       css: { [fontImport]: {} },
@@ -167,7 +178,7 @@ const names = new Set(items.map((i) => i.name))
 for (const it of items)
   for (const url of it.registryDependencies ?? []) {
     const name = url.slice(`${base}/r/`.length, -".json".length)
-    if (!names.has(name)) warnings.push(`${it.name} depends on ${name}, which isn't an item`)
+    if (!names.has(name)) throw new Error(`${it.name} depends on ${name}, which isn't an item`)
   }
 
 const registry = {
@@ -182,6 +193,19 @@ for (const warning of warnings) console.warn(`warning: ${warning}`)
 
 execFileSync(join(root, "node_modules/.bin/shadcn"), ["build", "--output", "public/r"], { cwd: root, stdio: "inherit" })
 
+// The catalog runs entirely on the client, but an installed component may
+// be imported directly by a Next.js server page. Declare that boundary in
+// shipped TSX; shadcn removes it for projects whose config has rsc: false.
+// This follows the build because shadcn reads each source path itself.
+for (const it of items) {
+  const path = join(root, "public/r", `${it.name}.json`)
+  const built = JSON.parse(readFileSync(path, "utf8"))
+  for (const f of built.files ?? []) {
+    if (f.path.endsWith(".tsx") && !/^\s*["']use client["']/.test(f.content)) f.content = `"use client"\n\n${f.content}`
+  }
+  writeFileSync(path, JSON.stringify(built, null, 2) + "\n")
+}
+
 // llms.txt: the kit, for a coding agent. What it is, how to install it, the
 // rules that matter when building with it, and every item with its URL.
 const byType = (type, category) => items.filter((i) => i.type === type && (!category || i.categories?.includes(category)))
@@ -194,12 +218,18 @@ Every control is a ui-sdk component underneath (\`@ui-sdk/react\`, \`@ui-sdk/cor
 
 ## Install
 
+CyberSpec's original code is MIT-licensed. Bundled recorded audio is excluded from MIT and has separate licensing requirements. Read https://github.com/agnelnieves/cyberspec/blob/main/THIRD_PARTY_NOTICES.md before reusing recordings. The foundation installs both the MIT license and third-party notices in the configured library directory under \`cyberspec/\`.
+
+Use a React 19 project with a configured shadcn \`components.json\` and a working \`@/\` import alias. React 18 is not supported by the underlying SDK. In TypeScript projects use \`@types/react >=19.2.10\`. The pinned \`@ui-sdk/core@${dependencyVersion("@ui-sdk/core", "llms.txt")}\` and \`@ui-sdk/react@${dependencyVersion("@ui-sdk/react", "llms.txt")}\` dependencies install from public npm; no token, private registry or GitHub access is needed.
+
 \`\`\`sh
-npx shadcn@latest registry add @cyberspec=${base}/r/{name}.json
-npx shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
+bunx --bun shadcn@latest registry add '@cyberspec=${base}/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
 \`\`\`
 
-Any item also installs from its URL: \`npx shadcn@latest add ${itemUrl("panel")}\`. Every item depends on \`cyber\`, which adds the \`<Cyber>\` root, the foundation stylesheets, the fonts and the page-wide behaviors.
+Any item also installs from its URL: \`bunx --bun shadcn@latest add ${itemUrl("panel")}\`. Every item depends on \`cyber\`, which adds the \`<Cyber>\` root, the foundation stylesheets, the fonts and the page-wide behaviors. Tailwind is not required; the \`tailwind.css\` entry in \`components.json\` can point at the application's plain CSS entry file. See the [installation setup](https://github.com/agnelnieves/cyberspec#install-from-the-registry) for a minimal configuration.
+
+Installed TSX declares client boundaries for Next.js App Router. Keep state, event handlers and render callbacks inside a Client Component; only serializable props may cross from a server page. Import the app's CSS entry once in its root layout/entry. Samples and CSS install alongside the components, so they do not fetch code or audio from this registry at runtime.
 
 \`\`\`tsx
 import { Cyber } from "@/components/ui/cyber"

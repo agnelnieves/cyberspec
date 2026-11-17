@@ -53,6 +53,11 @@
           "target": "@lib/agent-signal.ts"
         },
         {
+          "path": "registry/cyber/lib/clipboard.ts",
+          "type": "registry:lib",
+          "target": "@lib/clipboard.ts"
+        },
+        {
           "path": "registry/cyber/lib/fx.ts",
           "type": "registry:lib",
           "target": "@lib/fx.ts"
@@ -86,6 +91,16 @@
           "path": "registry/cyber/lib/sound.ts",
           "type": "registry:lib",
           "target": "@lib/sound.ts"
+        },
+        {
+          "path": "LICENSE",
+          "type": "registry:file",
+          "target": "@lib/cyberspec/LICENSE"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "type": "registry:file",
+          "target": "@lib/cyberspec/THIRD_PARTY_NOTICES.md"
         }
       ],
       "css": {
@@ -127,7 +142,7 @@
       "description": "A flagged confirmation that has to be answered, and that an agent has to ask a person about.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -153,7 +168,7 @@
       "title": "Alert",
       "description": "An inline notice on a spined frame: info, success, warning or danger, each with its own glyph.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -222,7 +237,7 @@
       "title": "Breadcrumb",
       "description": "A trail of pages, the current one in the signal color.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -297,7 +312,7 @@
       "description": "A month grid with today marked and the chosen day lit.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -322,7 +337,7 @@
       "title": "Card",
       "description": "A content card with a scanlined media slot, plain or interactive.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -347,7 +362,7 @@
       "description": "A viewer: slides in a cut frame, with keys, segment indicators and a position readout.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -397,7 +412,7 @@
       "description": "Replies to choose from: rows in the signal color, the chosen one a solid yellow bar.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -421,7 +436,7 @@
       "title": "Code block",
       "description": "Highlighted code with line numbers, a filename tab and a copy key. No highlighting dependency.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -447,7 +462,7 @@
       "description": "One section behind a key that shows and hides it.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -472,7 +487,7 @@
       "description": "A text control that filters a list of options as you type.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -497,7 +512,7 @@
       "description": "A searchable list of commands behind a prompt, in a dialog.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -549,7 +564,7 @@
       "description": "Rows with selection, sortable columns, status badges and a menu per row.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -576,7 +591,7 @@
       "description": "A date field with a calendar that opens beside it.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -627,7 +642,7 @@
       "description": "A sheet that slides in from the edge of the page, and can be dragged.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -722,7 +737,7 @@
       "description": "An attribute as a hexagon holding an icon, a value and a name, and a honeycomb to lay several out.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -792,7 +807,7 @@
       "description": "An always-visible list of rows in columns, the selected row a solid signal bar.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -817,7 +832,7 @@
       "description": "A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -891,7 +906,7 @@
       "dependencies": [
         "@ui-sdk/core@0.1.0-beta.5",
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -1032,7 +1047,7 @@
       "description": "Page keys with previous, next and ellipses, and a position readout.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1078,7 +1093,7 @@
       "description": "A password field with a key to show or hide it.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1103,7 +1118,7 @@
       "description": "A key that opens a framed surface beside it, with a title, description and body.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -1337,7 +1352,7 @@
       "description": "A labelled trigger that opens a list of options to choose from.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1476,7 +1491,7 @@
       "description": "A value on a readout between minus and plus keys, with MIN and MAX tags.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1549,7 +1564,7 @@
       "description": "A console log with tagged lines, a prompt with history, and a follow-the-end scroll.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -1575,7 +1590,7 @@
       "description": "A labelled text input in a cut frame, with a hint, an error and an optional icon.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1647,7 +1662,7 @@
       "description": "The page's notification region and a notify() helper.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -1773,7 +1788,7 @@
       "description": "A hierarchy with connector lines and branches that open.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json"
@@ -1918,7 +1933,7 @@
       "title": "Button demo",
       "description": "How to use button, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -1941,7 +1956,7 @@
       "title": "Button group demo",
       "description": "How to use button group, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2125,7 +2140,7 @@
       "title": "Command palette demo",
       "description": "How to use command palette, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2148,7 +2163,7 @@
       "title": "Context menu demo",
       "description": "How to use context menu, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2171,7 +2186,7 @@
       "title": "Data table demo",
       "description": "How to use data table, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2318,7 +2333,7 @@
       "title": "Hex stat demo",
       "description": "How to use hex stat, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2466,7 +2481,7 @@
       "title": "Menu demo",
       "description": "How to use menu, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2489,7 +2504,7 @@
       "title": "Menubar demo",
       "description": "How to use menubar, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2776,7 +2791,7 @@
       "title": "Reticle demo",
       "description": "How to use reticle, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2820,7 +2835,7 @@
       "title": "Segmented control demo",
       "description": "How to use segmented control, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -2883,7 +2898,7 @@
       "title": "Side tabs demo",
       "description": "How to use side tabs, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3006,7 +3021,7 @@
       "title": "Tabs demo",
       "description": "How to use tabs, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3049,7 +3064,7 @@
       "title": "Text field demo",
       "description": "How to use text field, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3113,7 +3128,7 @@
       "title": "Toggle demo",
       "description": "How to use toggle, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3136,7 +3151,7 @@
       "title": "Toggle group demo",
       "description": "How to use toggle group, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3159,7 +3174,7 @@
       "title": "Toolbar demo",
       "description": "How to use toolbar, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3182,7 +3197,7 @@
       "title": "Tooltip demo",
       "description": "How to use tooltip, as the catalog shows it.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3226,7 +3241,7 @@
       "title": "Archive",
       "description": "A database of people, places and machines, one dossier each.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3276,7 +3291,7 @@
       "title": "Augments",
       "description": "Five attributes on a hexagonal lattice, with points to spend and an info panel.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3316,7 +3331,7 @@
       "title": "Comms",
       "description": "Contacts, a message thread, and replies to choose from.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3369,7 +3384,7 @@
       "description": "An agent console: what the agent sees, what it does, a permission prompt, and undo.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3425,7 +3440,7 @@
       "title": "Grid",
       "description": "A generated district map with filters, markers and a route.",
       "dependencies": [
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
@@ -3470,7 +3485,7 @@
       "description": "A job board: tabs, a list of jobs, objectives to tick off, and the brief.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
-        "lucide-react@^1.73.0"
+        "lucide-react@1.73.0"
       ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",

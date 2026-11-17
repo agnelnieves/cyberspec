@@ -3,6 +3,7 @@ import { Check, Copy, FileCode2, X } from "lucide-react"
 import { Button } from "@/registry/cyber/ui/button"
 import { haptic } from "@/registry/cyber/lib/haptics"
 import { sfx } from "@/registry/cyber/lib/sound"
+import { copyText } from "@/registry/cyber/lib/clipboard"
 import "@/registry/cyber/ui/cyber/code-block.css"
 
 type Language = "ts" | "tsx" | "js" | "bash" | "json" | "css" | "text"
@@ -231,27 +232,36 @@ function CodeBlock({
   const bytes = React.useMemo(() => new TextEncoder().encode(source).length, [source])
   const [state, setState] = React.useState<"idle" | "copied" | "failed">("idle")
   const timer = React.useRef<number | undefined>(undefined)
+  const mounted = React.useRef(true)
   const body = React.useRef<HTMLDivElement>(null)
   const { overflows, compact } = usePanelSize(body)
   const name = label ?? filename ?? `${tags[language]} code`
 
-  React.useEffect(() => () => window.clearTimeout(timer.current), [])
+  React.useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      window.clearTimeout(timer.current)
+    }
+  }, [])
 
   // Returning the Promise keeps the key pending until the clipboard answers.
   const copy = async () => {
     window.clearTimeout(timer.current)
     try {
-      await navigator.clipboard.writeText(source)
+      await copyText(source)
+      if (!mounted.current) return
       setState("copied")
       sfx("success")
       haptic("success")
       onCopy?.(source)
     } catch {
+      if (!mounted.current) return
       setState("failed")
       sfx("deny")
       haptic("error")
     }
-    timer.current = window.setTimeout(() => setState("idle"), 1800)
+    if (mounted.current) timer.current = window.setTimeout(() => setState("idle"), 1800)
   }
 
   const digits = Math.max(2, String(lines.length).length)

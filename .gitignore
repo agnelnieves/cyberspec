@@ -4,5 +4,8 @@ public/r
 .DS_Store
 shots
 .vercel
+.env
+.env.*
+!.env.example
 output/social/og-*
 output/social/.frames*

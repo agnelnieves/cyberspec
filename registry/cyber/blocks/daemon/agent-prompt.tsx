@@ -12,6 +12,10 @@ import "@/registry/cyber/ui/cyber/dialog.css"
 import "@/registry/cyber/blocks/daemon/daemon.css"
 import { daemon, type Hold } from "@/registry/cyber/blocks/daemon/engine"
 
+const getHold = () => daemon.getState().hold
+// Permission requests belong to a browser session, never a server render.
+const getServerHold = () => null
+
 // The prompt a person sees when an agent asks to do something that needs
 // them: a step on a control marked data-agent-confirm, or a press from the
 // browser's own agent. Mount it once, at the app's root.
@@ -19,7 +23,7 @@ import { daemon, type Hold } from "@/registry/cyber/blocks/daemon/engine"
 // It's marked data-agent-hidden, so the agent that's asking can neither see
 // the prompt nor press Allow on it.
 function AgentPrompt() {
-  const { hold } = React.useSyncExternalStore(daemon.subscribe, daemon.getState)
+  const hold = React.useSyncExternalStore(daemon.subscribe, getHold, getServerHold)
   // The last request stays on screen while the dialog closes.
   const shown = React.useRef<Hold | null>(null)
   if (hold) shown.current = hold

@@ -6,12 +6,18 @@ Every control is a ui-sdk component underneath (`@ui-sdk/react`, `@ui-sdk/core`)
 
 ## Install
 
+CyberSpec's original code is MIT-licensed. Bundled recorded audio is excluded from MIT and has separate licensing requirements. Read https://github.com/agnelnieves/cyberspec/blob/main/THIRD_PARTY_NOTICES.md before reusing recordings. The foundation installs both the MIT license and third-party notices in the configured library directory under `cyberspec/`.
+
+Use a React 19 project with a configured shadcn `components.json` and a working `@/` import alias. React 18 is not supported by the underlying SDK. In TypeScript projects use `@types/react >=19.2.10`. The pinned `@ui-sdk/core@0.1.0-beta.5` and `@ui-sdk/react@0.1.0-beta.5` dependencies install from public npm; no token, private registry or GitHub access is needed.
+
 ```sh
-npx shadcn@latest registry add @cyberspec=https://www.cyberspec.dev/r/{name}.json
-npx shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
+bunx --bun shadcn@latest registry add '@cyberspec=https://www.cyberspec.dev/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
 ```
 
-Any item also installs from its URL: `npx shadcn@latest add https://www.cyberspec.dev/r/panel.json`. Every item depends on `cyber`, which adds the `<Cyber>` root, the foundation stylesheets, the fonts and the page-wide behaviors.
+Any item also installs from its URL: `bunx --bun shadcn@latest add https://www.cyberspec.dev/r/panel.json`. Every item depends on `cyber`, which adds the `<Cyber>` root, the foundation stylesheets, the fonts and the page-wide behaviors. Tailwind is not required; the `tailwind.css` entry in `components.json` can point at the application's plain CSS entry file. See the [installation setup](https://github.com/agnelnieves/cyberspec#install-from-the-registry) for a minimal configuration.
+
+Installed TSX declares client boundaries for Next.js App Router. Keep state, event handlers and render callbacks inside a Client Component; only serializable props may cross from a server page. Import the app's CSS entry once in its root layout/entry. Samples and CSS install alongside the components, so they do not fetch code or audio from this registry at runtime.
 
 ```tsx
 import { Cyber } from "@/components/ui/cyber"
