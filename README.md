@@ -1,6 +1,6 @@
 # CYBERSPEC
 
-[![Cyberspec — cyberpunk components built on ui-sdk](./public/og-v2.png)](https://www.cyberspec.dev/)
+[![CyberSpec — Cyberpunk interfaces. Open-source React library.](./public/og-v4.png)](https://www.cyberspec.dev/)
 
 Live: https://www.cyberspec.dev
 
@@ -202,27 +202,28 @@ first, or pass `--url https://www.cyberspec.dev` to check the published registry
 
 ### Social assets
 
-The social artwork follows the red terminal and wireframe CYBERSPEC identity.
-Rebuild it with `bun run social:build` (local Chrome and `ffmpeg` required), or
-`bun run social:build --stills` for just the PNG images. No dev server is needed.
-Use `bun run social:build --video` to rebuild the CRT/glitch loop without
-touching the PNGs, or `bun run social:build --preview` to inspect six motion
-frames before encoding. The loop runs for eight seconds at 30 fps; its GIF
-and a review page with playback controls are written to `output/social/`.
-These generated review exports are ignored by Git.
-The review page shows the static card instead of autoplaying when reduced
-motion is enabled, with an explicit option to play.
+The share image pairs “Cyberpunk interfaces.” with the landing page’s red
+dot-matrix globe and cyan Reykjavík waypoint. The frame has a straight top
+edge and a slanted upper-left corner. In the silent eight-second loop, the
+globe turns, a signal travels out from Reykjavík, and the headline briefly
+splits into red and cyan.
+
+`index.html` points Open Graph and X (Twitter) large-image cards to
+`public/og-v4.png`. Clients that support Open Graph video can also play
+`public/og-video-v4.mp4`. Both assets are 1200 × 630. The H.264 video runs
+at 30 fps.
+
+Use `bun run social:build` to render the assets offline with local Chrome
+and `ffmpeg`. Use `--stills` for PNGs, `--video` for the loop, or `--preview`
+for a set of motion frames in `output/social/og-video-v4-frames/`. The video
+export also writes a GIF and a review page to `output/social/`. Open
+`og-video-v4-review.html` there to play the loop. The page shows the still
+until you choose to play if you have reduced motion enabled.
 
 The full-length demo video, `output/social/cyberspec-demo-full.mp4`, uses
 Git LFS. Run `git lfs pull` to download it after cloning.
 
-`index.html` references `public/og-v2.png` (1200 × 630) and
-`public/og-video-v3.mp4` (1200 × 630). `public/og-square-v2.png` is a square
-variant for social posts. The original `public/og.png` and earlier video
-exports are preserved.
-
-Link previews retain a static image fallback; support for the optional Open
-Graph video depends on the consuming service. Twitter uses a large-image card.
+`public/og-square-v2.png` contains the earlier square artwork for social posts.
 
 AI-generated phone and post-apocalyptic desk concepts are kept in
 `output/social/` for review, alongside their generation prompts. They are not

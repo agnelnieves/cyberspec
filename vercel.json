@@ -4,5 +4,5 @@
   "installCommand": "bun install --frozen-lockfile",
   "buildCommand": "bun run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!r/|assets/|examples/|llms\\.txt|og\\.png).*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/((?!r/|assets/|examples/|llms\\.txt|favicon\\.svg|og(?:-[a-z0-9-]+)?\\.(?:png|mp4)).*)", "destination": "/index.html" }]
 }
