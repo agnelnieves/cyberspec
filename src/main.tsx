@@ -8,6 +8,7 @@ import "@/registry/cyber/ui/cyber/skin.css"
 import "./site.css"
 import { StrictMode, useLayoutEffect, useSyncExternalStore } from "react"
 import { createRoot } from "react-dom/client"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import { installCyber } from "@/registry/cyber/lib/install"
 import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
@@ -54,7 +55,12 @@ function App() {
     target?.scrollIntoView()
     if (target?.hasAttribute("tabindex")) target.focus({ preventScroll: true })
   }, [pathname, hash])
-  return <Site route={pathname.replace(/^\/+|\/+$/g, "")} />
+  return (
+    <>
+      <Site route={pathname.replace(/^\/+|\/+$/g, "")} />
+      <SpeedInsights />
+    </>
+  )
 }
 
 canonicalizeLocation()
