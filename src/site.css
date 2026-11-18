@@ -616,20 +616,4 @@
     }
   }
 
-  @media (max-width: 400px) {
-    [data-site-search] [data-slot="dialog-trigger"] {
-      width: var(--cy-h);
-      padding-inline: 0;
-    }
-    [data-site-search-label] {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-    }
-    [data-site-fx] [data-site-chip] {
-      padding-inline: 4px;
-    }
-  }
 }

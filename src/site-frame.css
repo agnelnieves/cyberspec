@@ -13,8 +13,7 @@
     background: var(--cy-void);
   }
 
-  /* The mask follows the viewport through the footer and browser-bar resizes.
-     Only its width is capped. The document owns scrolling and anchor links. */
+  /* On desktop the housing stays in place while the document scrolls. */
   .site-housing {
     position: fixed;
     inset: 0;
@@ -52,7 +51,7 @@
     inset: var(--site-edge) var(--site-edge) auto;
     z-index: 1;
     min-height: 52px;
-    padding: 9px clamp(26px, 3.8vw, 70px);
+    padding: 9px 13px 9px clamp(26px, 3.8vw, 70px);
     gap: 16px;
     flex-wrap: nowrap;
     background: transparent;
@@ -297,22 +296,48 @@
     .site-housing [data-site-brand-compact] { display: block; width: 27px; }
   }
 
-  @media (min-width: 761px) and (max-width: 975px) {
-    .site-housing [data-site-bar] { padding-block-start: 29px; }
+  @media (max-width: 975px) {
+    .site-sheet { --site-header-clear: 84px; }
+    .site-housing [data-site-bar] {
+      padding: 8px 8px 8px clamp(16px, 4.8vw, 36px);
+    }
+    .site-housing [data-site-tools] {
+      flex: 1;
+      justify-content: space-between;
+      margin: 0;
+    }
+    .site-housing [data-site-brand] { width: 44px; min-height: 44px; }
+    .site-housing :is(.site-mobile-menu > [data-slot="drawer-trigger"], [data-site-search] [data-slot="dialog-trigger"]) {
+      --frame-notch: 0px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .site-housing [data-site-search] [data-kit="command-palette-kbd"] { display: none; }
+  }
+
+  @media (max-width: 760px), (hover: none) and (pointer: coarse) {
+    /* Give the outline and the scrollport the same viewport bounds as Safari's
+       controls resize. Only the page background extends behind the controls. */
+    .site-sheet {
+      position: fixed;
+      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      width: auto;
+    }
+
+    .site-housing { position: absolute; }
+
+    .site-sheet [data-site-scroll] {
+      position: absolute;
+      inset: var(--site-edge) 0;
+      min-height: 0;
+      overflow-y: auto;
+    }
   }
 
   @media (max-width: 760px) {
-    .site-sheet { --site-header-clear: 122px; --site-inset: clamp(16px, 4.8vw, 36px); }
+    .site-sheet { --site-inset: clamp(16px, 4.8vw, 36px); }
     .site-outline.narrow { display: block; }
     .site-outline.wide { display: none; }
-    .site-housing [data-site-bar] {
-      flex-wrap: wrap;
-      gap: 0;
-      padding: 24px var(--site-inset) 0;
-    }
-    .site-housing [data-site-nav] { flex: 1 0 100%; justify-content: center; }
-    .site-housing [data-site-nav] a { padding-block: 5px; }
-    .site-housing [data-site-tools] { flex: 1; justify-content: space-between; gap: 4px; margin: 0; }
     .site-housing [data-site-brand] { top: -12px; }
     .site-housing [data-site-brand-compact] { width: 21px; }
     .landing-hero {
@@ -335,8 +360,6 @@
   }
 
   @media (max-width: 410px) {
-    .site-housing [data-site-swatch] { width: 15px; }
-    .site-housing [data-site-chip] { padding-inline: 4px; }
     .landing-actions { gap: 6px; }
     .landing-actions [data-kit="button"] { font-size: 13px; padding-inline: 10px; gap: 5px; }
     .landing-hero-foot a { font-size: 10px; }
