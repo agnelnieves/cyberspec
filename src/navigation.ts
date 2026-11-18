@@ -28,21 +28,13 @@ function canonicalizeLocation() {
   if (url.href !== location.href) history.replaceState(history.state, "", url)
 }
 
-function rememberFrameScroll(scroller: HTMLElement) {
-  if (scroller.scrollTop !== (history.state?.frameScrollTop ?? 0)) {
-    history.replaceState({ ...history.state, frameScrollTop: scroller.scrollTop }, "")
-  }
-}
-
 function navigate(href: string) {
   const url = canonicalUrl(href)
   if (url.href !== location.href) {
-    const scroller = document.querySelector<HTMLElement>("[data-site-scroll]")
-    if (scroller) rememberFrameScroll(scroller)
     history.pushState(null, "", url)
     dispatchEvent(new Event(navigated))
   }
-  if (!url.hash) document.getElementById("main")?.scrollIntoView()
+  if (!url.hash) window.scrollTo(0, 0)
 }
 
-export { canonicalizeLocation, fragmentId, navigate, navigated, rememberFrameScroll }
+export { canonicalizeLocation, fragmentId, navigate, navigated }

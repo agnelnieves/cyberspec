@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import { rememberFrameScroll } from "./navigation"
 import "./site-frame.css"
 
 function FrameOutline({ narrow = false }: { narrow?: boolean }) {
@@ -11,7 +10,7 @@ function FrameOutline({ narrow = false }: { narrow?: boolean }) {
     <svg className={narrow ? "site-outline narrow" : "site-outline wide"}
       viewBox={narrow ? "0 0 360 742" : "0 0 1200 720"} preserveAspectRatio="none"
       aria-hidden="true" focusable="false">
-      <path d={bounds + contour} fill="var(--cy-void)" fillRule="evenodd" pointerEvents="fill" />
+      <path d={bounds + contour} fill="var(--cy-void)" fillRule="evenodd" />
       <path d={contour} fill="none" stroke="var(--site-keyline)" strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
     </svg>
   )
@@ -27,7 +26,7 @@ function SiteFrame({ header, children }: { header: ReactNode; children: ReactNod
           <FrameOutline narrow />
         </div>
       </div>
-      <div data-site-scroll="" onScrollEnd={(event) => rememberFrameScroll(event.currentTarget)}>{children}</div>
+      <div data-site-scroll="">{children}</div>
     </div>
   )
 }

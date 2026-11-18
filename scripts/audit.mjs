@@ -5,7 +5,7 @@
 // - motion: with effects off, nothing may still be animating
 // - agents: every ui-sdk component the agent bridge can see needs a name,
 //   and names shouldn't repeat within a page
-// - layout: no horizontal page scroll at 360px
+// - layout: no horizontal overflow at 360px, and a swipe scrolls the landing page
 //
 //   node scripts/audit.mjs            # all pages
 //   node scripts/audit.mjs /jobs /    # some
@@ -41,7 +41,7 @@ try {
     console.log(`\n══ ${route}`)
     const open = async (fx, width) => {
       const page = await browser.newPage()
-      await page.setViewport({ width, height: 900, deviceScaleFactor: 1 })
+      await page.setViewport({ width, height: 900, deviceScaleFactor: 1, isMobile: width === 360, hasTouch: width === 360 })
       await page.evaluateOnNewDocument((level) => {
         try {
           localStorage.setItem("cyberspec:fx", level)
@@ -101,6 +101,14 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
     console.log(overflow > 1 ? `  layout  page scrolls sideways by ${overflow}px at 360px` : "  layout  fits 360px")
     if (overflow > 1) failures++
+    if (route === "/") {
+      const finger = await page.touchscreen.touchStart(180, 580)
+      await finger.move(180, 500)
+      await finger.move(180, 360)
+      await finger.end()
+      await page.waitForFunction(() => window.scrollY > 50, { timeout: 3000 })
+      console.log("  touch  swipe scrolled the document")
+    }
     await page.close()
 
     // The landing frame previously passed the phone overflow check while

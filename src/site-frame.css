@@ -13,7 +13,7 @@
     background: var(--cy-void);
   }
 
-  /* On desktop the housing stays in place while the document scrolls. */
+  /* Only the frame is fixed. Swipes anywhere on the page scroll the document. */
   .site-housing {
     position: fixed;
     inset: 0;
@@ -316,21 +316,32 @@
   }
 
   @media (max-width: 760px), (hover: none) and (pointer: coarse) {
-    /* Give the outline and the scrollport the same viewport bounds as Safari's
-       controls resize. Only the page background extends behind the controls. */
-    .site-sheet {
-      position: fixed;
-      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-      width: auto;
+    :root:has([data-site]) {
+      scroll-padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
     }
 
-    .site-housing { position: absolute; }
+    .site-sheet {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+    }
 
-    .site-sheet [data-site-scroll] {
-      position: absolute;
-      inset: var(--site-edge) 0;
-      min-height: 0;
-      overflow-y: auto;
+    .site-housing {
+      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    /* Solid viewport edges give Safari a background behind its translucent bars. */
+    .site-housing::before, .site-housing::after {
+      content: "";
+      position: fixed;
+      inset-inline: 0;
+      background: var(--cy-void);
+    }
+    .site-housing::before {
+      top: 0;
+      height: calc(var(--site-edge) + env(safe-area-inset-top));
+    }
+    .site-housing::after {
+      bottom: 0;
+      height: calc(var(--site-edge) + env(safe-area-inset-bottom));
     }
   }
 
