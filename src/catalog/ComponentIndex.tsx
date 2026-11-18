@@ -80,7 +80,35 @@ export function ComponentIndex({ spec, onSelect }: { spec?: PanelSpec; onSelect?
 
 export function MobileComponentIndex({ spec }: { spec?: PanelSpec }) {
   const [open, setOpen] = useState(false)
+  const [scrollHidden, setScrollHidden] = useState(false)
   const selected = useRef(false)
+
+  useLayoutEffect(() => {
+    setScrollHidden(false)
+    if (open) return
+
+    const root = document.documentElement
+    const pageY = () => Math.max(0, Math.min(window.scrollY, root.scrollHeight - root.clientHeight))
+    let pivot = pageY()
+    let hidden = false
+    function onScroll() {
+      const y = pageY()
+      if (root.style.overflowY === "hidden") {
+        pivot = y
+        return
+      }
+      // Measure from the last high or low point so small movements accumulate.
+      pivot = hidden ? Math.max(y, pivot) : Math.min(y, pivot)
+      const nextHidden = hidden ? y > 8 && pivot - y < 12 : y - pivot >= 24
+      if (nextHidden === hidden) return
+      hidden = nextHidden
+      pivot = y
+      setScrollHidden(hidden)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [open, spec])
+
   function select(event: MouseEvent<HTMLAnchorElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
     event.preventDefault()
@@ -96,7 +124,7 @@ export function MobileComponentIndex({ spec }: { spec?: PanelSpec }) {
       setOpen(value)
     }} keepMounted
       finalFocus={() => (selected.current && document.getElementById("component-title")) || document.getElementById("catalog-toggle")}
-      trigger={<DialogTrigger id="catalog-toggle" className="catalog-index-toggle" data-kit="button" data-size="sm"
+      trigger={<DialogTrigger id="catalog-toggle" className="catalog-index-toggle" data-scroll-hidden={scrollHidden || undefined} data-kit="button" data-size="sm"
         data-frame="notch br" data-tone="secondary" data-press-flash="">
         <List aria-hidden /> Browse components
       </DialogTrigger>}>

@@ -238,6 +238,19 @@
       grid-template-columns: minmax(0, 1fr);
     }
     .catalog-index-toggle { min-height: max(44px, var(--catalog-toggle-height)); }
+    .catalog-index-toggle[data-scroll-hidden]:not(:focus-visible) {
+      opacity: 0;
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      [data-fx="full"] .catalog-index-toggle {
+        transition: translate 180ms var(--cy-ease-out), opacity 140ms ease-out;
+      }
+      [data-fx="full"] .catalog-index-toggle[data-scroll-hidden]:not(:focus-visible) {
+        translate: 0 calc(-100% - var(--catalog-toggle-gap));
+      }
+      [data-fx="full"] .catalog-index-toggle:focus-visible { transition: none; }
+    }
     .catalog-grid-content {
       --catalog-anchor-inset: calc(var(--catalog-sticky-top) + max(44px, var(--catalog-toggle-height)) + var(--catalog-toggle-gap));
       padding-block-start: var(--catalog-toggle-gap);
