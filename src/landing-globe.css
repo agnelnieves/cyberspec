@@ -1,0 +1,69 @@
+@layer cyber.blocks {
+  .landing-globe {
+    --earth-ocean-lit: color-mix(in srgb, var(--cy-accent) 9%, var(--cy-void));
+    --earth-ocean-dark: color-mix(in srgb, var(--cy-accent) 4%, var(--cy-void));
+    --earth-land-shadow: color-mix(in srgb, var(--cy-accent) 48%, var(--cy-void));
+    --earth-land-lit: color-mix(in srgb, var(--cy-accent) 90%, var(--cy-ink-hi));
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .landing-globe-grid {
+    stroke: var(--cy-accent);
+    stroke-width: 0.65px;
+    opacity: 0.16;
+  }
+
+  .landing-globe-animation {
+    visibility: hidden;
+  }
+
+  .landing-globe-animation canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .landing-globe[data-rotating-surface] .landing-globe-still {
+    visibility: hidden;
+  }
+
+  .landing-globe[data-rotating-surface] .landing-globe-animation {
+    visibility: visible;
+  }
+
+  .landing-globe-rim,
+  .landing-globe-limb {
+    stroke: var(--cy-accent);
+    stroke-width: 0.75px;
+    opacity: 0.3;
+  }
+
+  .landing-globe-limb {
+    opacity: 0.18;
+  }
+
+  .landing-globe-waypoint {
+    color: var(--cy-signal);
+    fill: currentColor;
+    font: 600 14px / 1 var(--cy-mono);
+    letter-spacing: 1.2px;
+  }
+
+  .landing-globe-coordinates {
+    font-size: 0.8em;
+    font-weight: 450;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 760px) {
+    .landing-globe-tag {
+      font-size: clamp(14px, calc(36px - 3vw), 24px);
+      letter-spacing: 0.06em;
+    }
+  }
+}

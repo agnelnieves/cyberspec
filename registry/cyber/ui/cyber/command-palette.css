@@ -133,6 +133,17 @@
     color: var(--cy-ink-mute);
   }
 
+  [data-skin="cyber"] button[data-kit="command-palette-key"] {
+    min-height: 24px;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--cy-line-ctl);
+      color: var(--cy-ink);
+    }
+  }
+
   /* The empty part is a live region that stays in the page, so it's never
      hidden: it has no height of its own until its line is put in it. */
   [data-skin="cyber"] [data-kit="command-palette-empty"] {

@@ -50,7 +50,7 @@ try {
       localStorage.setItem("cyberspec:fx", level)
     } catch {}
   }, fx)
-  await page.goto(`${base}/`, { waitUntil: "networkidle0", timeout: 60000 })
+  await page.goto(`${base}/components`, { waitUntil: "networkidle0", timeout: 60000 })
   await page.evaluate(() => document.fonts.ready)
   await new Promise((resolve) => setTimeout(resolve, 1200))
 

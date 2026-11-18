@@ -50,7 +50,7 @@ function Panel({ spec, index, heading: Heading = "h3" }: { spec: PanelSpec; inde
 function CatalogGrid() {
   const groups = [...new Set(panels.map((panel) => panel.group))]
   return (
-    <div data-kit="catalog">
+    <div id="components" data-kit="catalog" tabIndex={-1}>
       {groups.map((group) => (
         <section key={group} data-kit="catalog-group" aria-labelledby={`group-${group}`}>
           <h2 data-kit="catalog-heading" id={`group-${group}`}>

@@ -1,0 +1,106 @@
+@layer cyber.blocks {
+  .landing-showcase {
+    scroll-margin-block-start: calc(var(--bar-h, 60px) + 24px);
+  }
+
+  .landing-showcase > h2 {
+    margin: 0;
+    color: var(--cy-ink-hi);
+    font: 600 clamp(32px, 4.6vw, 64px) / 0.98 var(--cy-font);
+    letter-spacing: -0.035em;
+  }
+
+  .showcase-intro {
+    margin: 10px 0 clamp(18px, 2.4vw, 32px);
+    color: var(--cy-ink-hi);
+    font-size: clamp(17px, 1.45vw, 21px);
+    line-height: 1.4;
+  }
+
+  .showcase-bench {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 1px;
+    border: 1px solid var(--cy-line-deco);
+    background: var(--cy-line-deco);
+  }
+
+  .showcase-sample {
+    display: grid;
+    align-content: space-between;
+    gap: 20px;
+    min-width: 0;
+    padding: clamp(18px, 2.5vw, 36px);
+    background: var(--cy-panel);
+  }
+
+  .showcase-monitor {
+    grid-row: span 2;
+  }
+
+  .showcase-component {
+    margin: 0;
+    font: 600 clamp(22px, 2.4vw, 32px) / 1 var(--cy-font);
+    letter-spacing: -0.02em;
+  }
+
+  .showcase-component a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    color: var(--cy-ink-hi);
+    text-decoration: none;
+  }
+
+  .showcase-component a svg {
+    color: var(--cy-ink);
+  }
+
+  .showcase-component a:is(:hover, :focus-visible) {
+    color: var(--cy-signal);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .showcase-chart {
+    padding-block-start: 8px;
+  }
+
+  .showcase-chart [data-kit="signal-graph"] {
+    --graph-height: clamp(80px, 9vw, 136px);
+  }
+
+  .showcase-chart[data-grid="false"] [data-kit="signal-graph-plot"] {
+    background: none;
+  }
+
+  .showcase-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-block-start: 6px;
+    color: var(--cy-ink-mute);
+    font: 500 var(--cy-text-xs) / 1.4 var(--cy-mono);
+  }
+
+  @media (max-width: 700px) {
+    .showcase-bench {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .showcase-monitor {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .showcase-bench {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .showcase-sample {
+      gap: 12px;
+    }
+  }
+}

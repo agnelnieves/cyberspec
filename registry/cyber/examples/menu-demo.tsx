@@ -3,7 +3,7 @@ import { Menu, type MenuEntry } from "@/registry/cyber/ui/menu"
 
 // What you can do with a contact.
 const actions: MenuEntry[] = [
-  { value: "call", label: "Call", icon: <PhoneCall aria-hidden />, shortcut: "mod+k" },
+  { value: "call", label: "Call", icon: <PhoneCall aria-hidden />, shortcut: "mod+shift+enter" },
   { value: "message", label: "Message", icon: <MessageSquare aria-hidden />, shortcut: "mod+shift+m" },
   { value: "locate", label: "Locate", icon: <MapPin aria-hidden />, disabled: true },
   {
