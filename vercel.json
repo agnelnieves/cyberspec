@@ -4,5 +4,31 @@
   "installCommand": "bun install --frozen-lockfile",
   "buildCommand": "bun run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!r/|assets/|examples/|llms\\.txt|favicon\\.svg|og(?:-[a-z0-9-]+)?\\.(?:png|mp4)).*)", "destination": "/index.html" }]
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/.([mM][dD])", "destination": "/index.md" },
+    { "source": "/:page+{/}?\\.([mM][dD])", "destination": "/:page+.md" }
+  ],
+  "headers": [
+    {
+      "source": "/:page(.*?){/}?\\.([mM][dD])",
+      "headers": [
+        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
+        { "key": "Link", "value": "<https://www.cyberspec.dev/:page>; rel=\"canonical\"" }
+      ]
+    },
+    {
+      "source": "/:home(index|landing|landing-v2)?{/}?\\.([mM][dD])",
+      "headers": [{ "key": "Link", "value": "<https://www.cyberspec.dev/>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/preview/:name{/}?\\.([mM][dD])",
+      "headers": [{ "key": "Link", "value": "<https://www.cyberspec.dev/components/sidebar/:name>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/components/sidebar{/}?\\.([mM][dD])",
+      "headers": [{ "key": "Link", "value": "<https://www.cyberspec.dev/components/sidebar/button>; rel=\"canonical\"" }]
+    }
+  ]
 }

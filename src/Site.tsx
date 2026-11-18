@@ -6,6 +6,7 @@ import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel } from "@/registry/cyber/lib/fx"
 import { accents, HeaderPreferences, setInterfaceSounds, type Accent } from "./HeaderPreferences"
 import { installCommands, repositoryUrl } from "./install"
+import { getSitePage } from "./site-pages"
 import { Brand } from "./Brand"
 import { BootScreen } from "./BootScreen"
 import { useEntrance } from "./useEntrance"
@@ -356,6 +357,7 @@ function SiteHeader({ preferences, music, booting, ...nav }: SectionNavProps & {
 }
 
 function Site({ route }: { route: string }) {
+  const page = getSitePage(`/${route}`)
   const preview = route.startsWith("preview/")
   const sidebar = isSidebarRoute(route)
   const exampleIndex = examples.findIndex((example) => example.route === route)
@@ -432,7 +434,7 @@ function Site({ route }: { route: string }) {
             <a href="https://github.com/shuding/spec-01" target="_blank" rel="noreferrer" data-kit="link">
               SPEC-01
             </a>
-            .
+            . {page && <a href={page.markdownPath} type="text/markdown" data-kit="link">View as Markdown</a>}
           </p>
           <RepositoryLink />
         </footer>

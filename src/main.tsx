@@ -14,6 +14,8 @@ import { Analytics } from "@vercel/analytics/react"
 import { installCyber } from "@/registry/cyber/lib/install"
 import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
+import { getSitePage } from "./site-pages"
+import { syncPageHead } from "./site-metadata"
 import { canonicalizeLocation, fragmentId, isSidebarRoute, navigate, navigated } from "./navigation"
 import { cancelPageMomentum, scrollToPageAnchor } from "./usePageScroll"
 
@@ -41,7 +43,7 @@ document.addEventListener("click", (event) => {
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
   const link = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null
   if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return
-  if (link.origin !== location.origin || /\.[a-z0-9]+$/i.test(link.pathname)) return
+  if (link.origin !== location.origin || !getSitePage(link.pathname)) return
   // Leave text fragments and other browser-managed destinations to the browser.
   if (link.pathname === location.pathname && link.search === location.search && link.hash &&
       !document.getElementById(fragmentId(link.hash))) return
@@ -53,6 +55,10 @@ function App() {
   const href = useSyncExternalStore(subscribe, currentHref)
   const { pathname } = new URL(href)
   const route = pathname.replace(/^\/+|\/+$/g, "")
+  const page = getSitePage(pathname)
+  useLayoutEffect(() => {
+    if (page) syncPageHead(page)
+  }, [page])
   useLayoutEffect(() => {
     // The router handles in-page links. Initial and cross-page deep links
     // need their destination content to have mounted before positioning.

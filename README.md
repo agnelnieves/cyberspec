@@ -184,6 +184,7 @@ bun run dev              # http://localhost:5720
 bun run build            # builds the registry, then the site
 bun run registry:build   # just the registry, into public/r, and public/llms.txt
 bun run typecheck
+bun scripts/check-site-pages.ts # verify HTML, Markdown, and discovery URLs after a build
 bun scripts/consumer-check.mjs # fresh Vite + Next.js installs from the generated registry
 bun scripts/install-check.mjs  # Copy Prompt and clipboard fallbacks, with the dev server
 bun scripts/sound-check.mjs    # sound mappings and stop behavior, in headless Chrome
@@ -210,8 +211,9 @@ edge and a slanted upper-left corner. In the silent eight-second loop, the
 globe turns, a signal travels out from Reykjavík, and the headline briefly
 splits into red and cyan.
 
-`index.html` points Open Graph and X (Twitter) large-image cards to
-`public/og-v4.png`. Clients that support Open Graph video can also play
+`src/site-metadata.ts` sets the Open Graph and X (Twitter) cards for each
+page. The homepage uses `public/og-v4.png`, and example screens use their
+own thumbnails. Clients that support Open Graph video on the homepage can play
 `public/og-video-v4.mp4`. Both assets are 1200 × 630. The H.264 video runs
 at 30 fps.
 
@@ -238,6 +240,7 @@ meta tags unless it is explicitly selected later.
 | --- | --- |
 | `/` | The CyberSpec homepage with a live component demo and the installation prompt. |
 | `/components` | Install commands and every component, one panel each. Component and group anchors link directly to their catalog entries. |
+| `/components/sidebar/<name>` | A component's documentation, installation command, source example, and interactive demo. |
 | `/examples` | The example screens below, one card each. The bar links here instead of to each screen. |
 | `/loadout` | Gear slots, a weapon's sheet and what's in the pack. |
 | `/augments` | Five attributes on a lattice, and points to spend on them. |
@@ -247,6 +250,13 @@ meta tags unless it is explicitly selected later.
 | `/grid` | The district street map and waypoint planner, plus a relay atlas and rotatable globe. Open `/grid?view=atlas` or `/grid?view=globe` directly. |
 | `/daemon` | An agent on the page: what it sees, what it does, and how to stop it. |
 | `/preview/<name>` | One component's example alone, for screenshots. |
+
+Every page has a **View as Markdown** link. Append `.md` or `.MD` to the
+path, as in [the Button documentation](https://www.cyberspec.dev/components/sidebar/button.md).
+Use `/index.md` for the homepage. HTML and Markdown both work without JavaScript.
+The [documentation index](https://www.cyberspec.dev/llms.txt) links to the
+component and example indexes and to `/llms-full.txt` for the combined text.
+The [sitemap](https://www.cyberspec.dev/sitemap.xml) lists canonical HTML pages.
 
 ### Layout
 

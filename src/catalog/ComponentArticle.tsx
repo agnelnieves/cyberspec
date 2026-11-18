@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { components } from "@/registry/cyber/meta.json"
 import { CodeBlock } from "@/registry/cyber/ui/code-block"
 import { Tabs } from "@/registry/cyber/ui/tabs"
-import { siteUrl } from "../install"
+import { installCommand, installedExampleSource } from "../install"
 import { DemoStage } from "./Catalog"
 import type { PanelSpec } from "./panels"
 import "./component-article.css"
@@ -12,19 +12,13 @@ const sources = import.meta.glob<string>("/registry/cyber/examples/*-demo.tsx", 
   eager: true, query: "?raw", import: "default",
 })
 
-function installCommand(name: string) {
-  return `bunx --bun shadcn@latest add ${siteUrl}/r/${name}.json`
-}
-
 function ExampleSource({ name, title }: { name: string; title: string }) {
   const filename = `${name}-demo.tsx`
-  const source = sources[`/registry/cyber/examples/${filename}`]
-    .replaceAll("@/registry/cyber/ui/", "@/components/ui/")
-    .replaceAll("@/registry/cyber/lib/", "@/lib/")
+  const source = installedExampleSource(sources[`/registry/cyber/examples/${filename}`])
   return (
     <div className="component-example-source">
       <CodeBlock language="tsx" filename={filename} label={`${title} example source`}
-        code={`"use client"\n\n${source}`} maxLines={18} />
+        code={source} maxLines={18} />
       <CodeBlock language="bash" filename="Install this example" label={`Install the ${title} example`}
         code={installCommand(`${name}-demo`)} numbers={false} />
     </div>

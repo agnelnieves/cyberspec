@@ -223,6 +223,15 @@ const llms = `# CYBERSPEC
 
 Every control is a ui-sdk component underneath (\`@ui-sdk/react\`, \`@ui-sdk/core\`), so keyboard behavior, ARIA and the ui-sdk agent bridge come with it.
 
+## Read the documentation
+
+Append \`.md\` or \`.MD\` to a page path to read it as Markdown. For example, ${base}/components/sidebar/button.md includes the installation command and the working React example.
+
+- [CyberSpec overview](${base}/index.md)
+- [Component catalog](${base}/components.md) and [component documentation index](${base}/components/llms.txt)
+- [Example screens](${base}/examples.md) and [screen documentation index](${base}/examples/llms.txt)
+- [Complete Markdown documentation](${base}/llms-full.txt)
+
 ## Install
 
 CyberSpec's original code is MIT-licensed. Bundled recorded audio is excluded from MIT and has separate licensing requirements. Read https://github.com/agnelnieves/cyberspec/blob/main/THIRD_PARTY_NOTICES.md before reusing recordings. The foundation installs both the MIT license and third-party notices in the configured library directory under \`cyberspec/\`.

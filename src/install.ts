@@ -5,6 +5,18 @@ const repositoryUrl = "https://github.com/agnelnieves/cyberspec"
 const installCommands = `bunx --bun shadcn@latest registry add '@cyberspec-ui=${siteUrl}/r/{name}.json'
 bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button`
 
+export function installCommand(name: string) {
+  return `bunx --bun shadcn@latest add ${siteUrl}/r/${name}.json`
+}
+
+// Show the source with the module paths used in a standard shadcn project.
+export function installedExampleSource(raw: string) {
+  const source = raw
+    .replaceAll("@/registry/cyber/ui/", "@/components/ui/")
+    .replaceAll("@/registry/cyber/lib/", "@/lib/")
+  return /^\s*["']use client["']/.test(source) ? source : `"use client"\n\n${source}`
+}
+
 const installationPrompt = `Install CyberSpec in this project: a cyberpunk component kit for React, built on UI SDK.
 
 Read ${siteUrl}/llms.txt and ${siteUrl}/r/registry.json first. The source and usage examples are at ${repositoryUrl}.

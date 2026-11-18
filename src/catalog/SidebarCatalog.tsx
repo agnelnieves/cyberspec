@@ -76,8 +76,6 @@ function ComponentPager({ index, sidebarOpen, compact = false }: { index: number
 export default function SidebarCatalog({ spec, sidebarOpen }: { spec?: PanelSpec; sidebarOpen: boolean }) {
   const previous = useRef(spec)
   useLayoutEffect(() => {
-    const originalTitle = document.title
-    document.title = `${spec?.title ?? "Component not found"} · CyberSpec Components`
     // A direct link can arrive before this route's code has loaded.
     if (location.hash) {
       const target = document.getElementById(fragmentId(location.hash))
@@ -86,7 +84,6 @@ export default function SidebarCatalog({ spec, sidebarOpen }: { spec?: PanelSpec
       document.getElementById("component-title")?.focus({ preventScroll: true })
     }
     previous.current = spec
-    return () => { document.title = originalTitle }
   }, [spec])
 
   if (!spec) return <header data-kit="page-head">
