@@ -12,7 +12,7 @@
 
   .transmission-intro h2 {
     margin: 0 0 18px;
-    font: 500 clamp(27px, 2.7vw, 43px) / 1.09 var(--cy-heading, var(--cy-mono));
+    font: 500 clamp(27px, 2.7vw, 43px) / 1.09 var(--cy-mono);
     letter-spacing: -0.06em;
     color: var(--cy-ink-hi);
   }
@@ -73,15 +73,17 @@
   }
 
   .transmission-scale {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
+    position: relative;
     height: 29px;
     margin-inline-start: var(--track-heading);
     color: var(--cy-ink-mute);
     font: 500 10px / 1 var(--cy-mono);
     background: repeating-linear-gradient(to right, var(--cy-line-ctl) 0 1px, transparent 1px calc(100% / 12)) left bottom / 100% 5px no-repeat;
   }
+
+  .transmission-scale span { position: absolute; transform: translateX(-50%); }
+  .transmission-scale span:first-child { transform: none; }
+  .transmission-scale span:last-child { transform: translateX(-100%); }
 
   .transmission-track {
     display: grid;
@@ -185,6 +187,8 @@
   @media (max-width: 440px) {
     .transmission-demo { padding: 10px; }
     .transmission-console { padding: 11px; }
+    .transmission-editor { --track-heading: 44px; }
+    .transmission-lane li { padding-inline: 3px; white-space: normal; }
     .transmission-track-name svg { display: none; }
   }
 }

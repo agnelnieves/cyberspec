@@ -59,7 +59,7 @@ function LandingTimeline() {
           </div>
           <div className="transmission-editor" data-playing={playing || undefined} style={{ "--head": `${tick / lastTick * 100}%` } as CSSProperties}>
             <div className="transmission-scale" aria-hidden="true">
-              {marks.map((second) => <span key={second}>{second}s</span>)}
+              {marks.map((second) => <span key={second} style={{ left: `${second / duration * 100}%` }}>{second}s</span>)}
             </div>
             {tracks.map(({ name, icon: Icon, cues }) => (
               <div className="transmission-track" key={name} data-channel={name}>
