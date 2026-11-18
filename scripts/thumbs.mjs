@@ -48,12 +48,13 @@ try {
   })
   for (const name of names) {
     await page.goto(`${base}/${name}`, { waitUntil: "networkidle0", timeout: 60000 })
+    await page.waitForSelector('main[data-site-example] > [data-kit]:not([data-kit="page-head"], [data-site-empty])')
     await page.evaluate(() => document.fonts.ready)
     await new Promise((resolve) => setTimeout(resolve, 800))
     // The screen alone: the site's bar, page heading and footer come off,
     // and the shot starts where the screen does.
     await page.addStyleTag({
-      content: '[data-site-bar], [data-site-skip], [data-kit="page-head"], [data-site-pager], [data-site-footer] { display: none !important }',
+      content: '.site-housing, .site-frame-edge, [data-site-skip], [data-kit="page-head"], [data-site-pager], [data-site-footer] { display: none !important }',
     })
     await new Promise((resolve) => setTimeout(resolve, 300))
     const top = await page.evaluate(() => {

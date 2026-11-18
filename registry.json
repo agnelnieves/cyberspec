@@ -3422,6 +3422,7 @@
         "https://www.cyberspec.dev/r/readout.json",
         "https://www.cyberspec.dev/r/screen.json",
         "https://www.cyberspec.dev/r/scroll-area.json",
+        "https://www.cyberspec.dev/r/select.json",
         "https://www.cyberspec.dev/r/switch.json",
         "https://www.cyberspec.dev/r/toaster.json"
       ],
@@ -3465,6 +3466,7 @@
         "https://www.cyberspec.dev/r/badge.json",
         "https://www.cyberspec.dev/r/button.json",
         "https://www.cyberspec.dev/r/checkbox.json",
+        "https://www.cyberspec.dev/r/collapsible.json",
         "https://www.cyberspec.dev/r/dialog.json",
         "https://www.cyberspec.dev/r/panel.json",
         "https://www.cyberspec.dev/r/radio-group.json",
@@ -3613,6 +3615,9 @@
       "type": "registry:block",
       "title": "Loadout",
       "description": "Gear slots, a weapon's sheet with its stats, and what's in the pack.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
       "registryDependencies": [
         "https://www.cyberspec.dev/r/cyber.json",
         "https://www.cyberspec.dev/r/alert-dialog.json",

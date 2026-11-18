@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Listbox, ListboxGroup, ListboxGroupLabel, ListboxItem, ListboxItemIndicator } from "@ui-sdk/react/listbox"
-import { ChevronRight, Cpu, Crosshair, LogOut, MapPin, Package, PhoneCall, Radar, RotateCcw, ScanSearch, Shield, Truck, Wrench } from "lucide-react"
+import { BriefcaseBusiness, ChevronDown, ChevronRight, Cpu, Crosshair, LogOut, MapPin, Package, PhoneCall, Radar, RotateCcw, ScanSearch, Shield, Truck, Wrench } from "lucide-react"
 import { Place, Portrait, Vehicle } from "@/registry/cyber/blocks/jobs/art"
 import { board, contacts, creditsOf, distanceOf, offer, type Difficulty, type Group, type Job, type Kind } from "@/registry/cyber/blocks/jobs/data"
 import { AlertDialog } from "@/registry/cyber/ui/alert-dialog"
@@ -74,17 +74,20 @@ function JobList({
   selected: string | null
   tracked: string | null
   fresh: string[]
-  onSelect: (id: string) => void
+  onSelect: (id: string, pressed: boolean) => void
 }) {
   if (!jobs.length) return <p data-kit="hint">Nothing open under this filter.</p>
   return (
     <Listbox
       aria-label={label}
       data-jobs-list=""
+      // An explicit press also opens the brief for the already selected row.
+      deselectable
       value={jobs.some((job) => job.id === selected) ? selected : null}
-      // Pressing the chosen row again would clear the choice; the sheet
-      // always shows a job, so that's ignored.
-      onValueChange={(value) => value && onSelect(value)}
+      onValueChange={(value, details) => {
+        const id = value ?? selected
+        if (id) onSelect(id, details.reason === "item-press")
+      }}
     >
       {groups.map((group) => {
         const rows = jobs.filter((job) => job.group === group.value)
@@ -139,6 +142,7 @@ const startDone = () => Object.fromEntries([...board, offer].map((job) => [job.i
 
 export default function Jobs() {
   const [jobs, setJobs] = React.useState(board)
+  const [filter, setFilter] = React.useState<"all" | "priority">("all")
   const [selected, setSelected] = React.useState<string | null>("glass-jaw")
   const [tracked, setTracked] = React.useState<string | null>("glass-jaw")
   const [waypoint, setWaypoint] = React.useState<string | null>(null)
@@ -147,6 +151,9 @@ export default function Jobs() {
   const [credits, setCredits] = React.useState(15240)
   const [cleared, setCleared] = React.useState(12)
   const [offered, setOffered] = React.useState(true)
+  const [boardOpen, setBoardOpen] = React.useState(false)
+  const boardId = React.useId()
+  const browse = React.useRef<HTMLButtonElement>(null)
   // The job the open question is about. It's held apart from the selection
   // so the dialog keeps its wording while it closes over the next job.
   const [abandoning, setAbandoning] = React.useState<Job | null>(null)
@@ -164,16 +171,23 @@ export default function Jobs() {
   const trackedJob = jobs.find((entry) => entry.id === tracked) ?? null
   const waypointJob = jobs.find((entry) => entry.id === waypoint) ?? null
 
-  const select = (id: string) => {
+  const select = (id: string, pressed: boolean) => {
     setSelected(id)
     setFresh((ids) => ids.filter((entry) => entry !== id))
+    if (pressed && browse.current?.getClientRects().length) {
+      setBoardOpen(false)
+      setFocusTick((tick) => tick + 1)
+    }
   }
 
   // Takes a job off the board and chooses the one that moves into its place.
   const remove = (id: string) => {
-    const index = jobs.findIndex((entry) => entry.id === id)
     const rest = jobs.filter((entry) => entry.id !== id)
-    const next = rest[Math.min(index, rest.length - 1)]
+    const visible = filter === "priority" ? jobs.filter((entry) => entry.priority) : jobs
+    const remaining = visible.filter((entry) => entry.id !== id)
+    const index = visible.findIndex((entry) => entry.id === id)
+    const next = remaining[Math.min(index, remaining.length - 1)] ?? rest[0]
+    if (!remaining.length) setFilter("all")
     setJobs(rest)
     setSelected(next?.id ?? null)
     if (next) setFresh((ids) => ids.filter((entry) => entry !== next.id))
@@ -183,6 +197,7 @@ export default function Jobs() {
 
   const restore = () => {
     setJobs(board)
+    setFilter("all")
     setSelected("glass-jaw")
     setTracked("glass-jaw")
     setWaypoint(null)
@@ -207,6 +222,7 @@ export default function Jobs() {
   return (
     <Screen
       label="Job board"
+      data-jobs-screen=""
       status={
         <>
           <Readout label="Open jobs" value={jobs.length} size="sm" tone="accent" />
@@ -234,15 +250,31 @@ export default function Jobs() {
       code="CS-J7 // BOARD SYNCED // LOWTIDE EXCHANGE // PROTOCOL 7741-C"
     >
       <div data-kit="jobs">
-        <div data-jobs-board="">
+        <Button
+          ref={browse}
+          data-jobs-browse=""
+          aria-expanded={boardOpen}
+          aria-controls={boardId}
+          onClick={() => setBoardOpen((open) => !open)}
+        >
+          <BriefcaseBusiness aria-hidden />
+          Browse jobs
+          {offered && <Badge tone="flag">1 offer</Badge>}
+          <ChevronDown aria-hidden />
+        </Button>
+        <div id={boardId} data-jobs-board="" data-open={boardOpen ? "" : undefined}>
           <h2 data-sr-only>Open jobs</h2>
           <Tabs
             label="Job filter"
             variant="key"
-            defaultValue="all"
+            value={filter}
+            onValueChange={(value) => {
+              setFilter(value === "priority" ? "priority" : "all")
+              if (value === "priority" && !job?.priority && priority[0]) select(priority[0].id, false)
+            }}
             tabs={[
-              { value: "priority", label: "Priority", flag: isNew(priority), content: list("Priority jobs", priority) },
-              { value: "all", label: "All", flag: isNew(jobs), content: list("All jobs", jobs) },
+              { value: "all", label: "All jobs", content: list("All jobs", jobs) },
+              { value: "priority", label: "Priority", flag: isNew(priority), disabled: !priority.length, content: list("Priority jobs", priority) },
             ]}
           />
 
@@ -263,6 +295,7 @@ export default function Jobs() {
                       data-agent-confirm={`Declines the job offer "${offer.name}" from ${sender.name}. It won't be offered again.`}
                       onClick={() => {
                         setOffered(false)
+                        setBoardOpen(false)
                         setFocusTick((tick) => tick + 1)
                         notify("Offer declined", { description: `${sender.name} will find someone else.` })
                       }}
@@ -274,7 +307,9 @@ export default function Jobs() {
                       tone="flag"
                       onClick={() => {
                         setOffered(false)
+                        setBoardOpen(false)
                         setJobs((rows) => [...rows, offer])
+                        setFilter("all")
                         setSelected(offer.id)
                         setFocusTick((tick) => tick + 1)
                         notify("Job accepted", { tone: "success", description: `${offer.name} is on the board under Side work.` })
@@ -324,6 +359,7 @@ export default function Jobs() {
                   </h2>
                   <Level difficulty={job.difficulty} />
                 </div>
+                <p data-jobs-summary="">{job.brief[0]}</p>
                 <div data-jobs-meta="">
                   <p data-kit="hint">
                     {job.kind} in {job.district}, <span data-kit="value">{distanceOf(job.distance)}</span> out. Posted by{" "}
@@ -379,7 +415,7 @@ export default function Jobs() {
                     </h3>
                     <Micro>Net protocol 7741-C // From {contact.name}</Micro>
                   </div>
-                  {job.brief.map((paragraph) => (
+                  {job.brief.slice(1).map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                 </section>

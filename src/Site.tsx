@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowUpRight, Menu, Music2, Palette, PanelLeftOpen, Pause, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpRight, LayoutGrid, Menu, Music2, Palette, PanelLeftOpen, Pause, Sparkles, Volume2, VolumeX } from "lucide-react"
 import { CatalogGrid, Preview } from "./catalog/Catalog"
 import { ComponentIndex } from "./catalog/ComponentIndex"
 import { panels } from "./catalog/panels"
@@ -17,7 +17,6 @@ import Landing from "./Landing"
 import { SiteFrame } from "./SiteFrame"
 import { LandingCTA } from "./LandingCTA"
 import { Drawer } from "@/registry/cyber/ui/drawer"
-import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
 import { Button } from "@/registry/cyber/ui/button"
 import { Examples, examples } from "./Examples"
 import { SiteSearch, type SearchSetting } from "./SiteSearch"
@@ -276,16 +275,16 @@ function ExamplePager({ index }: { index: number }) {
   return (
     <nav aria-label="More examples" data-site-pager>
       {previous ? (
-        <a href={`/${previous.route}`} rel="prev">
-          <span aria-hidden>←</span> {previous.title}
+        <a href={`/${previous.route}`} rel="prev" aria-label={`Previous example, ${previous.title}`}>
+          <ArrowLeft aria-hidden /> {previous.title}
         </a>
       ) : (
         <span />
       )}
       <a href="/examples">All examples</a>
       {next ? (
-        <a href={`/${next.route}`} rel="next">
-          {next.title} <span aria-hidden>→</span>
+        <a href={`/${next.route}`} rel="next" aria-label={`Next example, ${next.title}`}>
+          {next.title} <ArrowRight aria-hidden />
         </a>
       ) : (
         <span />
@@ -384,6 +383,13 @@ function Site({ route }: { route: string }) {
   const section = sections.find((entry) => entry.route === (sidebar ? "components" : route))
   const pageRoute = preview || section || example ? route : ""
   const root = React.useRef<HTMLDivElement>(null)
+  const previousPage = React.useRef(pageRoute)
+  React.useLayoutEffect(() => {
+    // A pager link can survive the route change at the bottom of the page.
+    if (previousPage.current !== pageRoute && !location.hash && (example || pageRoute === "examples"))
+      root.current?.querySelector<HTMLElement>("main")?.focus({ preventScroll: true })
+    previousPage.current = pageRoute
+  }, [example, pageRoute])
   const level = React.useSyncExternalStore(onFxChange, fxLevel)
   const prefersReducedMotion = React.useSyncExternalStore(onFxChange, () => matchMedia("(prefers-reduced-motion: reduce)").matches)
   const reduced = level !== "full" || prefersReducedMotion
@@ -417,16 +423,11 @@ function Site({ route }: { route: string }) {
       }} />}
       <a href="#main" data-site-skip>Skip to content</a>
       <SiteFrame header={header}>
-        <main id="main" tabIndex={-1} data-site-page={sidebar ? "component-sidebar" : preview ? "preview" : pageRoute || "landing"}>
+        <main id="main" tabIndex={-1} data-site-example={example ? "" : undefined} data-site-page={sidebar ? "component-sidebar" : preview ? "preview" : pageRoute || "landing"}>
           {(example || section?.route === "examples") && (
             <header data-kit="page-head">
-              {example && (
-                <Breadcrumb
-                  label="You are here"
-                  items={[{ label: "Examples", href: "/examples" }, { label: example.title }]}
-                />
-              )}
               <h1>{example?.title ?? section?.title}</h1>
+              {example && <a href="/examples" data-example-index-link=""><LayoutGrid aria-hidden /> Examples</a>}
               <p>{example?.line ?? section?.line}</p>
             </header>
           )}

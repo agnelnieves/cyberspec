@@ -1,13 +1,16 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
 @layer cyber.blocks {
-  /* Three columns: who, their record, the thread. The line panel sits under
-     the list, where the list leaves room. Narrower, the thread drops under
-     the other two; on a phone everything is one column, in the order it's
-     used: the list, the record, the thread, then the line. */
+  [data-skin="cyber"] [data-comms-screen] {
+    container: comms / inline-size;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The conversation keeps the largest column. On tablet the directory
+     and record share a rail beside it. */
   [data-skin="cyber"] [data-kit="comms"] {
     display: grid;
-    grid-template-columns: minmax(0, 300px) minmax(0, 264px) minmax(0, 1fr);
+    grid-template-columns: minmax(206px, 1fr) minmax(190px, 0.9fr) minmax(0, 2.4fr);
     grid-template-rows: auto 1fr;
     grid-template-areas:
       "list record thread"
@@ -15,20 +18,26 @@
     align-items: start;
     gap: 22px 28px;
 
-    @media (max-width: 1120px) {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: auto auto auto;
+    @container comms (max-width: 940px) {
+      grid-template-columns: minmax(190px, 0.55fr) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr;
       grid-template-areas:
-        "list record"
-        "deck record"
-        "thread thread";
+        "list thread"
+        "record thread"
+        "deck thread";
+      gap: 20px;
     }
 
-    @media (max-width: 700px) {
+    @container comms (max-width: 620px) {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: none;
       grid-template-areas: "list" "record" "thread" "deck";
+      gap: 16px;
     }
+  }
+
+  [data-skin="cyber"] :is([data-comms-picker], [data-comms-disclosure]) {
+    display: none;
   }
 
   [data-skin="cyber"] [data-comms-list] {
@@ -166,6 +175,18 @@
     width: 100%;
   }
 
+  [data-skin="cyber"] [data-comms-contact-actions] { order: 1; }
+
+  [data-skin="cyber"] [data-comms-details] {
+    display: grid;
+    gap: 12px;
+  }
+
+  [data-skin="cyber"] [data-comms-message] {
+    font-size: var(--cy-text-md);
+    line-height: 1.45;
+  }
+
   /* ── The thread ───────────────────────────────────────────────────── */
 
   [data-skin="cyber"] [data-comms-thread] {
@@ -245,7 +266,7 @@
       text-wrap: pretty;
     }
 
-    @media (max-width: 520px) {
+    @container comms (max-width: 360px) {
       & div {
         grid-template-columns: minmax(0, 1fr);
       }
@@ -254,6 +275,7 @@
 
   [data-skin="cyber"] [data-comms-brief-foot] {
     display: flex;
+    order: 1;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
@@ -284,6 +306,14 @@
     & [data-kit="actions"] {
       justify-content: flex-end;
     }
+
+    @container comms (max-width: 620px) {
+      min-height: 0;
+
+      & [data-kit="actions"] > button {
+        width: 100%;
+      }
+    }
   }
 
   [data-skin="cyber"] [data-comms-state] {
@@ -296,5 +326,61 @@
 
   [data-skin="cyber"] [data-comms-replies] {
     min-width: 0;
+  }
+
+  /* On a phone the picker opens the directory on demand. The selected
+     person's photo, presence and call key stay beside the conversation. */
+  @container comms (max-width: 620px) {
+    [data-skin="cyber"] [data-comms-directory],
+    [data-skin="cyber"] [data-comms-call-name],
+    [data-skin="cyber"] [data-comms-plate-code],
+    [data-skin="cyber"] [data-comms-plate-bars],
+    [data-skin="cyber"] [data-comms-brief]:not([data-expanded]) :is([data-comms-terms], [data-comms-crew]),
+    [data-skin="cyber"] [data-comms-details]:not([data-expanded]) {
+      display: none;
+    }
+
+    [data-skin="cyber"] [data-comms-picker] { display: block; }
+    [data-skin="cyber"] [data-comms-record] {
+      grid-template-columns: clamp(76px, 25cqi, 112px) minmax(0, 1fr);
+      grid-template-areas: "plate who" "actions actions" "details details";
+      gap: 0 14px;
+      align-items: center;
+    }
+    [data-skin="cyber"] [data-comms-record-head] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    [data-skin="cyber"] [data-comms-plate] { grid-area: plate; }
+    [data-skin="cyber"] [data-comms-who] {
+      grid-area: who;
+      grid-template-columns: 1fr;
+      justify-items: start;
+      gap: 4px;
+    }
+    [data-skin="cyber"] [data-comms-contact-actions] {
+      grid-area: actions;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--cy-gap);
+      margin-block-start: 10px;
+    }
+    [data-skin="cyber"] [data-comms-disclosure] {
+      display: inline-flex;
+      min-height: 44px;
+
+      &[aria-expanded="true"] svg { rotate: 180deg; }
+    }
+    [data-skin="cyber"] [data-comms-details] {
+      grid-area: details;
+      margin-block-start: 12px;
+    }
+    [data-skin="cyber"] [data-comms-brief-head] { order: -3; }
+    [data-skin="cyber"] [data-comms-brief-title] { order: -2; }
+    [data-skin="cyber"] [data-comms-brief-foot] { order: -1; }
+    [data-skin="cyber"] [data-comms-crew] { flex-basis: 100%; order: 1; }
   }
 }

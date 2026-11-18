@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ArrowUp } from "lucide-react"
 import { Figure } from "@/registry/cyber/blocks/loadout/figure"
 import {
   credits,
@@ -129,6 +130,10 @@ export default function Loadout() {
   const [confirming, setConfirming] = React.useState(false)
 
   const root = React.useRef<HTMLDivElement>(null)
+  const sheetRef = React.useRef<HTMLElement>(null)
+  const back = React.useRef<HTMLButtonElement>(null)
+  const lastSlot = React.useRef<HTMLElement | null>(null)
+  const rackId = React.useId()
   const primary = React.useRef<HTMLButtonElement>(null)
   const rescue = React.useRef(false)
 
@@ -156,10 +161,25 @@ export default function Loadout() {
     if (!document.activeElement || document.activeElement === document.body) primary.current?.focus()
   })
 
-  const select = (next: Selection) => {
+  const focusInventory = (button: HTMLElement | null) => {
+    const destination = button?.getClientRects().length ? button : root.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
+    destination?.focus({ preventScroll: true })
+    destination?.scrollIntoView({ block: "center" })
+  }
+
+  const select = (next: Selection, button: HTMLElement) => {
+    lastSlot.current = button
     setSelection(next)
     if (next && "slot" in next) setTarget(next.slot)
     if (next && "item" in next && itemById[next.item].isNew) setSeen((ids) => (ids.includes(next.item) ? ids : [...ids, next.item]))
+    // When the sheet sits below the inventory, bring its new heading into
+    // view. A wide rack keeps focus on the tile for continued browsing.
+    if (back.current?.getClientRects().length) {
+      requestAnimationFrame(() => {
+        sheetRef.current?.focus({ preventScroll: true })
+        back.current?.scrollIntoView({ block: "start" })
+      })
+    }
   }
 
   // Where an item would go: the empty slot that was asked for, else the
@@ -204,9 +224,25 @@ export default function Loadout() {
     else equip(item)
   }
 
-  const browse = (group: Filter) => {
+  const choosePack = (group: Filter) => {
+    const available = pack.filter((candidate) => group === "all" || groupOf[candidate.kind] === group)
+    const next = available.find((candidate) => candidate.id === item?.id)
+      ?? available.find((candidate) => candidate.kind === emptySlot?.kind)
+      ?? available[0]
     setFilter(group)
+    setSelection(next ? { item: next.id } : null)
+  }
+
+  const changeView = (next: View) => {
+    setView(next)
+    if (next === "pack") choosePack(filter)
+    else if (!home && !emptySlot) setSelection(worn.length ? { item: worn[0].id } : { slot: slots[0].id })
+  }
+
+  const browse = (group: Filter) => {
     setView("pack")
+    choosePack(group)
+    requestAnimationFrame(() => focusInventory(null))
   }
 
   const sell = (sold: Item) => {
@@ -215,9 +251,10 @@ export default function Loadout() {
     setBalance(balance + sold.price)
     // The next thing in the pack takes the sheet, so its keys stay where
     // focus returns to.
-    setSelection(rest.length ? { item: rest[0].id } : null)
+    const next = rest.find((other) => filter === "all" || groupOf[other.kind] === filter)
+    setSelection(next ? { item: next.id } : null)
     notify(`${sold.name} sold`, { tone: "success", description: `Ren Aoki paid ${credits(sold.price)}. Balance ${credits(balance + sold.price)}.` })
-    if (!rest.length)
+    if (!next)
       setTimeout(() => {
         if (!document.activeElement || document.activeElement === document.body) primary.current?.focus()
       }, 320)
@@ -231,8 +268,9 @@ export default function Loadout() {
   })
   React.useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== "e" || event.metaKey || event.ctrlKey || event.altKey || event.repeat) return
+      if (event.defaultPrevented || event.key.toLowerCase() !== "e" || event.metaKey || event.ctrlKey || event.altKey || event.repeat) return
       const from = event.target as Element | null
+      if (from !== document.body && !root.current?.contains(from)) return
       if (from?.closest?.('input, textarea, select, [contenteditable=""], [contenteditable="true"], dialog, [role="dialog"], [role="alertdialog"]'))
         return
       toggleRef.current()
@@ -246,6 +284,7 @@ export default function Loadout() {
     const held = fitted[slot.id] ? itemById[fitted[slot.id]!] : null
     return (
       <ItemSlot
+        id={`${rackId}-${slot.id}`}
         label={held ? held.name : slot.name}
         rarity={held?.rarity}
         mods={held?.mods.length ? held.mods.map((mod) => mod !== null) : undefined}
@@ -253,7 +292,7 @@ export default function Loadout() {
         equipped={Boolean(held)}
         selected={held ? item?.id === held.id : emptySlot?.id === slot.id}
         size={size}
-        onClick={() => select(held ? { item: held.id } : { slot: slot.id })}
+        onClick={(event) => select(held ? { item: held.id } : { slot: slot.id }, event.currentTarget)}
       >
         {held && <Art d={held.art} />}
       </ItemSlot>
@@ -274,7 +313,7 @@ export default function Loadout() {
             return (
               <li key={slot.id}>
                 {slotTile(slot, "lg")}
-                <div data-loadout-caption="">
+                <label data-loadout-caption="" htmlFor={`${rackId}-${slot.id}`}>
                   <span data-kit="label">{held ? held.name : slot.name}</span>
                   <span data-kit="hint">{held ? `${slot.name} // ${held.type}` : "Open slot"}</span>
                   {held && (
@@ -282,20 +321,20 @@ export default function Loadout() {
                       {figureOf(held)}
                     </span>
                   )}
-                </div>
+                </label>
               </li>
             )
           })}
         </ul>
         <Micro>CS-L0 // Rack 03 // Link stable</Micro>
-        {/* What the fitted gear adds up to. */}
-        <div data-loadout-vitals="">
-          <Readout label="Armor" value={armor} size="sm" />
-          <Meter label="Load" value={load} max={carryLimit} high={heavyAt} highLabel="Heavy" segments={16} />
-        </div>
       </section>
 
       <Figure region={region} />
+
+      <div data-loadout-vitals="">
+        <Readout label="Armor" value={armor} size="sm" />
+        <Meter label="Load" value={load} max={carryLimit} high={heavyAt} highLabel="Heavy" segments={16} />
+      </div>
 
       <div data-loadout-gear="">
         {regions.map((group) => {
@@ -307,7 +346,10 @@ export default function Loadout() {
               </h2>
               <div data-loadout-slots="">
                 {group.slots.map((slotId) => (
-                  <React.Fragment key={slotId}>{slotTile(slotById[slotId])}</React.Fragment>
+                  <div key={slotId}>
+                    {slotTile(slotById[slotId])}
+                    {group.slots.length > 1 && <label htmlFor={`${rackId}-${slotId}`}>{slotById[slotId].name}</label>}
+                  </div>
                 ))}
               </div>
               {group.title === "Deck" && (
@@ -328,7 +370,7 @@ export default function Loadout() {
   const packView = (
     <div data-loadout-pack="">
       <div data-loadout-pack-head="">
-        <SegmentedControl<Filter> label="Pack filter" value={filter} onValueChange={(next) => next && setFilter(next)} options={filters} />
+        <SegmentedControl<Filter> label="Pack filter" value={filter} onValueChange={(next) => next && choosePack(next)} options={filters} />
         <p data-kit="value" role="status">
           {shown.length} of {pack.length} shown // {kilos(packWeight)} stowed
         </p>
@@ -339,23 +381,24 @@ export default function Loadout() {
           {shown.map((candidate) => (
             <li key={candidate.id}>
               <ItemSlot
+                id={`${rackId}-pack-${candidate.id}`}
                 label={candidate.name}
                 rarity={candidate.rarity}
                 mods={candidate.mods.length ? candidate.mods.map((mod) => mod !== null) : undefined}
                 count={candidate.count}
                 isNew={isNew(candidate)}
                 selected={item?.id === candidate.id}
-                onClick={() => select({ item: candidate.id })}
+                onClick={(event) => select({ item: candidate.id }, event.currentTarget)}
               >
                 <Art d={candidate.art} />
               </ItemSlot>
-              <div data-loadout-caption="">
+              <label data-loadout-caption="" htmlFor={`${rackId}-pack-${candidate.id}`}>
                 <span data-kit="label">{candidate.name}</span>
                 <span data-kit="hint">
                   {candidate.type} // {kilos(candidate.weight)}
                 </span>
                 <span data-kit="value">{credits(candidate.price)}</span>
-              </div>
+              </label>
             </li>
           ))}
         </ul>
@@ -373,6 +416,8 @@ export default function Loadout() {
 
   const sheet = (
     <Panel
+      ref={sheetRef}
+      tabIndex={-1}
       data-loadout-sheet=""
       level={2}
       title={item ? item.name : emptySlot ? emptySlot.name : "No selection"}
@@ -392,16 +437,17 @@ export default function Loadout() {
               <Viewer item={item} />
             </Dialog>
           )}
-          <Button
-            disabled={!item || Boolean(home)}
-            onClick={() => {
-              if (!item) return
-              setSelling(item)
-              setConfirming(true)
-            }}
-          >
-            Sell
-          </Button>
+          {item && (
+            <Button
+              disabled={Boolean(home)}
+              onClick={() => {
+                setSelling(item)
+                setConfirming(true)
+              }}
+            >
+              Sell
+            </Button>
+          )}
         </>
       }
     >
@@ -423,16 +469,21 @@ export default function Loadout() {
                   Stowed
                 </Badge>
               )}
-              {item.isNew && <Badge tone="flag">New</Badge>}
+              {isNew(item) && <Badge tone="flag">New</Badge>}
             </p>
-            <Readout
-              size="lg"
-              label={item.output.label}
-              value={item.output.value}
-              unit={item.output.unit}
-              precision={item.output.precision}
-              delta={rival ? item.output.value - rival.output.value : undefined}
-            />
+            <div data-loadout-output="">
+              <Readout
+                size="lg"
+                label={item.output.label}
+                value={item.output.value}
+                unit={item.output.unit}
+                precision={item.output.precision}
+                delta={rival ? item.output.value - rival.output.value : undefined}
+              />
+              <span data-loadout-swatch="" data-rarity={item.rarity} aria-hidden>
+                <Art d={item.art} />
+              </span>
+            </div>
             {rival && <p data-kit="hint">Against the {rival.name}, fitted now.</p>}
             <div data-loadout-meters="">
               {item.stats.map((stat) => (
@@ -509,6 +560,7 @@ export default function Loadout() {
 
   return (
     <Screen
+      data-loadout-screen=""
       label="Loadout"
       code="CS-L0 // LOADOUT // SABLE QUINN // PROTOCOL 7741-C"
       status={
@@ -520,12 +572,7 @@ export default function Loadout() {
       aside={
         <>
           <Readout label="Carry weight" value={load} precision={1} unit={`/ ${carryLimit} kg`} size="sm" tone={load >= heavyAt ? "flag" : "signal"} />
-          <div data-loadout-credits="">
-            <span data-loadout-currency="" aria-hidden>
-              ¤
-            </span>
-            <Readout label="Credits" value={balance} size="sm" tone="flag" />
-          </div>
+          <Readout label="Credits" prefix="¤" value={balance} size="sm" tone="flag" />
         </>
       }
       hints={[
@@ -538,13 +585,18 @@ export default function Loadout() {
         <Tabs
           label="Loadout views"
           value={view}
-          onValueChange={(next) => next && setView(next as View)}
+          onValueChange={(next) => next && changeView(next as View)}
           tabs={[
             { value: "fitted", label: "Fitted", content: fittedView },
             { value: "pack", label: "Pack", flag: pack.some(isNew) ? "New" : undefined, content: packView },
           ]}
         />
-        {sheet}
+        <div data-loadout-detail="">
+          <Button ref={back} data-loadout-back="" tone="ghost" onClick={() => focusInventory(lastSlot.current)}>
+            <ArrowUp aria-hidden /> Back to {view === "fitted" ? "fitted gear" : "pack"}
+          </Button>
+          {sheet}
+        </div>
       </div>
       <AlertDialog
         open={confirming}

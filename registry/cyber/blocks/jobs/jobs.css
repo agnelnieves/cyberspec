@@ -1,21 +1,30 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
 @layer cyber.blocks {
+  [data-skin="cyber"] [data-jobs-screen] {
+    grid-template-columns: minmax(0, 1fr);
+    container: job-screen / inline-size;
+    @media (pointer: coarse) {
+      --cy-h-sm: 44px;
+    }
+  }
+
   /* Three columns: the board, the chosen job's sheet, its linked records.
      The records drop under the other two when there isn't room for three,
      and everything stacks on a phone. */
   [data-skin="cyber"] [data-kit="jobs"] {
     display: grid;
-    grid-template-columns: minmax(0, 350px) minmax(0, 1fr) minmax(0, 236px);
-    gap: 28px 32px;
+    grid-template-columns: minmax(250px, 27fr) minmax(0, 48fr) minmax(200px, 21fr);
+    gap: 24px clamp(16px, 2cqi, 30px);
     align-items: start;
 
-    @media (max-width: 1180px) {
-      grid-template-columns: minmax(0, 330px) minmax(0, 1fr);
+    @container job-screen (max-width: 1020px) {
+      grid-template-columns: minmax(224px, .65fr) minmax(0, 1fr);
     }
 
-    @media (max-width: 800px) {
+    @container job-screen (max-width: 690px) {
       grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
     }
   }
 
@@ -52,6 +61,10 @@
     display: grid;
     gap: 26px;
     min-width: 0;
+  }
+
+  [data-skin="cyber"] [data-jobs-browse] {
+    display: none;
   }
 
   [data-skin="cyber"] [data-jobs-list] {
@@ -182,9 +195,8 @@
   [data-skin="cyber"] [data-jobs-name] {
     grid-area: name;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
     font-size: var(--cy-text-lg);
     font-weight: 700;
     line-height: 1.1;
@@ -323,6 +335,10 @@
     display: grid;
     gap: 20px;
     min-width: 0;
+    padding: clamp(14px, 1.75cqi, 24px);
+    border: 1px solid var(--cy-line-deco);
+    border-block-start: 2px solid var(--cy-line-hot);
+    background: var(--cy-panel-a);
   }
 
   [data-skin="cyber"] [data-jobs-head] {
@@ -350,7 +366,7 @@
     gap: 6px 20px;
 
     & h2 {
-      font-size: var(--cy-text-2xl);
+      font-size: clamp(var(--cy-text-2xl), 3.5cqi, var(--cy-text-3xl));
       font-weight: 700;
       line-height: 1;
       letter-spacing: var(--cy-track);
@@ -362,6 +378,14 @@
     & [data-jobs-level] {
       font-size: var(--cy-text-md);
     }
+  }
+
+  [data-skin="cyber"] [data-jobs-summary] {
+    max-inline-size: 58ch;
+    font-size: var(--cy-text-lg);
+    line-height: 1.35;
+    color: var(--cy-ink-hi);
+    text-wrap: pretty;
   }
 
   [data-skin="cyber"] [data-jobs-meta] {
@@ -394,17 +418,20 @@
     display: grid;
     gap: 16px;
     min-width: 0;
+
+    & [data-kit="checkbox-item"] + [data-kit="checkbox-item"] {
+      border-block-start: 1px solid var(--cy-line-deco);
+    }
   }
 
   /* The bar that follows the ticks, and what the job pays beside it. */
   [data-skin="cyber"] [data-jobs-progress] {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
     gap: 14px 28px;
 
     & [data-kit="progress"] {
-      flex: 1 1 220px;
       min-width: 0;
     }
   }
@@ -424,7 +451,6 @@
       text-wrap: pretty;
     }
 
-    /* The first paragraph is the job; the rest is how. */
     & p:first-of-type {
       border-inline-start-color: var(--cy-accent);
     }
@@ -478,7 +504,7 @@
     gap: 12px;
     min-width: 0;
 
-    @media (max-width: 1180px) {
+    @container job-screen (max-width: 1020px) {
       grid-column: 1 / -1;
     }
   }
@@ -489,5 +515,65 @@
     gap: 14px;
     align-items: start;
     min-width: 0;
+  }
+
+  @container job-screen (max-width: 690px) {
+    [data-skin="cyber"] [data-jobs-browse] {
+      display: flex;
+      inline-size: 100%;
+      min-block-size: 44px;
+      justify-content: start;
+      gap: 10px;
+
+      & > svg:last-child {
+        margin-inline-start: auto;
+      }
+      &[aria-expanded="true"] > svg:last-child {
+        rotate: 180deg;
+      }
+    }
+
+    [data-skin="cyber"] [data-jobs-board]:not([data-open]) {
+      display: none;
+    }
+
+    [data-skin="cyber"] [data-jobs-now] {
+      gap: 6px 16px;
+      & div {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+      }
+    }
+  }
+
+  @container job-screen (max-width: 475px) {
+    [data-skin="cyber"] [data-jobs-sheet] {
+      gap: 16px;
+    }
+    [data-skin="cyber"] [data-jobs-actions] > [data-kit="actions"] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      inline-size: 100%;
+      & > :last-child {
+        grid-column: 1 / -1;
+      }
+    }
+    [data-skin="cyber"] [data-jobs-cards] {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      & > [data-kit="card"] {
+        display: grid;
+        grid-template-columns: minmax(72px, 32%) minmax(0, 1fr);
+        align-items: center;
+      }
+      & [data-kit="card-media"] {
+        margin-inline-end: 0;
+      }
+      & [data-kit="card-footer"] {
+        grid-column: 1 / -1;
+      }
+    }
   }
 }

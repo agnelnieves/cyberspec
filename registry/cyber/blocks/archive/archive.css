@@ -58,13 +58,58 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     align-items: start;
-    padding-block: 8px 4px;
     min-width: 0;
 
-    @container archive (min-width: 760px) {
-      grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-      gap: 28px;
+    @container archive (min-width: 660px) {
+      grid-template-columns: minmax(245px, 32%) minmax(0, 1fr);
+      gap: clamp(20px, 2.4cqi, 36px);
     }
+
+    /* A 420px directory has room for the four section names on its rail. */
+    @container archive (min-width: 1080px) {
+      grid-template-columns: minmax(420px, 32%) minmax(0, 1fr);
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-browser] {
+    display: grid;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  [data-skin="cyber"] [data-archive-browse] {
+    display: none;
+  }
+
+  @container archive (max-width: 659px) {
+    [data-skin="cyber"] [data-archive-browse] {
+      display: flex;
+      width: 100%;
+      min-height: 44px;
+
+      &[aria-expanded="true"] svg:last-child { rotate: 180deg; }
+    }
+    [data-skin="cyber"] [data-archive-browse-current] {
+      margin-inline-start: auto;
+      color: var(--cy-signal);
+      font-size: var(--cy-text-xs);
+    }
+    [data-skin="cyber"] [data-archive-directory]:not([data-expanded]) {
+      display: none;
+    }
+  }
+
+  [data-skin="cyber"] [data-archive-directory] { min-width: 0; }
+
+  [data-skin="cyber"] [data-archive-no-results] {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    padding: 24px;
+    border: 1px dashed var(--cy-line-deco);
+
+    & > svg { color: var(--cy-signal); }
+    & h2 { font-size: var(--cy-text-xl); }
   }
 
   [data-skin="cyber"] [data-archive-index] {
@@ -72,12 +117,10 @@
     gap: 14px;
     align-content: start;
     min-width: 0;
-  }
 
-  [data-skin="cyber"] [data-archive-empty] {
-    padding: 10px 12px;
-    border-inline-start: 1px solid var(--cy-line-ctl);
-    text-wrap: pretty;
+    @media (pointer: coarse) {
+      & input { font-size: max(16px, 1em); }
+    }
   }
 
   [data-skin="cyber"] [data-archive-index-foot] {
@@ -91,15 +134,24 @@
 
   [data-skin="cyber"] [data-archive-dossier] {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-    align-items: start;
+    grid-template-columns: minmax(78px, 26%) minmax(0, 1fr);
+    grid-template-areas: "location location" "plate name" "sheet sheet";
+    gap: 14px;
+    align-content: start;
+    align-items: center;
     min-width: 0;
 
-    @container archive (min-width: 1040px) {
-      grid-template-columns: minmax(260px, 5fr) minmax(0, 6fr);
-      gap: 28px;
+    @container archive (min-width: 1000px) {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr);
+      grid-template-areas: "plate location" "plate name" "plate sheet";
+      align-items: start;
+      gap: 12px clamp(16px, 2cqi, 28px);
     }
+  }
+
+  [data-skin="cyber"] [data-archive-location] {
+    grid-area: location;
+    min-width: 0;
   }
 
   /* The plate: a still behind scanlines, with print in its margins. */
@@ -110,9 +162,15 @@
     --frame-image: linear-gradient(to top, var(--cy-fill-hover), transparent 55%);
 
     display: grid;
+    grid-area: plate;
     gap: 6px;
     padding: 10px 12px 12px;
     min-width: 0;
+
+    @container archive (max-width: 999px) {
+      --frame-cut: var(--cy-cut);
+      padding: 5px;
+    }
   }
 
   [data-skin="cyber"] :is([data-archive-plate-head], [data-archive-plate-foot]) {
@@ -121,6 +179,8 @@
     gap: 12px;
     min-width: 0;
     overflow: hidden;
+
+    @container archive (max-width: 999px) { display: none; }
   }
 
   [data-skin="cyber"] [data-archive-plate-head] {
@@ -138,7 +198,7 @@
        it; the drawing keeps its proportions and sits in the middle. */
     aspect-ratio: 1;
 
-    @container archive (min-width: 1040px) {
+    @container archive (min-width: 1000px) {
       aspect-ratio: 4 / 5;
     }
 
@@ -177,6 +237,7 @@
   }
 
   [data-skin="cyber"] [data-archive-sheet] {
+    grid-area: sheet;
     display: grid;
     gap: 16px;
     align-content: start;
@@ -194,10 +255,10 @@
   }
 
   [data-skin="cyber"] [data-archive-name] {
+    grid-area: name;
     display: grid;
     gap: 8px;
-    padding-block-end: 12px;
-    border-block-end: 1px solid var(--cy-line-ctl);
+    min-width: 0;
 
     & h2 {
       font-size: var(--cy-text-2xl);
@@ -206,9 +267,15 @@
       letter-spacing: var(--cy-track);
       text-transform: uppercase;
       text-wrap: balance;
+      overflow-wrap: anywhere;
       color: var(--cy-ink);
       /* It takes focus when a linked record is followed. */
       outline-offset: 4px;
+    }
+
+    @container archive (min-width: 1000px) {
+      padding-block-end: 12px;
+      border-block-end: 1px solid var(--cy-line-ctl);
     }
   }
 
@@ -221,7 +288,7 @@
   /* The line of facts: labels in ink, what they read in the signal color. */
   [data-skin="cyber"] [data-archive-facts] {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 16px;
     margin: 0;
 
@@ -253,8 +320,8 @@
     display: grid;
     gap: 10px;
     max-width: 62ch;
-    font-size: var(--cy-text-md);
-    line-height: 1.45;
+    font-size: max(16px, var(--cy-text-md));
+    line-height: 1.5;
     color: var(--cy-ink-hi);
     text-wrap: pretty;
   }
@@ -263,6 +330,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--cy-gap);
+
+    @container archive (max-width: 659px) {
+      & > button { flex: 1 1 auto; min-height: 44px; }
+    }
   }
 
   [data-skin="cyber"] [data-archive-links] {
@@ -278,6 +349,12 @@
       margin: 0;
       padding: 0;
       list-style: none;
+    }
+
+    @container archive (max-width: 659px) {
+      & ul { display: grid; }
+      & button { width: 100%; min-height: 44px; justify-content: start; }
+      & button svg:last-child { margin-inline-start: auto; }
     }
   }
 

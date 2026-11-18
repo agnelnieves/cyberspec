@@ -167,7 +167,7 @@ type Program = { name: string; task: string; beats: Beat[] }
 let programs: Program[] = [
   {
     name: "ghostwrite",
-    task: "Set the deck up for a quiet run through Glasswater and commit the route.",
+    task: "Configure the deck for a quiet run through Glasswater.",
     beats: [
       { say: "Reading the page." },
       { scan: true },
@@ -185,7 +185,7 @@ let programs: Program[] = [
   },
   {
     name: "deadlock",
-    task: "Burn the current identity. It's marked as needing a person, so the agent has to ask.",
+    task: "Request permission to burn the current identity.",
     beats: [
       { say: "This control is marked data-agent-confirm. I can ask, but I can't decide." },
       { step: { ref: "Burn identity", action: "press" } },
@@ -194,7 +194,7 @@ let programs: Program[] = [
   },
   {
     name: "null-ping",
-    task: "Look, don't touch: read what's on the page and what the district list offers.",
+    task: "Inspect the switches, route controls and district list.",
     beats: [{ scan: "switch" }, { find: "route" }, { find: "", within: "District" }, { say: "Read-only pass complete. Nothing was changed." }],
   },
 ]
@@ -211,12 +211,12 @@ async function play(name: string) {
   print("user", `run ${program.name}: ${program.task}`)
   try {
     for (const beat of program.beats) {
+      // A stop during the pause must cancel the upcoming step too.
+      await pause(520)
       if (stopped) {
         print("warn", "Stopped by you.")
         break
       }
-      // Paced so each step can be watched land on the page.
-      await pause(520)
       if ("say" in beat) print("agent", beat.say)
       else if ("scan" in beat) scan(beat.scan === true ? undefined : beat.scan)
       else if ("find" in beat) await find(beat.find, beat.within)

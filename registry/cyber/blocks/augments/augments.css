@@ -1,61 +1,49 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
 @layer cyber.blocks {
-  /* Three columns: the counters and the sheet down the left, the lattice
-     in the middle with the reset under it, what it all adds up to on the
-     right. The sheet is the tall one, so the lattice's stage takes the
-     height that's over and centers in it. */
+  [data-skin="cyber"] [data-augments-screen] {
+    container: augments / inline-size;
+  }
+
   [data-skin="cyber"] [data-kit="augments"] {
     display: grid;
-    grid-template-columns: minmax(0, 320px) minmax(0, 1fr) minmax(0, 284px);
+    grid-template-columns: minmax(275px, 29fr) minmax(0, 46fr) minmax(210px, 25fr);
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "points stage side"
       "sheet  stage side"
       "sheet  reset side";
-    gap: 20px 24px;
+    gap: 16px clamp(14px, 1.7cqi, 26px);
     align-items: start;
     min-width: 0;
+  }
 
-    @media (max-width: 1180px) {
-      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  @container augments (max-width: 1050px) {
+    [data-skin="cyber"] [data-kit="augments"] {
+      grid-template-columns: minmax(260px, .85fr) minmax(0, 1.15fr);
       grid-template-areas:
         "points stage"
         "sheet  stage"
         "sheet  reset"
         "side   side";
     }
+  }
 
-    /* One column, in the order it's used: what there is to spend, where
-       it goes, what it does, what it added up to. */
-    @media (max-width: 760px) {
+  @container augments (max-width: 670px) {
+    [data-skin="cyber"] [data-kit="augments"] {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: none;
-      grid-template-areas:
-        "points"
-        "stage"
-        "sheet"
-        "reset"
-        "side";
+      grid-template-rows: auto;
+      grid-template-areas: "points" "stage" "sheet" "reset" "side";
+      row-gap: 16px;
     }
-  }
 
-  /* ── Status strip ──────────────────────────────────────────────────── */
+    [data-skin="cyber"] [data-kit="screen-status"] {
+      display: grid;
+      grid-template-columns: 1fr 1fr max-content;
+      gap: 6px 12px;
+    }
 
-  /* The currency mark stands before the figure, on its baseline. */
-  [data-skin="cyber"] [data-augments-credits] {
-    display: flex;
-    align-items: end;
-    gap: 6px;
-  }
-
-  [data-skin="cyber"] [data-augments-currency] {
-    padding-block-end: 8px;
-    font-family: var(--cy-mono);
-    font-size: var(--cy-text-lg);
-    font-weight: 600;
-    line-height: 1;
-    color: var(--cy-flag);
+    [data-skin="cyber"] :is([data-kit="screen-status-lead"], [data-kit="screen-status-aside"]) { display: contents; }
   }
 
   /* ── Counters ──────────────────────────────────────────────────────── */
@@ -64,7 +52,17 @@
     grid-area: points;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 20px;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--cy-panel-a);
+    border-block: 1px solid var(--cy-line-deco);
+
+    & > :last-child {
+      padding-inline-start: 12px;
+      border-inline-start: 1px solid var(--cy-line-deco);
+    }
+
+    & [data-kit="readout-rule"] { display: none; }
   }
 
   /* ── The lattice ───────────────────────────────────────────────────── */
@@ -79,14 +77,14 @@
     display: grid;
     align-self: stretch;
     align-content: center;
-    gap: 22px;
+    gap: 20px;
     min-width: 0;
-    padding: 44px 16px 18px;
+    padding: 62px clamp(12px, 1.3cqi, 20px) 18px;
     isolation: isolate;
+    background:
+      radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--cy-accent) 8%, transparent), transparent 72%),
+      linear-gradient(var(--cy-line-deco), var(--cy-line-deco)) center top / calc(100% - 24px) 1px no-repeat;
 
-    @media (max-width: 760px) {
-      padding-block-start: 30px;
-    }
   }
 
   [data-skin="cyber"] [data-augments-schematic] {
@@ -118,12 +116,20 @@
     }
   }
 
-  [data-skin="cyber"] [data-augments-print="head"] {
+  [data-skin="cyber"] [data-augments-stage-head] {
     position: absolute;
-    inset-block-start: 14px;
-    inset-inline-start: 22px;
-    max-width: calc(100% - 44px);
-    overflow: hidden;
+    inset-block-start: 12px;
+    inset-inline: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 10px;
+
+    & [data-kit="value"] {
+      font-size: var(--cy-text-xs);
+      color: var(--cy-ink-mute);
+    }
   }
 
   [data-skin="cyber"] [data-augments-print="side"] {
@@ -136,15 +142,8 @@
 
   [data-skin="cyber"] [data-augments-stream] {
     position: absolute;
-    inset-block-start: 40px;
+    inset-block-start: 48px;
     inset-inline-start: 22px;
-  }
-
-  /* The margins have no room for print on a phone. */
-  @media (max-width: 760px) {
-    [data-skin="cyber"] :is([data-augments-print="side"], [data-augments-stream]) {
-      display: none;
-    }
   }
 
   [data-skin="cyber"] [data-augments-stage-foot] {
@@ -155,6 +154,34 @@
     gap: 10px 20px;
   }
 
+  [data-skin="cyber"] [data-augments-jump] { display: none; }
+
+  @container augments (max-width: 670px) {
+    [data-skin="cyber"] :is([data-augments-print="side"], [data-augments-stream], [data-augments-stage-foot] [data-kit="barcode"]) {
+      display: none;
+    }
+    [data-skin="cyber"] [data-augments-jump] { display: inline-flex; }
+    [data-skin="cyber"] [data-augments-stage] {
+      --hex-stat-size: 132px;
+      padding: 54px 8px 12px;
+      gap: 12px;
+    }
+    [data-skin="cyber"] [data-augments-stage-foot] {
+      padding-inline: 4px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  @media (pointer: coarse) {
+    [data-skin="cyber"] [data-augments-stage] [data-kit="hex-stat-raise"] {
+      height: 44px;
+      inset-block-end: -22px;
+    }
+    [data-skin="cyber"] [data-augments-stage] [data-kit="hex-stat-group"] { padding-block-end: 24px; }
+  }
+
   [data-skin="cyber"] [data-augments-ruler] {
     opacity: 0.7;
   }
@@ -163,6 +190,7 @@
 
   [data-skin="cyber"] [data-augments-sheet-panel] {
     grid-area: sheet;
+    --panel-spine: 8px;
   }
 
   /* The tear skews the sheet, and a skewed tall block reaches well past
@@ -192,7 +220,7 @@
 
   [data-skin="cyber"] [data-augments-upgrades] {
     display: grid;
-    gap: 10px;
+    gap: 0;
     min-width: 0;
   }
 
@@ -202,6 +230,9 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
     gap: 8px;
+    padding-block: 6px;
+
+    & + & { border-block-start: 1px solid var(--cy-line-deco); }
   }
 
   [data-skin="cyber"] [data-augments-upgrade-tags] {
@@ -262,7 +293,7 @@
     align-content: start;
     min-width: 0;
 
-    @media (min-width: 761px) and (max-width: 1180px) {
+    @container augments (min-width: 671px) and (max-width: 1050px) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 22px 28px;
     }

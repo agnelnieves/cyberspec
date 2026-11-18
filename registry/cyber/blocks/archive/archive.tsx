@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowUpRight, Cpu, MapPin, Search, SquareTerminal, Users } from "lucide-react"
+import { ArrowUpRight, ChevronDown, Cpu, MapPin, Search, SquareTerminal, Users } from "lucide-react"
 import { Plate } from "@/registry/cyber/blocks/archive/art"
 import { entries, entriesIn, entryOf, sectionOf, sections, type Entry, type Section } from "@/registry/cyber/blocks/archive/data"
 import { Badge } from "@/registry/cyber/ui/badge"
@@ -63,7 +63,7 @@ function Facts({ entry, full }: { entry: Entry; full?: boolean }) {
   )
 }
 
-function Records({
+function RecordIndex({
   section,
   shown,
   entry,
@@ -71,203 +71,215 @@ function Records({
   tracked,
   onChoose,
   onFilter,
-  onTrack,
-  onJump,
-  onShown,
+  onOpen,
+  onRowClick,
 }: {
   section: Section
-  /** The records the filter lets through. */
   shown: Entry[]
-  /** The record in the dossier. */
   entry: Entry
   filter: string
   tracked: string | null
   onChoose: (id: string) => void
   onFilter: (text: string) => void
+  onOpen: () => void
+  onRowClick: () => void
+}) {
+  const { label, seek } = sectionOf(section)
+  const all = entriesIn(section)
+  return (
+    <div
+      data-archive-index=""
+      onClick={(event) => {
+        if ((event.target as Element).closest('[role="option"]')) onRowClick()
+      }}
+      // Enter on a row opens the record it has already chosen.
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && (event.target as Element).closest('[role="option"]')) onOpen()
+      }}
+    >
+      <TextField
+        label={`Filter ${label.toLowerCase()}`}
+        icon={<Search />}
+        value={filter}
+        onValueChange={onFilter}
+        placeholder={seek}
+        hint={`${shown.length} of ${all.length} shown`}
+        autoComplete="off"
+        clearable
+        data-archive-filter=""
+      />
+      {shown.length > 0 && (
+        <ItemList
+          label={`${label} on file`}
+          items={shown.map((item) => ({
+            value: item.id,
+            label: item.name,
+            meta: item.meta,
+            flag: item.id === tracked ? "Tracked" : undefined,
+          }))}
+          value={entry.id}
+          onValueChange={(id) => {
+            if (id) onChoose(id)
+          }}
+        />
+      )}
+      <div data-archive-index-foot="" aria-hidden>
+        <Ruler />
+        <Micro>
+          IDX {section.slice(0, 3)} // {two(shown.length)} of {two(all.length)} // NODE 3F:A2
+        </Micro>
+      </div>
+    </div>
+  )
+}
+
+function Dossier({
+  entry,
+  tracked,
+  open,
+  onOpenChange,
+  onTrack,
+  onJump,
+  onShown,
+}: {
+  entry: Entry
+  tracked: string | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
   onTrack: (id: string | null) => void
   onJump: (id: string) => void
-  /** Runs once a record is on screen, with the dossier's heading. */
   onShown: (id: string, heading: HTMLElement | null) => void
 }) {
-  const { label, one, seek } = sectionOf(section)
-  const all = entriesIn(section)
-  const [open, setOpen] = React.useState(false)
   const dossier = React.useRef<HTMLElement>(null)
   const heading = React.useId()
-
-  // The record open on arrival is simply there (the section's own panel has
-  // already torn in). Any record after it tears in by itself.
   const [first] = React.useState(entry.id)
   const [moved, setMoved] = React.useState(false)
   if (!moved && entry.id !== first) setMoved(true)
+  const section = entry.section
+  const { label } = sectionOf(section)
+  const all = entriesIn(section)
+  const place = all.indexOf(entry)
+  const isTracked = tracked === entry.id
 
   React.useEffect(() => {
     onShown(entry.id, dossier.current?.querySelector("h2") ?? null)
   }, [entry.id, onShown])
 
-  const isTracked = tracked === entry.id
-  const place = all.indexOf(entry)
-
   return (
-    <div data-archive-section="">
-      <div
-        data-archive-index=""
-        // Enter on a row opens the record it has already chosen.
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && (event.target as Element).closest('[role="option"]')) setOpen(true)
-        }}
-      >
-        <TextField
-          label={`Filter ${label.toLowerCase()}`}
-          icon={<Search />}
-          value={filter}
-          onValueChange={onFilter}
-          placeholder={seek}
-          hint={`${shown.length} of ${all.length} shown`}
-          autoComplete="off"
-          clearable
-          data-archive-filter=""
-        />
-        {shown.length ? (
-          <ItemList
-            label={`${label} on file`}
-            items={shown.map((item) => ({
-              value: item.id,
-              label: item.name,
-              meta: item.meta,
-              flag: item.id === tracked ? "Tracked" : undefined,
-            }))}
-            value={entry.id}
-            onValueChange={(id) => {
-              if (id) onChoose(id)
-            }}
-          />
-        ) : (
-          <p data-kit="hint" data-archive-empty="" role="status">
-            No {one} on file matches “{filter.trim()}”. The dossier is holding the last record.
-          </p>
-        )}
-        <div data-archive-index-foot="" aria-hidden>
-          <Ruler />
+    <article data-archive-dossier="" aria-labelledby={heading} ref={dossier}>
+      <div data-archive-plate="" data-frame="tl br">
+        <div data-archive-plate-head="">
           <Micro>
-            IDX {section.slice(0, 3)} // {two(shown.length)} of {two(all.length)} // NODE 3F:A2
+            {entry.code} // PLATE {two(place + 1)}/{two(all.length)}
           </Micro>
+          <Micro>REV 0.1</Micro>
+        </div>
+        <div key={entry.id} data-archive-still="" data-scanlines="" data-swap={moved ? "" : undefined}>
+          <Plate entry={entry} variant={place} />
+          <Corners inset={6} size={10} />
+        </div>
+        <div data-archive-plate-foot="">
+          <DataStream rows={4} bytes={3} seed={entry.id} />
+          <Barcode value={entry.code} size={22} />
         </div>
       </div>
 
-      <article data-archive-dossier="" aria-labelledby={heading} ref={dossier}>
-        <div data-archive-plate="" data-frame="tl br">
-          <div data-archive-plate-head="">
-            <Micro>
-              {entry.code} // PLATE {two(place + 1)}/{two(all.length)}
-            </Micro>
-            <Micro>REV 0.1</Micro>
-          </div>
-          <div key={entry.id} data-archive-still="" data-scanlines="" data-swap={moved ? "" : undefined}>
-            <Plate entry={entry} variant={place} />
-            <Corners inset={6} size={10} />
-          </div>
-          <div data-archive-plate-foot="">
-            <DataStream rows={4} bytes={3} seed={entry.id} />
-            <Barcode value={entry.code} size={22} />
+      <div data-archive-location="">
+        <Breadcrumb label="Record location" items={[{ label: "Archive" }, { label }, { label: entry.name }]} />
+      </div>
+      <header data-archive-name="" key={entry.id}>
+        <GlitchText as="h2" id={heading} tabIndex={-1} decode={moved ? "mount" : "none"}>
+          {entry.name}
+        </GlitchText>
+        <p data-archive-tags="">
+          <Badge tone="mute">{entry.code}</Badge>
+          {/* A district's list column is its sector, which its serial already says. */}
+          <Badge tone="signal">{section === "places" ? "District" : entry.meta}</Badge>
+          {isTracked && <Badge tone="flag">Tracked</Badge>}
+        </p>
+      </header>
+      <div data-archive-sheet="">
+        <div key={entry.id} data-archive-entry="" data-swap={moved ? "" : undefined}>
+          <Facts entry={entry} />
+          <div data-archive-text="">
+            {entry.text.slice(0, 2).map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
         </div>
 
-        <div data-archive-sheet="">
-          <Breadcrumb label="Record location" items={[{ label: "Archive" }, { label }, { label: entry.name }]} />
-          <div key={entry.id} data-archive-entry="" data-swap={moved ? "" : undefined}>
-            <header data-archive-name="">
-              <GlitchText as="h2" id={heading} tabIndex={-1} decode={moved ? "mount" : "none"}>
-                {entry.name}
-              </GlitchText>
-              <p data-archive-tags="">
-                <Badge tone="mute">{entry.code}</Badge>
-                {/* A district's list column is its sector, which its serial already says. */}
-                <Badge tone="signal">{section === "places" ? "District" : entry.meta}</Badge>
-                {isTracked && <Badge tone="flag">Tracked</Badge>}
-              </p>
-            </header>
-            <Facts entry={entry} />
+        <div data-archive-actions="">
+          <Drawer
+            trigger="Open record"
+            triggerTone="primary"
+            title={entry.name}
+            description={entry.summary}
+            code={`${entry.code} // FULL RECORD`}
+            open={open}
+            onOpenChange={onOpenChange}
+          >
+            <Facts entry={entry} full />
             <div data-archive-text="">
-              {entry.text.slice(0, 2).map((paragraph) => (
+              {entry.text.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-          </div>
-
-          <div data-archive-actions="">
-            <Drawer
-              trigger="Open record"
-              triggerTone="primary"
-              title={entry.name}
-              description={entry.summary}
-              code={`${entry.code} // FULL RECORD`}
-              open={open}
-              onOpenChange={setOpen}
-            >
-              <Facts entry={entry} full />
-              <div data-archive-text="">
-                {entry.text.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-              <h3 data-kit="label">Field notes</h3>
-              <ol>
-                {entry.notes.map(([at, note]) => (
-                  <li key={at}>
-                    <time>{at}</time>
-                    <span>{note}</span>
-                  </li>
-                ))}
-              </ol>
-              <div data-archive-record-foot="" aria-hidden>
-                <Barcode value={`${entry.code} ${entry.id}`} size={20} />
-                <Micro>PROTOCOL 7741-C // READ ONLY</Micro>
-              </div>
-            </Drawer>
-            <Toggle
-              pressed={isTracked}
-              onPressedChange={(pressed) => {
-                onTrack(pressed ? entry.id : null)
-                if (pressed) notify(`Tracking ${entry.name}`, { description: "Its row is flagged, and the status strip follows it." })
-                else notify(`${entry.name} released`, { description: "Nothing is tracked." })
-              }}
-            >
-              Track record
-            </Toggle>
-          </div>
-
-          <section data-archive-links="" aria-labelledby={`${heading}-links`}>
-            <h3 id={`${heading}-links`} data-kit="label">
-              Linked records
-            </h3>
-            <ul>
-              {entry.links.map((id) => {
-                const link = entryOf(id)
-                return (
-                  <li key={id}>
-                    <Button size="sm" onClick={() => onJump(id)}>
-                      {icons[link.section]}
-                      <span data-sr-only>Go to </span>
-                      {link.name}
-                      <ArrowUpRight aria-hidden />
-                    </Button>
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-
-          <div data-archive-sheet-foot="" aria-hidden>
-            <Ruler />
-            <div>
-              <Barcode value={entry.id} size={14} />
-              <Micro>CS-A7 // {entry.code} // LINK STABLE</Micro>
+            <h3 data-kit="label">Field notes</h3>
+            <ol>
+              {entry.notes.map(([at, note]) => (
+                <li key={at}>
+                  <time>{at}</time>
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ol>
+            <div data-archive-record-foot="" aria-hidden>
+              <Barcode value={`${entry.code} ${entry.id}`} size={20} />
+              <Micro>PROTOCOL 7741-C // READ ONLY</Micro>
             </div>
+          </Drawer>
+          <Toggle
+            pressed={isTracked}
+            onPressedChange={(pressed) => {
+              onTrack(pressed ? entry.id : null)
+              if (pressed) notify(`Tracking ${entry.name}`, { description: "Its row is flagged, and the status strip follows it." })
+              else notify(`${entry.name} released`, { description: "Nothing is tracked." })
+            }}
+          >
+            Track record
+          </Toggle>
+        </div>
+
+        <section data-archive-links="" aria-labelledby={`${heading}-links`}>
+          <h3 id={`${heading}-links`} data-kit="label">
+            Linked records
+          </h3>
+          <ul>
+            {entry.links.map((id) => {
+              const link = entryOf(id)
+              return (
+                <li key={id}>
+                  <Button size="sm" onClick={() => onJump(id)}>
+                    {icons[link.section]}
+                    <span data-sr-only>Go to </span>
+                    {link.name}
+                    <ArrowUpRight aria-hidden />
+                  </Button>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        <div data-archive-sheet-foot="" aria-hidden>
+          <Ruler />
+          <div>
+            <Barcode value={entry.id} size={14} />
+            <Micro>CS-A7 // {entry.code} // LINK STABLE</Micro>
           </div>
         </div>
-      </article>
-    </div>
+      </div>
+    </article>
   )
 }
 
@@ -284,6 +296,10 @@ export default function Archive() {
   const [filters, setFilters] = React.useState<Record<Section, string>>({ people: "", places: "", machines: "", programs: "" })
   const [tracked, setTracked] = React.useState<string | null>("sable-quinn")
   const [read, setRead] = React.useState<readonly string[]>([])
+  const [browse, setBrowse] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+  const directoryId = React.useId()
+  const browseKey = React.useRef<HTMLButtonElement>(null)
   const root = React.useRef<HTMLDivElement>(null)
   // Set by a jump: the record it leaves has taken the pressed key with it,
   // so focus goes to the heading of the record it lands on.
@@ -294,7 +310,8 @@ export default function Archive() {
 
   const jump = (id: string) => {
     const target = entryOf(id)
-    landing.current = target.id !== entry.id
+    landing.current = target.id !== entry.id || !shown.length
+    setBrowse(false)
     setSection(target.section)
     setChosen((now) => ({ ...now, [target.section]: id }))
     // A filter that would hide the record gives way to it.
@@ -313,11 +330,13 @@ export default function Archive() {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return
       if ((event.target as Element | null)?.closest?.(`${typing}, [role="dialog"]`)) return
-      const field = root.current?.querySelector<HTMLInputElement>("[data-archive-filter]")
-      if (!field) return
       event.preventDefault()
-      field.focus()
-      field.select()
+      if (browseKey.current?.getClientRects().length) setBrowse(true)
+      requestAnimationFrame(() => {
+        const field = root.current?.querySelector<HTMLInputElement>("[data-archive-filter]")
+        field?.focus()
+        field?.select()
+      })
     }
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
@@ -344,7 +363,7 @@ export default function Archive() {
                 <dd data-tracked={following ? "" : undefined}>{following ? following.name : "Nothing"}</dd>
               </div>
             </dl>
-            <Button size="sm" disabled={!following || following.id === entry.id} onClick={() => following && jump(following.id)}>
+            <Button size="sm" disabled={!following || (shown.length > 0 && following.id === entry.id)} onClick={() => following && jump(following.id)}>
               Go to tracked record
             </Button>
           </>
@@ -357,34 +376,80 @@ export default function Archive() {
         ]}
         code="CS-A7 // ARCHIVE // READ ONLY // PROTOCOL 7741-C"
       >
-        <SideTabs
-          label="Archive sections"
-          code="HALCYON SPRAWL"
-          value={section}
-          onValueChange={(value) => {
-            if (value) setSection(value as Section)
-          }}
-          tabs={sections.map(({ value, label }) => ({
-            value,
-            label,
-            icon: icons[value],
-            content:
-              value === section ? (
-                <Records
-                  section={value}
-                  shown={shown}
-                  entry={entry}
-                  filter={filters[value]}
-                  tracked={tracked}
-                  onChoose={(id) => setChosen((now) => ({ ...now, [value]: id }))}
-                  onFilter={(text) => setFilters((now) => ({ ...now, [value]: text }))}
-                  onTrack={setTracked}
-                  onJump={jump}
-                  onShown={onShown}
-                />
-              ) : null,
-          }))}
-        />
+        <div data-archive-section="">
+          <aside data-archive-browser="" aria-label="Record index">
+            <Button
+              ref={browseKey}
+              data-archive-browse=""
+              aria-controls={directoryId}
+              aria-expanded={browse}
+              onClick={() => setBrowse(!browse)}
+            >
+              <Search aria-hidden />
+              Browse records
+              <span data-archive-browse-current="">{sectionOf(section).label}</span>
+              <ChevronDown aria-hidden />
+            </Button>
+            <div data-archive-directory="" id={directoryId} data-expanded={browse || undefined}>
+              <SideTabs
+                label="Archive sections"
+                code="HALCYON SPRAWL"
+                value={section}
+                onValueChange={(value) => {
+                  if (value) setSection(value as Section)
+                }}
+                tabs={sections.map(({ value, label }) => ({
+                  value,
+                  label,
+                  icon: icons[value],
+                  content: value === section && (
+                    <RecordIndex
+                      section={value}
+                      shown={shown}
+                      entry={entry}
+                      filter={filters[value]}
+                      tracked={tracked}
+                      onChoose={(id) => setChosen((now) => ({ ...now, [value]: id }))}
+                      onFilter={(text) => setFilters((now) => ({ ...now, [value]: text }))}
+                      onOpen={() => setOpen(true)}
+                      onRowClick={() => {
+                        if (!browseKey.current?.getClientRects().length) return
+                        setBrowse(false)
+                        browseKey.current.focus()
+                      }}
+                    />
+                  ),
+                }))}
+              />
+            </div>
+          </aside>
+          {shown.length ? (
+            <Dossier
+              entry={entry}
+              tracked={tracked}
+              open={open}
+              onOpenChange={setOpen}
+              onTrack={setTracked}
+              onJump={jump}
+              onShown={onShown}
+            />
+          ) : (
+            <div data-archive-no-results="">
+              <Search aria-hidden />
+              <h2 role="status">No matching records</h2>
+              <p>Try another name, location or record code.</p>
+              <Button
+                onClick={() => {
+                  setFilters((now) => ({ ...now, [section]: "" }))
+                  if (browseKey.current?.getClientRects().length && !browse) browseKey.current.focus()
+                  else root.current?.querySelector<HTMLInputElement>("[data-archive-filter]")?.focus()
+                }}
+              >
+                Clear filter
+              </Button>
+            </div>
+          )}
+        </div>
       </Screen>
     </div>
   )

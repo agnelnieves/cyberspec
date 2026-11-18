@@ -1,6 +1,11 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
 @layer cyber.blocks {
+  [data-skin="cyber"] [data-grid-screen] {
+    grid-template-columns: minmax(0, 1fr);
+    container: grid-screen / inline-size;
+  }
+
   [data-skin="cyber"] [data-grid-picker] {
     max-inline-size: 100%;
 
@@ -56,22 +61,18 @@
     display: grid;
     grid-template-columns: var(--grid-l) minmax(0, 1fr) var(--grid-r);
     grid-template-rows: minmax(0, 1fr) auto;
-    height: 690px;
+    height: clamp(620px, 76svh, 780px);
     min-width: 0;
 
     /* Narrower, the map takes the width and the panels follow it. */
-    @media (max-width: 1060px) {
+    @container grid-screen (max-width: 990px) {
       --grid-l: 0px;
       --grid-r: 0px;
 
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: auto;
-      gap: 16px;
-      height: auto;
-    }
-
-    @media (max-width: 680px) {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto;
+      gap: 12px;
+      height: auto;
     }
   }
 
@@ -119,8 +120,9 @@
       outline: none;
     }
 
-    @media (max-width: 1060px) {
-      height: clamp(380px, 112vw, 560px);
+    @container grid-screen (max-width: 990px) {
+      grid-area: 1 / 1;
+      height: clamp(260px, min(98cqi, 52svh), 500px);
 
       &::after {
         content: none;
@@ -136,6 +138,10 @@
     grid-area: 1 / 1 / -1 / -1;
     z-index: 1;
     pointer-events: none;
+
+    @container grid-screen (max-width: 990px) {
+      grid-area: 1 / 1;
+    }
   }
 
   [data-skin="cyber"] [data-grid-view]:focus-visible + [data-grid-edge] {
@@ -236,22 +242,22 @@
     stroke-dasharray: 3 3;
   }
 
-  [data-skin="cyber"] [data-grid-rail] {
+  [data-skin="cyber"] [data-grid-track] {
     fill: none;
     stroke: var(--cy-signal);
     stroke-width: 1.5;
     stroke-linejoin: miter;
 
-    &[data-grid-rail="bed"] {
+    &[data-grid-track="bed"] {
       stroke: var(--cy-void);
       stroke-width: 11;
     }
-    &[data-grid-rail="ties"] {
+    &[data-grid-track="ties"] {
       stroke: var(--cy-signal-dim);
       stroke-width: 7;
       stroke-dasharray: 1.5 5;
     }
-    &[data-grid-rail="station"] {
+    &[data-grid-track="station"] {
       fill: var(--cy-void);
       stroke-width: 2;
     }
@@ -369,7 +375,7 @@
 
     [data-grid-pin] > & {
       position: absolute;
-      bottom: calc(100% + 3px);
+      top: calc(100% + 6px);
       left: 50%;
       translate: -50% 0;
     }
@@ -412,8 +418,8 @@
     &[data-grid-micro="bottom"] {
       bottom: 9px;
 
-      /* The zoom keys sit there on a narrow screen. */
-      @media (max-width: 1060px) {
+      /* Keep the compact map's lower margin clear of small print. */
+      @container grid-screen (max-width: 990px) {
         display: none;
       }
     }
@@ -421,16 +427,39 @@
 
   /* ── Keys and panels over the sheet ────────────────────────────────── */
 
-  [data-skin="cyber"] [data-grid-zoom] {
+  [data-skin="cyber"] [data-grid-layers-key] {
+    display: none;
+  }
+
+  [data-skin="cyber"] [data-grid-tools] {
     grid-area: 2 / 1;
     justify-self: start;
     z-index: 2;
     margin: 0 0 16px 16px;
 
-    @media (max-width: 1060px) {
-      grid-area: 1 / 1 / 2 / -1;
-      align-self: end;
-      margin: 0 0 12px 12px;
+    @container grid-screen (max-width: 990px) {
+      grid-area: auto;
+      justify-self: stretch;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin: 0;
+
+      & > [data-grid-layers-key] {
+        display: inline-flex;
+        padding-inline: 10px;
+        &[aria-expanded="true"] {
+          --frame-line: var(--cy-line-hot);
+          --frame-fill: var(--cy-fill-active);
+          color: var(--cy-ink-hi);
+        }
+      }
+      & [data-kit="button-group"] [data-kit="button"]:not([data-icon]) {
+        min-inline-size: 52px;
+        padding-inline: 8px;
+      }
     }
   }
 
@@ -448,6 +477,10 @@
       pointer-events: auto;
     }
 
+    & [data-kit="panel-surface"] {
+      --frame-fill: color-mix(in srgb, var(--tone) 5%, var(--cy-panel));
+    }
+
     &[data-grid-rail="detail"] {
       grid-area: 1 / 3 / -1 / 4;
       justify-content: space-between;
@@ -459,12 +492,28 @@
       padding: 16px 0 0 16px;
     }
 
-    @media (max-width: 1060px) {
+    @container grid-screen (max-width: 990px) {
       &[data-grid-rail="detail"],
       &[data-grid-rail="filters"] {
         grid-area: auto;
         justify-content: flex-start;
         padding: 0;
+      }
+
+      &[data-grid-rail="filters"]:not([data-open]) {
+        display: none;
+      }
+      &[data-grid-rail="detail"] {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        align-items: start;
+      }
+    }
+
+    @container grid-screen (max-width: 560px) {
+      &[data-grid-rail="detail"] {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
       }
     }
   }
@@ -503,6 +552,17 @@
 
     & > [data-grid-fact] {
       grid-column: 1 / -1;
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-actions] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+    gap: 6px;
+    & > button {
+      min-inline-size: 0;
+      gap: 5px;
+      padding-inline: 6px;
     }
   }
 
@@ -583,6 +643,35 @@
     & [data-grid-you-sample] {
       width: 16px;
       height: 16px;
+    }
+  }
+
+  @container grid-screen (max-width: 560px) {
+    [data-skin="cyber"] [data-grid-picker] {
+      flex-basis: 100%;
+    }
+    [data-skin="cyber"] [data-grid-screen] [data-kit="screen-status-lead"] {
+      inline-size: 100%;
+      justify-content: space-between;
+      gap: 8px 12px;
+    }
+    [data-skin="cyber"] [data-grid-now] {
+      gap: 5px 14px;
+      & div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+    }
+  }
+  @media (pointer: coarse) {
+    [data-skin="cyber"] [data-grid-screen] {
+      --cy-h-sm: 44px;
+    }
+  }
+  @container grid-screen (max-width: 300px) {
+    [data-skin="cyber"] [data-grid-layers-key] > svg {
+      display: none;
     }
   }
 }

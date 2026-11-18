@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Activity, Brain, Cpu, RotateCcw, Shield, Zap } from "lucide-react"
+import { Activity, ArrowDown, ArrowUp, Brain, Cpu, RotateCcw, Shield, Zap } from "lucide-react"
 import { sfx } from "@/registry/cyber/lib/sound"
 import { AlertDialog } from "@/registry/cyber/ui/alert-dialog"
 import { Badge } from "@/registry/cyber/ui/badge"
@@ -218,6 +218,7 @@ export default function Augments() {
   ])
   const entry = React.useRef(0)
   const root = React.useRef<HTMLDivElement>(null)
+  const sheet = React.useRef<HTMLElement>(null)
   // The attribute whose node should take focus if a change removes what
   // was focused (a "+" key that has nothing left to spend, a sheet that
   // was swapped from the keyboard).
@@ -301,8 +302,8 @@ export default function Augments() {
   const step = (by: number) => {
     const at = attributes.findIndex((each) => each.id === selected)
     const next = attributes[(at + by + attributes.length) % attributes.length].id
-    refocus.current = next
     setSelected(next)
+    root.current?.querySelector<HTMLElement>(`[data-augments-node="${next}"]`)?.focus()
   }
 
   // The screen's keys. They're only the screen's while focus is in it or
@@ -354,6 +355,7 @@ export default function Augments() {
 
   return (
     <Screen
+      data-augments-screen=""
       label="Augments"
       code="CS-A0 // AUGMENT LATTICE // MERIDIAN CLINIC 04"
       status={
@@ -362,14 +364,7 @@ export default function Augments() {
           <Readout label="Street standing" value={41} size="sm" tone="ok" />
         </>
       }
-      aside={
-        <div data-augments-credits="">
-          <span data-augments-currency="" aria-hidden>
-            ¤
-          </span>
-          <Readout label="Credits" value={balance} size="sm" tone="flag" />
-        </div>
-      }
+      aside={<Readout label="Credits" prefix="¤" value={balance} size="sm" tone="flag" />}
       hints={[
         { keys: "Q", label: "Previous attribute", onPress: () => step(-1) },
         { keys: "E", label: "Next attribute", onPress: () => step(1) },
@@ -384,15 +379,17 @@ export default function Augments() {
         </div>
 
         <div data-augments-stage="">
-          <h2 data-sr-only>Attribute lattice</h2>
           <Corners size={10} />
           <Schematic />
-          <Micro data-augments-print="head">LATTICE 05 NODES // CAP {cap} // BUS 3-WIRE // REV 0.1</Micro>
+          <header data-augments-stage-head="">
+            <h2 data-augments-heading="">Attribute lattice</h2>
+            <span data-kit="value">Level cap {cap}</span>
+          </header>
           <Micro data-augments-print="side" vertical>
             PROTOCOL 7741-C // NODE 3F:A2
           </Micro>
           <DataStream data-augments-stream="" rows={5} seed="CS-A0" />
-          <HexStatGroup label="Attributes" gap={18}>
+          <HexStatGroup label="Attributes" gap={24} minSize={82}>
             {attributes.map((each) => (
               <HexStat
                 key={each.id}
@@ -418,28 +415,35 @@ export default function Augments() {
           <div data-augments-stage-foot="">
             <Readout label="Attribute total" value={total} unit="/ 100" size="sm" />
             <Barcode value={`CS-A0-${total}`} size={20} />
+            <Button data-augments-jump="" onClick={() => {
+              sheet.current?.focus({ preventScroll: true })
+              sheet.current?.scrollIntoView({ block: "start" })
+            }}>
+              {attribute.name} details <ArrowDown aria-hidden />
+            </Button>
           </div>
           <Ruler data-augments-ruler="" />
         </div>
 
         <Panel
+          ref={sheet}
+          tabIndex={-1}
           data-augments-sheet-panel=""
           title={attribute.name}
           level={2}
           code={`${attribute.code} // NODE ${attributes.indexOf(attribute) + 1} OF 5`}
           actions={`Level ${level} / ${cap}`}
-          footer={<span>{feeds.length ? `Feeds ${feeds.join(" and ")}.` : "Feeds nothing directly."}</span>}
+          footer={<>
+            <span>Feeds {feeds.join(" and ")}.</span>
+            <Button data-augments-jump="" tone="ghost" onClick={() => root.current?.querySelector<HTMLElement>(`[data-augments-node="${selected}"]`)?.focus()}>
+              <ArrowUp aria-hidden /> Lattice
+            </Button>
+          </>}
         >
           {/* Keyed by attribute, so the sheet tears in when the selection changes. */}
           <div data-augments-sheet-clip="">
             <div key={attribute.id} data-augments-sheet="">
               <p>{attribute.about}</p>
-              <p>Each level of {attribute.name} will:</p>
-              <ul>
-                {attribute.perLevel.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
               <Stepper
                 label={`${attribute.name} level`}
                 value={level}
@@ -456,6 +460,12 @@ export default function Augments() {
                       : "No attribute points left."
                 }
               />
+              <h3 data-kit="label">Per level</h3>
+              <ul>
+                {attribute.perLevel.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
               <h3 data-kit="label">Upgrades</h3>
               <div data-augments-upgrades="" role="group" aria-label={`${attribute.name} upgrades`}>
                 {attribute.upgrades.map((upgrade) => {

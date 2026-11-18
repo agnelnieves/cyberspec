@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Briefcase, House, LocateFixed, MessageSquare, Minus, Navigation, Plus, Store } from "lucide-react"
+import { Briefcase, House, Layers, LocateFixed, MessageSquare, Minus, Navigation, Plus, Store } from "lucide-react"
 import { sfx } from "@/registry/cyber/lib/sound"
 import { relayAnnotations, relayGlobeAnnotations, relayMarkers, relayRoutes } from "@/registry/cyber/examples/map-demo"
 import {
@@ -87,7 +87,7 @@ function isGridPage() {
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value))
 
 // Where the sheet sits for a view: its scale, its offset, and the view's
-// center after clamping, so the sheet always covers the whole viewport.
+// center after clamping. Its edges can reach the clear space between panels.
 function place(view: View, size: Size | null) {
   if (!size) return { k: 1, tx: 0, ty: 0, x: view.x, y: view.y, tall: false }
   // The scale at which the sheet just covers the window. Where that leaves
@@ -98,7 +98,7 @@ function place(view: View, size: Size | null) {
   const k = cover * (snug ? BASE : 1) * zooms[view.zoom]
   const midX = (size.l + size.w - size.r) / 2
   const midY = size.h / 2
-  const tx = clamp(midX - view.x * k, size.w - W * k, 0)
+  const tx = clamp(midX - view.x * k, size.w - size.r - W * k, size.l)
   const ty = clamp(midY - view.y * k, size.h - H * k, 0)
   return { k, tx, ty, x: (midX - tx) / k, y: (midY - ty) / k, tall: H * k - size.h > 1 }
 }
@@ -130,11 +130,11 @@ const Terrain = React.memo(function Terrain() {
       {paths.blocks.map((d, tone) => (
         <path key={tone} data-grid-block={tone} d={d} />
       ))}
-      <path data-grid-rail="bed" d={paths.rail} />
-      <path data-grid-rail="ties" d={paths.rail} />
-      <path data-grid-rail="" d={paths.rail} />
+      <path data-grid-track="bed" d={paths.rail} />
+      <path data-grid-track="ties" d={paths.rail} />
+      <path data-grid-track="" d={paths.rail} />
       {stations.map(([x, y]) => (
-        <path key={`${x}`} data-grid-rail="station" d={`M${x - 7} ${y - 7}h14v14h-14Z`} />
+        <path key={`${x}`} data-grid-track="station" d={`M${x - 7} ${y - 7}h14v14h-14Z`} />
       ))}
       {landmarks.map((mark) =>
         mark.id === "exchange" ? (
@@ -242,6 +242,8 @@ export default function Grid() {
   const [shown, setShown] = React.useState<Kind[]>(kinds.map((kind) => kind.value))
   const [chosen, setChosen] = React.useState(tracked.id)
   const [waypointId, setWaypointId] = React.useState(tracked.id)
+  const [layersOpen, setLayersOpen] = React.useState(false)
+  const layersId = React.useId()
   const help = React.useId()
   const time = useClock()
 
@@ -392,13 +394,14 @@ export default function Grid() {
 
   const picker = (
     <div data-grid-picker="">
-      <SegmentedControl label="Map view" options={mapModes} value={mode} onValueChange={chooseMode} />
+      <SegmentedControl fill label="Map view" options={mapModes} value={mode} onValueChange={chooseMode} />
     </div>
   )
   if (!isDistrict) {
     return (
       <Screen
         label={mode === "globe" ? "Relay globe" : "Relay atlas"}
+        data-grid-screen=""
         status={
           <>
             {picker}
@@ -431,6 +434,7 @@ export default function Grid() {
   return (
     <Screen
       label="District map"
+      data-grid-screen=""
       status={
         <>
           {picker}
@@ -480,6 +484,7 @@ export default function Grid() {
             onPointerMove={onPointerMove}
             onPointerUp={onPointerEnd}
             onPointerCancel={onPointerEnd}
+            onLostPointerCapture={onPointerEnd}
             onKeyDown={onKeyDown}
           >
             <p id={help} data-sr-only>
@@ -511,7 +516,7 @@ export default function Grid() {
                     data-chosen={isChosen ? "" : undefined}
                     style={{ "--x": marker.x, "--y": marker.y } as React.CSSProperties}
                   >
-                    <Reticle active={isChosen} tag={isChosen ? (isWaypoint ? "Waypoint" : "Lock") : undefined}>
+                    <Reticle active={isChosen} tag={isChosen ? marker.name : undefined}>
                       <Tooltip content={`${marker.name} · ${marker.metres} m${isWaypoint ? " · waypoint" : ""}`} side="bottom">
                         <Button
                           icon
@@ -525,7 +530,7 @@ export default function Grid() {
                         </Button>
                       </Tooltip>
                     </Reticle>
-                    {isWaypoint && !isChosen && (
+                    {isWaypoint && (
                       <span data-grid-pennant="" aria-hidden>
                         WP
                       </span>
@@ -541,82 +546,26 @@ export default function Grid() {
           {/* The frame's edge, laid over the sheet so its cut corners show. */}
           <span data-grid-edge="" data-frame="tl br" aria-hidden />
 
-          <ButtonGroup
-            label="Map zoom"
-            data-grid-zoom=""
-            keys={[
-              { label: "Zoom out", icon: <Minus aria-hidden />, action: "decrement", disabled: view.zoom === 0, onPress: () => zoomBy(-1) },
-              {
-                label: `Reset zoom, ${percent}%`,
-                content: <span data-kit="value">{percent}%</span>,
-                onPress: () => move((now) => ({ ...now, zoom: START_ZOOM })),
-              },
-              { label: "Zoom in", icon: <Plus aria-hidden />, action: "increment", disabled: view.zoom === zooms.length - 1, onPress: () => zoomBy(1) },
-              { label: "Center on my position", icon: <LocateFixed aria-hidden />, onPress: () => centerOn(city.you) },
-            ]}
-          />
-
-          <div data-grid-rail="detail">
-            <Panel
-              title="Selected marker"
-              code={`${selected.id.toUpperCase()} // SECTOR ${selected.sector} // ${onRoute ? "ON ROUTE" : "OFF ROUTE"}`}
-              tone={onRoute ? "flag" : "default"}
-              level={2}
-              actions={<Badge tone={onRoute ? "flag" : "signal"}>{kind.label}</Badge>}
-              footer={
-                <p role="status">
-                  {onRoute ? "Waypoint. The route ends here." : `The route runs to ${waypoint.name}.`}
-                </p>
-              }
-            >
-              {/* Keyed by the marker, so a new selection tears in; the keys
-                  below stay mounted, and focus on them is never dropped. */}
-              <div key={selected.id} data-grid-dossier="">
-                <h3 data-grid-title="">{selected.name}</h3>
-                <p data-kit="hint">
-                  {selected.district}, sector {selected.sector}
-                </p>
-                <p>{selected.text}</p>
-              </div>
-              <div data-grid-figures="">
-                <Readout label="Distance" value={selected.metres} unit="m" tone={onRoute ? "flag" : "signal"} />
-                <Readout label="On foot" value={Math.max(1, Math.round(selected.metres / 80))} unit="min" size="sm" />
-                <dl data-grid-fact="">
-                  <dt data-kit="label">{selected.fact[0]}</dt>
-                  <dd data-kit="value">{selected.fact[1]}</dd>
-                </dl>
-              </div>
-              <div data-kit="actions">
-                <Button size="sm" onClick={() => centerOn(selected)}>
-                  <LocateFixed aria-hidden />
-                  Show on map
-                </Button>
-                {/* A flag key that's off keeps its solid yellow under the hatching,
-                    which leaves its label unreadable; off, it's a plain key. */}
-                <Button size="sm" tone={onRoute ? "secondary" : "flag"} disabled={onRoute} focusableWhenDisabled onClick={() => setWaypoint(selected)}>
-                  <Navigation aria-hidden />
-                  Set waypoint
-                </Button>
-              </div>
-            </Panel>
-
-            <Panel title="Current location" code="FIX 3 OF 3 // DRIFT 0.4 M" tone="signal" level={2}>
-              <p data-grid-here="">
-                Tidewall Row
-                <span data-kit="hint">
-                  {districtAt(city.you.x, city.you.y)}, sector {sectorAt(city.you.x, city.you.y)}
-                </span>
-              </p>
-              <dl data-grid-fact="">
-                <dt data-kit="label">Local time</dt>
-                <dd data-kit="value" data-grid-time="">
-                  {time}
-                </dd>
-              </dl>
-            </Panel>
+          <div data-grid-tools="">
+            <ButtonGroup
+              label="Map zoom"
+              keys={[
+                { label: "Zoom out", icon: <Minus aria-hidden />, action: "decrement", disabled: view.zoom === 0, onPress: () => zoomBy(-1) },
+                {
+                  label: `Reset zoom, ${percent}%`,
+                  content: <span data-kit="value">{percent}%</span>,
+                  onPress: () => move((now) => ({ ...now, zoom: START_ZOOM })),
+                },
+                { label: "Zoom in", icon: <Plus aria-hidden />, action: "increment", disabled: view.zoom === zooms.length - 1, onPress: () => zoomBy(1) },
+                { label: "Center on my position", icon: <LocateFixed aria-hidden />, onPress: () => centerOn(city.you) },
+              ]}
+            />
+            <Button data-grid-layers-key="" aria-controls={layersId} aria-expanded={layersOpen} onClick={() => setLayersOpen((open) => !open)}>
+              <Layers aria-hidden /> Layers
+            </Button>
           </div>
 
-          <div data-grid-rail="filters">
+          <div data-grid-rail="filters" id={layersId} data-open={layersOpen ? "" : undefined}>
             <Panel title="Filters" code="OVERLAY // 4 LAYERS" level={2}>
               <ToggleGroup<Kind>
                 label="Marker kinds"
@@ -626,7 +575,7 @@ export default function Grid() {
                 onValueChange={(next) => setShown(next)}
                 options={kinds.map((entry) => ({ value: entry.value, label: entry.plural, icon: entry.icon }))}
               />
-              <Collapsible label="Legend" summary="10 symbols" defaultOpen>
+              <Collapsible label="Legend" summary="10 symbols">
                 <div role="list" aria-label="Map legend" data-grid-legend="">
                   {kinds.map((entry) => (
                     <LegendRow
@@ -659,13 +608,77 @@ export default function Grid() {
                   <LegendRow label="Rail">
                     {stroke(
                       <>
-                        <path data-grid-rail="ties" d="M1 6H27" />
-                        <path data-grid-rail="" d="M1 6H27" />
+                        <path data-grid-track="ties" d="M1 6H27" />
+                        <path data-grid-track="" d="M1 6H27" />
                       </>,
                     )}
                   </LegendRow>
                 </div>
               </Collapsible>
+            </Panel>
+          </div>
+
+          <div data-grid-rail="detail">
+            <Panel
+              title="Selected marker"
+              code={`${selected.id.toUpperCase()} // SECTOR ${selected.sector} // ${onRoute ? "ON ROUTE" : "OFF ROUTE"}`}
+              tone={onRoute ? "flag" : "default"}
+              level={2}
+              actions={<Badge tone={onRoute ? "flag" : "signal"}>{kind.label}</Badge>}
+              footer={
+                <p role="status">
+                  {onRoute ? "Waypoint. The route ends here." : `The route runs to ${waypoint.name}.`}
+                </p>
+              }
+            >
+              {/* Keyed by the marker, so a new selection tears in; the keys
+                  below stay mounted, and focus on them is never dropped. */}
+              <div key={selected.id} data-grid-dossier="">
+                <h3 data-grid-title="">{selected.name}</h3>
+                <p data-kit="hint">
+                  {selected.district}, sector {selected.sector}
+                </p>
+                <p>{selected.text}</p>
+              </div>
+              <div data-grid-figures="">
+                <Readout label="Distance" value={selected.metres} unit="m" tone={onRoute ? "flag" : "signal"} />
+                <Readout label="On foot" value={Math.max(1, Math.round(selected.metres / 80))} unit="min" size="sm" />
+                <dl data-grid-fact="">
+                  <dt data-kit="label">{selected.fact[0]}</dt>
+                  <dd data-kit="value">{selected.fact[1]}</dd>
+                </dl>
+              </div>
+              <div data-grid-actions="">
+                <Button size="sm" onClick={() => {
+                  centerOn(selected)
+                  viewport.current?.focus({ preventScroll: true })
+                  viewport.current?.scrollIntoView({ block: "nearest", inline: "nearest" })
+                }}>
+                  <LocateFixed aria-hidden />
+                  Show on map
+                </Button>
+                {/* A flag key that's off keeps its solid yellow under the hatching,
+                    which leaves its label unreadable; off, it's a plain key. */}
+                <Button size="sm" tone={onRoute ? "secondary" : "flag"} disabled={onRoute} focusableWhenDisabled onClick={() => setWaypoint(selected)}>
+                  <Navigation aria-hidden />
+                  Set waypoint
+                </Button>
+              </div>
+            </Panel>
+
+            <Panel title="Current location" code="FIX 3 OF 3 // DRIFT 0.4 M" tone="signal" level={2}>
+              <p data-grid-here="">
+                Tidewall Row
+                <span data-kit="hint">
+                  {districtAt(city.you.x, city.you.y)}, sector {sectorAt(city.you.x, city.you.y)}
+                </span>
+              </p>
+              <dl data-grid-fact="">
+                <dt data-kit="label">Local time</dt>
+                <dd data-kit="value" data-grid-time="">
+                  {time}
+                </dd>
+              </dl>
             </Panel>
           </div>
         </div>

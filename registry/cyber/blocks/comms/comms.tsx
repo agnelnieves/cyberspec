@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Phone, PhoneOff, RotateCcw, Send } from "lucide-react"
+import { ChevronDown, Phone, PhoneOff, RotateCcw, Send } from "lucide-react"
 import { contacts, creditsOf, earlierCalls, type Line, type Offer, type Presence } from "@/registry/cyber/blocks/comms/data"
 import { Portrait } from "@/registry/cyber/blocks/comms/portrait"
 import { Avatar, AvatarStack } from "@/registry/cyber/ui/avatar"
@@ -15,6 +15,7 @@ import { Panel } from "@/registry/cyber/ui/panel"
 import { Readout } from "@/registry/cyber/ui/readout"
 import { Screen } from "@/registry/cyber/ui/screen"
 import { ScrollArea } from "@/registry/cyber/ui/scroll-area"
+import { Select } from "@/registry/cyber/ui/select"
 import { Switch } from "@/registry/cyber/ui/switch"
 import { notify } from "@/registry/cyber/ui/toaster"
 import "@/registry/cyber/blocks/comms/comms.css"
@@ -86,14 +87,32 @@ function PresenceBadge({ presence }: { presence: Presence }) {
 // The attached brief: what the job is, in a frame of its own. It stays in
 // the thread after it's answered, and says how.
 function Brief({ offer, state }: { offer: Offer; state: OfferState }) {
+  const [expanded, setExpanded] = React.useState(false)
+  const terms = React.useId()
   return (
-    <div data-comms-brief="" data-frame="tl br" data-state={state}>
+    <div data-comms-brief="" data-frame="tl br" data-state={state} data-expanded={expanded || undefined}>
       <div data-comms-brief-head="">
         <span data-kit="hint">Brief received {offer.received}</span>
         {state === "open" ? <Badge tone="flag">Open offer</Badge> : state === "accepted" ? <Badge tone="ok">Accepted</Badge> : <Badge tone="mute">Declined</Badge>}
       </div>
       <h3 data-comms-brief-title="">{offer.name}</h3>
-      <dl data-comms-terms="">
+      <div data-comms-brief-foot="">
+        <div data-comms-crew="">
+          <AvatarStack label="Crew on this job" size="sm">
+            {offer.crew.map((name) => (
+              <Avatar key={name} name={name} />
+            ))}
+          </AvatarStack>
+        </div>
+        <Button size="sm" data-comms-disclosure="" aria-controls={terms} aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          {expanded ? "Hide brief" : "View brief"} <ChevronDown aria-hidden />
+        </Button>
+        <span data-comms-pay="">
+          <span data-kit="label">Pays</span>
+          <span data-kit="value">{creditsOf(offer.pay)}</span>
+        </span>
+      </div>
+      <dl id={terms} data-comms-terms="">
         <div>
           <dt>Type</dt>
           <dd>{offer.kind}</dd>
@@ -107,17 +126,6 @@ function Brief({ offer, state }: { offer: Offer; state: OfferState }) {
           <dd>{offer.location}</dd>
         </div>
       </dl>
-      <div data-comms-brief-foot="">
-        <AvatarStack label="Crew on this job" size="sm">
-          {offer.crew.map((name) => (
-            <Avatar key={name} name={name} />
-          ))}
-        </AvatarStack>
-        <span data-comms-pay="">
-          <span data-kit="label">Pays</span>
-          <span data-kit="value">{creditsOf(offer.pay)}</span>
-        </span>
-      </div>
     </div>
   )
 }
@@ -132,6 +140,7 @@ export default function Comms() {
   const [call, setCall] = React.useState<{ id: string; since: number } | null>(null)
   const [elapsed, setElapsed] = React.useState(0)
   const [calls, setCalls] = React.useState<FeedItem[]>(earlierCalls)
+  const [showDetails, setShowDetails] = React.useState(false)
 
   // What a timer needs to know when it fires, long after the render that
   // set it: who's on screen now, and whether toasts are being held.
@@ -268,9 +277,9 @@ export default function Comms() {
     setRinging(id)
     return new Promise<void>((resolve) => {
       later(1500, (current) => {
-        setRinging(null)
         resolve()
         if (!current) return
+        setRinging(null)
         if (contact.call.connects) {
           setElapsed(0)
           setCall({ id, since: Date.now() })
@@ -290,6 +299,7 @@ export default function Comms() {
     setSelected("mara")
     setChoice(null)
     setTaken(0)
+    setRinging(null)
     setCall(null)
     setCalls(earlierCalls)
     notify("Inbox restored", { description: "Six threads, two offers waiting." })
@@ -300,6 +310,7 @@ export default function Comms() {
   // the key shows the ringing.
   const callKey = React.useRef<HTMLButtonElement>(null)
   const recordId = React.useId()
+  const detailsId = React.useId()
   const onScreenKey = (event: React.KeyboardEvent) => {
     if (event.key.toLowerCase() !== "c" || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return
     if ((event.target as Element).closest("input, textarea, select, [contenteditable]")) return
@@ -314,18 +325,9 @@ export default function Comms() {
     id: line.id,
     time: line.time,
     actor: line.from === "me" ? "You" : contact.name,
-    text: line.text,
+    text: <span data-comms-message={line.from}>{line.text}</span>,
     tone: line.offer ? "flag" : undefined,
   }))
-
-  const trailing =
-    thread.offer === "open" && offer
-      ? `New job: ${offer.name}`
-      : thread.offer === "accepted"
-        ? "Job accepted"
-        : thread.offer === "declined"
-          ? "Offer declined"
-          : `${thread.lines.length} messages`
 
   const state = thread.waiting
     ? `Sent. ${contact.name} is typing.`
@@ -336,6 +338,7 @@ export default function Comms() {
   return (
     <Screen
       label="Comms"
+      data-comms-screen=""
       onKeyDown={onScreenKey}
       status={
         <>
@@ -387,21 +390,35 @@ export default function Comms() {
       <div data-kit="comms">
         <div data-comms-list="">
           <h2 data-sr-only>Contact list</h2>
-          <ItemList
-            label="Contacts"
-            countLabel="unread"
-            value={selected}
-            // Pressing the chosen row again would clear the choice; the
-            // record and the thread always show someone, so that's ignored.
-            onValueChange={(value) => value && open(value)}
-            items={contacts.map((entry) => ({
-              value: entry.id,
-              label: entry.name,
-              meta: entry.role,
-              flag: threads[entry.id].offer === "open" ? "Job offer waiting" : undefined,
-              count: threads[entry.id].unread || undefined,
-            }))}
-          />
+          <div data-comms-directory="">
+            <ItemList
+              label="Contacts"
+              countLabel="unread"
+              value={selected}
+              // Pressing the chosen row again would clear the choice; the
+              // record and the thread always show someone, so that's ignored.
+              onValueChange={(value) => value && open(value)}
+              items={contacts.map((entry) => ({
+                value: entry.id,
+                label: entry.name,
+                meta: entry.role,
+                flag: threads[entry.id].offer === "open" ? "Job offer waiting" : undefined,
+                count: threads[entry.id].unread || undefined,
+              }))}
+            />
+          </div>
+          <div data-comms-picker="">
+            <Select
+              label="Contacts"
+              options={contacts.map((entry) => {
+                const { unread, offer } = threads[entry.id]
+                const status = [unread ? `${unread} unread` : "", offer === "open" ? "Open offer" : ""].filter(Boolean).join(" · ")
+                return { value: entry.id, label: status ? `${entry.name} · ${status}` : entry.name }
+              })}
+              value={selected}
+              onValueChange={(value) => value && open(value)}
+            />
+          </div>
         </div>
 
         <section data-comms-record="" aria-labelledby={recordId}>
@@ -437,35 +454,42 @@ export default function Comms() {
               <PresenceBadge presence={contact.presence} />
             )}
           </div>
-          <dl data-comms-facts="">
-            <div>
-              <dt>Channel</dt>
-              <dd>{contact.channel}</dd>
-            </div>
-            <div>
-              <dt>Last contact</dt>
-              <dd>{last.time}</dd>
-            </div>
-            <div>
-              <dt>Jobs together</dt>
-              <dd>{two(contact.jobs + (thread.offer === "accepted" ? 1 : 0))}</dd>
-            </div>
-          </dl>
-          <Meter label="Standing" value={thread.standing} />
-          <Button ref={callKey} tone="signal" data-comms-call="" onClick={dial}>
-            {onLine ? <PhoneOff aria-hidden /> : <Phone aria-hidden />}
-            {onLine ? `End call with ${contact.name}` : `Call ${contact.name}`}
-          </Button>
+          <div data-comms-contact-actions="">
+            <Button data-comms-disclosure="" aria-controls={detailsId} aria-expanded={showDetails} onClick={() => setShowDetails(!showDetails)}>
+              Details <ChevronDown aria-hidden />
+            </Button>
+            <Button ref={callKey} tone="signal" data-comms-call="" onClick={dial} aria-label={`${onLine ? "End call with" : "Call"} ${contact.name}`}>
+              {onLine ? <PhoneOff aria-hidden /> : <Phone aria-hidden />}
+              {onLine ? "End call" : "Call"} <span data-comms-call-name="">{onLine ? `with ${contact.name}` : contact.name}</span>
+            </Button>
+          </div>
+          <div data-comms-details="" id={detailsId} data-expanded={showDetails || undefined}>
+            <dl data-comms-facts="">
+              <div>
+                <dt>Channel</dt>
+                <dd>{contact.channel}</dd>
+              </div>
+              <div>
+                <dt>Last contact</dt>
+                <dd>{last.time}</dd>
+              </div>
+              <div>
+                <dt>Jobs together</dt>
+                <dd>{two(contact.jobs + (thread.offer === "accepted" ? 1 : 0))}</dd>
+              </div>
+            </dl>
+            <Meter label="Standing" value={thread.standing} />
+          </div>
         </section>
 
         <div data-comms-thread="" key={contact.id}>
           <Panel
             variant="titled"
             tone={thread.offer === "open" ? "flag" : "default"}
-            title={contact.name}
+            title="Message thread"
             level={2}
             code={`${contact.channel} // ${thread.offer === "open" ? "INBOUND // ANSWER BEFORE 04:00" : "THREAD SYNCED"}`}
-            actions={trailing}
+            actions={`${two(thread.lines.length)} messages`}
           >
             <ScrollArea label={`Messages with ${contact.name}`} maxHeight={264} stickToEnd>
               <Feed label={`Thread with ${contact.name}`} items={messages} live={thread.waiting} />

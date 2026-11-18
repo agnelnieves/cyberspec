@@ -1,9 +1,10 @@
 import * as React from "react"
-import { Play, RotateCcw, Square } from "lucide-react"
+import { ArrowDown, ArrowUp, Play, RotateCcw, Square } from "lucide-react"
 import { daemon, type DaemonState } from "@/registry/cyber/blocks/daemon/engine"
 import { Badge } from "@/registry/cyber/ui/badge"
 import { Button } from "@/registry/cyber/ui/button"
 import { Checkbox } from "@/registry/cyber/ui/checkbox"
+import { Collapsible } from "@/registry/cyber/ui/collapsible"
 import { Panel } from "@/registry/cyber/ui/panel"
 import { RadioGroup } from "@/registry/cyber/ui/radio-group"
 import { Readout } from "@/registry/cyber/ui/readout"
@@ -16,8 +17,8 @@ import { TextField } from "@/registry/cyber/ui/text-field"
 import { notify } from "@/registry/cyber/ui/toaster"
 import "@/registry/cyber/blocks/daemon/daemon.css"
 
-// An agent on the page, where you can watch it. On the left is an ordinary
-// form built from the kit. On the right is a console onto the ui-sdk agent
+// An agent on the page, where you can watch it. The deck is an ordinary
+// form built from the kit. Beside it is a console onto the ui-sdk agent
 // bridge: it lists what an agent can see, runs what an agent would run, and
 // keeps a history that can put the agent's changes back without touching
 // yours. Nothing here calls a model; the programs are scripted tool calls,
@@ -33,24 +34,26 @@ const districts = [
   { value: "meridian-heights", label: "Meridian Heights", code: "MH-01" },
 ]
 
-function Deck() {
-  const [committed, setCommitted] = React.useState<string | null>(null)
+function Deck({ id, consoleId }: { id: string; consoleId: string }) {
+  const [status, setStatus] = React.useState("Nothing committed yet.")
   const [burned, setBurned] = React.useState(false)
   return (
     <Panel
       title="Deck configuration"
       code="VANTA MK.II // WHAT THE AGENT OPERATES"
       level={2}
+      id={id}
       data-daemon-deck=""
+      actions={<a data-daemon-jump="" href={`#${consoleId}`}><ArrowUp aria-hidden /> Console</a>}
       footer={
         <p data-kit="hint" role="status">
-          {burned ? "Identity burned. This one doesn't come back." : (committed ?? "Nothing committed yet.")}
+          {status}
         </p>
       }
     >
       <div data-daemon-form="">
-        <TextField label="Handle" defaultValue="nyx" hint="Shown to every crew you run with." />
-        <Select label="District" options={districts} defaultValue="lowtide" hint="Where the route starts." />
+        <TextField label="Handle" defaultValue="nyx" />
+        <Select label="District" options={districts} defaultValue="lowtide" />
         <Slider label="Gain" defaultValue={40} />
         <Stepper label="Relays" defaultValue={2} min={1} max={8} />
         <RadioGroup
@@ -71,9 +74,11 @@ function Deck() {
       <div data-kit="actions" data-daemon-actions="">
         {/* Irreversible, so an agent can ask for it but a person has to say yes. */}
         <Button
+          disabled={burned}
           data-agent-confirm="Burns the current identity: its alias, its credit line and every door it opens. This can't be undone."
           onClick={() => {
             setBurned(true)
+            setStatus("Identity burned. This one doesn't come back.")
             notify("Identity burned", { tone: "error", description: "The Glasswater alias is gone." })
           }}
         >
@@ -83,7 +88,7 @@ function Deck() {
           tone="primary"
           onClick={() => {
             const at = new Date().toLocaleTimeString("en-GB", { hour12: false })
-            setCommitted(`Route committed at ${at}.`)
+            setStatus(`Route committed at ${at}.`)
             notify("Route committed", { tone: "success", description: "The deck is holding the new configuration." })
           }}
         >
@@ -99,7 +104,7 @@ function Deck() {
 const serverState: DaemonState = { lines: [], busy: false, hold: null, agentChanges: 0 }
 const getServerState = () => serverState
 
-function Console() {
+function Console({ id, deckId }: { id: string; deckId: string }) {
   const state = React.useSyncExternalStore(daemon.subscribe, daemon.getState, getServerState)
   return (
     <Panel
@@ -107,17 +112,15 @@ function Console() {
       code="BRIDGE UP // SNAPSHOT · QUERY · ACT"
       tone="signal"
       level={2}
+      id={id}
       data-daemon-console=""
       actions={
-        state.busy ? (
-          <Badge tone="signal" status live>
-            Running
+        <>
+          <Badge tone={state.hold ? "flag" : state.busy ? "signal" : "mute"} status live={state.busy} role="status">
+            {state.hold ? "Held" : state.busy ? "Running" : "Idle"}
           </Badge>
-        ) : (
-          <Badge tone="mute" status>
-            Idle
-          </Badge>
-        )
+          <a data-daemon-jump="" href={`#${deckId}`}>Deck <ArrowDown aria-hidden /></a>
+        </>
       }
     >
       {/* The console's own controls are kept from the agent: it operates the
@@ -125,25 +128,16 @@ function Console() {
       <div data-agent-hidden="" data-daemon-console-body="">
         <div data-daemon-programs="" role="group" aria-label="Programs">
           {daemon.programs.map((program) => (
-            <div key={program.name} data-daemon-program="">
-              <Button tone="signal" size="sm" disabled={state.busy} onClick={() => void daemon.play(program.name)}>
-                <Play aria-hidden />
-                {program.name}
-              </Button>
-              <span data-kit="hint">{program.task}</span>
-            </div>
+            <Button key={program.name} data-daemon-program="" tone="signal" disabled={state.busy}
+              onClick={() => void daemon.play(program.name)}>
+              <span data-daemon-program-name=""><span data-sr-only>Run </span>{program.name}</span>
+              <span data-daemon-program-task="">{program.task}</span>
+              <Play aria-hidden />
+            </Button>
           ))}
         </div>
-        <Terminal
-          label="Daemon log"
-          lines={state.lines}
-          busy={state.busy}
-          onCommand={(text) => void daemon.run(text)}
-          placeholder='help · scan · set "Handle" wraith · run ghostwrite'
-          height={340}
-        />
         <div data-daemon-status="">
-          <Readout value={state.agentChanges} label="Agent changes applied" size="sm" />
+          <Readout value={state.agentChanges} label="Agent changes" size="sm" />
           <div data-kit="actions">
             <Button size="sm" disabled={!state.busy} onClick={() => daemon.stop()}>
               <Square aria-hidden />
@@ -155,6 +149,14 @@ function Console() {
             </Button>
           </div>
         </div>
+        <Terminal
+          label="Daemon log"
+          lines={state.lines}
+          busy={state.busy}
+          onCommand={(text) => void daemon.run(text)}
+          placeholder="Type a command or help"
+          height="clamp(220px, 32svh, 320px)"
+        />
       </div>
     </Panel>
   )
@@ -169,23 +171,26 @@ const notes = [
 ]
 
 export default function Daemon() {
+  const id = React.useId()
+  const consoleId = `daemon-console-${id}`
+  const deckId = `daemon-deck-${id}`
+  React.useEffect(() => () => daemon.stop(), [])
   return (
     <div data-kit="daemon">
       <div data-daemon-columns="">
-        <Deck />
-        <Console />
+        <Console id={consoleId} deckId={deckId} />
+        <Deck id={deckId} consoleId={consoleId} />
       </div>
-      <dl data-daemon-notes="">
-        {notes.map(([term, text]) => (
-          <div key={term}>
-            <dt>{term}</dt>
-            <dd>{text}</dd>
-          </div>
-        ))}
-      </dl>
-      <span data-micro aria-hidden>
-        CS-D0 // AGENT BRIDGE // WEBMCP TOOLS REGISTERED WHERE THE BROWSER PROVIDES THEM
-      </span>
+      <Collapsible label="How the agent bridge works" data-agent-hidden="">
+        <dl data-daemon-notes="">
+          {notes.map(([term, text]) => (
+            <div key={term}>
+              <dt>{term}</dt>
+              <dd>{text}</dd>
+            </div>
+          ))}
+        </dl>
+      </Collapsible>
     </div>
   )
 }
