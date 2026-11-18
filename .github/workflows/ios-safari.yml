@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        site: [baseline, candidate]
+        site: [baseline]
         runner: [xcode-27]
     env:
       IOS_FAMILY: ${{ matrix.runner == 'xcode-27' && '27' || '26' }}

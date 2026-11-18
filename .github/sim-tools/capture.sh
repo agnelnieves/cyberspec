@@ -38,7 +38,15 @@ cleanup() {
 }
 trap cleanup EXIT
 log() { echo "$*" | tee -a "$evidence/diagnostics.log" >&2; }
-visit() { xcrun simctl openurl "$udid" "http://127.0.0.1:5743/$1"; }
+visit() {
+  for attempt in {1..5}; do
+    if xcrun simctl openurl "$udid" "http://127.0.0.1:5743/$1"; then return 0; fi
+    log "Safari launch timed out on attempt $attempt; retrying."
+    xcrun simctl launch "$udid" com.apple.mobilesafari || true
+    sleep 3
+  done
+  return 1
+}
 wait_for_page() {
   local anchor=$1
   for attempt in {1..12}; do
