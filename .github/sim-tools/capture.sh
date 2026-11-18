@@ -12,15 +12,15 @@ udid=$(python3 - "$evidence/devices.json" <<'PY'
 import json,re,sys
 phones=[]
 for runtime, devices in json.load(open(sys.argv[1]))["devices"].items():
-    version=re.search(r"\.iOS-(\d+)(?:-(\d+))?",runtime)
-    if version and int(version[1]) >= 26:
+    version=re.search(r"\.iOS-27-0(?:-(\d+))?$",runtime)
+    if version:
         for device in devices:
             name=device["name"]
             if device.get("isAvailable") and name.startswith("iPhone"):
-                rank=(int(version[1])==26,int(version[1]),int(version[2] or 0),name=="iPhone 17 Pro",name)
+                rank=(version[1]=="1",name=="iPhone 17",name)
                 phones.append((rank,device["udid"]))
 if not phones:
-    sys.exit("No iPhone with an iOS 26+ runtime installed")
+    sys.exit("No iPhone with an iOS 27.0.x runtime installed")
 print(max(phones)[1])
 PY
 )
