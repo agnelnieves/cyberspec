@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Palette, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { ArrowUpRight, Menu, Palette, Sparkles, Volume2, VolumeX } from "lucide-react"
 import { CatalogGrid, Preview } from "./catalog/Catalog"
 import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
@@ -10,6 +10,7 @@ import { CopyPrompt } from "./CopyPrompt"
 import Landing from "./Landing"
 import { SiteFrame } from "./SiteFrame"
 import { LandingCTA } from "./LandingCTA"
+import { Drawer } from "@/registry/cyber/ui/drawer"
 import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
 import { Examples, examples } from "./Examples"
 import { SiteSearch, type SearchSetting } from "./SiteSearch"
@@ -19,6 +20,7 @@ import { Ruler } from "@/registry/cyber/ui/micro"
 import { Panel } from "@/registry/cyber/ui/panel"
 import { Readout } from "@/registry/cyber/ui/readout"
 import { Toasts } from "@/registry/cyber/ui/toaster"
+import "./site-menu.css"
 
 // A screen is registry/cyber/blocks/<name>/<name>.tsx, found by name and
 // loaded when its page opens.
@@ -150,7 +152,7 @@ function setInterfaceSounds(on: boolean) {
   if (on) sfx("on")
 }
 
-function SoundToggle() {
+function SoundToggle({ showLabel = false }: { showLabel?: boolean }) {
   const on = React.useSyncExternalStore(onSoundChange, soundEnabled)
   return (
     <button
@@ -163,6 +165,7 @@ function SoundToggle() {
       onClick={() => setInterfaceSounds(!on)}
     >
       {on ? <Volume2 aria-hidden size={14} /> : <VolumeX aria-hidden size={14} />}
+      {showLabel && (on ? "On" : "Off")}
     </button>
   )
 }
@@ -187,7 +190,7 @@ function AccentPicker({ chosen, choose }: { chosen: Accent; choose: (accent: Acc
   )
 }
 
-function SiteTools({ root }: { root: React.RefObject<HTMLDivElement | null> }) {
+function useSitePreferences(root: React.RefObject<HTMLDivElement | null>) {
   const [chosen, setChosen] = React.useState<Accent>(accents[0])
   function choose(accent: Accent) {
     setChosen(accent)
@@ -223,14 +226,7 @@ function SiteTools({ root }: { root: React.RefObject<HTMLDivElement | null> }) {
       icon: <VolumeX aria-hidden />, apply: () => setInterfaceSounds(false),
     },
   ]
-  return (
-    <div data-site-tools>
-      <SiteSearch settings={settings} />
-      <AccentPicker chosen={chosen} choose={choose} />
-      <FxSwitch />
-      <SoundToggle />
-    </div>
-  )
+  return { chosen, choose, settings }
 }
 
 // Previous and next screen, at the foot of each example.
@@ -258,40 +254,72 @@ function ExamplePager({ index }: { index: number }) {
   )
 }
 
-function SiteHeader({ root, currentSection, isExample }: {
-  root: React.RefObject<HTMLDivElement | null>
-  currentSection?: string
-  isExample: boolean
-}) {
+type SectionNavProps = { currentSection?: string; isExample: boolean }
+
+function SectionNav({ currentSection, isExample, onNavigate }: SectionNavProps & { onNavigate?: () => void }) {
+  const inDrawer = Boolean(onNavigate)
+  return (
+    <nav aria-label="Sections" data-site-nav={inDrawer ? "drawer" : "bar"}>
+      {sections.map((entry) => (
+        <a key={entry.route} href={`/${entry.route}`} onClick={onNavigate}
+          aria-current={entry.route === currentSection ? (isExample ? "true" : "page") : undefined}>
+          {entry.title}
+          {entry.route === "examples" && (
+            <>
+              <span data-site-count aria-hidden>{examples.length}</span>
+              <span data-sr-only>, {examples.length} screens</span>
+            </>
+          )}
+          {inDrawer && <ArrowUpRight aria-hidden />}
+        </a>
+      ))}
+      <RepositoryLink iconOnly={!inDrawer} />
+    </nav>
+  )
+}
+
+function MobileMenu({ children, ...nav }: SectionNavProps & { children: React.ReactNode }) {
+  const [open, setOpen] = React.useState(false)
+  return (
+    <div className="site-mobile-menu">
+      <Drawer title="Menu" side="bottom" open={open} onOpenChange={setOpen}
+        trigger={<><Menu aria-hidden /> Menu</>}>
+        <SectionNav {...nav} onNavigate={() => setOpen(false)} />
+        <div className="site-menu-settings">{children}</div>
+      </Drawer>
+    </div>
+  )
+}
+
+const compactHeader = matchMedia("(max-width: 975px)")
+function subscribeCompactHeader(notify: () => void) {
+  compactHeader.addEventListener("change", notify)
+  return () => compactHeader.removeEventListener("change", notify)
+}
+
+function SiteHeader({ root, ...nav }: SectionNavProps & { root: React.RefObject<HTMLDivElement | null> }) {
+  const compact = React.useSyncExternalStore(subscribeCompactHeader, () => compactHeader.matches)
+  const { chosen, choose, settings } = useSitePreferences(root)
+  const accent = <AccentPicker chosen={chosen} choose={choose} />
   return (
     <header data-site-bar>
       <a href="/" data-site-brand aria-label="Cyberspec, home">
         <span data-site-brand-full><Brand /></span>
         <span data-site-brand-compact><Brand markOnly /></span>
       </a>
-      <nav aria-label="Sections" data-site-nav>
-        {sections.map((entry) => (
-          <a
-            key={entry.route}
-            href={`/${entry.route}`}
-            // The section is current on its own page; on a screen inside it,
-            // the link is marked but the page is the screen.
-            aria-current={entry.route === currentSection ? (isExample ? "true" : "page") : undefined}
-          >
-            {entry.title}
-            {entry.route === "examples" && (
-              <>
-                <span data-site-count aria-hidden>
-                  {examples.length}
-                </span>
-                <span data-sr-only>, {examples.length} screens</span>
-              </>
-            )}
-          </a>
-        ))}
-        <RepositoryLink iconOnly />
-      </nav>
-      <SiteTools root={root} />
+      {!compact && <SectionNav {...nav} />}
+      <div data-site-tools>
+        <SiteSearch settings={settings} />
+        {compact ? (
+          <MobileMenu key={location.pathname} {...nav}>
+            <div><span>Accent</span>{accent}</div>
+            <div><span>Effects</span><FxSwitch /></div>
+            <div><span>Sound</span><SoundToggle showLabel /></div>
+          </MobileMenu>
+        ) : (
+          <>{accent}<FxSwitch /><SoundToggle /></>
+        )}
+      </div>
     </header>
   )
 }

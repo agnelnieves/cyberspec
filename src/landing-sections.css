@@ -11,6 +11,11 @@
     margin-block-start: clamp(28px, 4vw, 60px);
   }
 
+  .landing-sections > section:not([data-landing-cta]) {
+    border-inline: 1px solid var(--hairline);
+    background: var(--sheet);
+  }
+
   .landing-sections :is(.landing-showcase, .landing-agent) {
     display: grid;
     grid-template-columns: var(--columns);
@@ -18,9 +23,7 @@
     gap: 0;
     margin: 0;
     padding: 0;
-    border-inline: 1px solid var(--hairline);
     border-block-start: 1px solid var(--hairline);
-    background: var(--sheet);
   }
 
   .landing-sections :is(.landing-showcase > h2, .landing-agent-copy h2) {
