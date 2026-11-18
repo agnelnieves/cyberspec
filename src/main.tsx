@@ -9,6 +9,7 @@ import "./site.css"
 import { StrictMode, useLayoutEffect, useSyncExternalStore } from "react"
 import { createRoot } from "react-dom/client"
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import { Analytics } from "@vercel/analytics/react"
 import { installCyber } from "@/registry/cyber/lib/install"
 import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
@@ -58,6 +59,7 @@ function App() {
   return (
     <>
       <Site route={pathname.replace(/^\/+|\/+$/g, "")} />
+      <Analytics />
       <SpeedInsights />
     </>
   )
