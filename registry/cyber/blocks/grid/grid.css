@@ -1,6 +1,18 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
 @layer cyber.blocks {
+  [data-skin="cyber"] [data-grid-picker] {
+    max-inline-size: 100%;
+
+    @media (pointer: coarse) {
+      --cy-h: var(--cy-h-lg);
+    }
+  }
+
+  [data-skin="cyber"] [data-grid-relays] {
+    --map-height: clamp(350px, min(47vw, 52svh), 620px);
+  }
+
   [data-skin="cyber"] [data-kit="grid-map"] {
     display: grid;
     min-width: 0;

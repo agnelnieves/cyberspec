@@ -54,8 +54,8 @@ const examples: Example[] = [
   {
     route: "grid",
     title: "Grid",
-    line: "The district from above, with filters and a route.",
-    shows: ["Generated map", "Markers", "Pan and zoom"],
+    line: "Set a district waypoint or trace the Atlantic relays on an atlas and a globe.",
+    shows: ["District map", "Atlas", "Globe"],
   },
 ]
 

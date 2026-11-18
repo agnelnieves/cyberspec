@@ -128,6 +128,10 @@
       "Loader",
       "A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line."
     ],
+    "map": [
+      "Map",
+      "A flat map or rotatable globe with selectable markers, routes, and a bundled world basemap."
+    ],
     "menu": [
       "Menu",
       "A key that opens a menu of actions, with checkable items, groups and a submenu."
@@ -304,7 +308,7 @@
     ],
     "grid": [
       "Grid",
-      "A generated district map with filters, markers and a route."
+      "A district map with filters and waypoints, plus an atlas and globe of the Atlantic relay network."
     ],
     "daemon": [
       "Daemon",

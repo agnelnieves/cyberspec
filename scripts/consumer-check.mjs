@@ -53,11 +53,11 @@ write("index.html", '<!doctype html><html><body><div id="root"></div><script typ
 write("src/index.css", "/* Plain CSS consumer: no Tailwind installed. */\n")
 run("install", ["install"])
 
-const names = ["slider-demo", "menu-demo", "combobox-demo", "dialog-demo", "calendar-demo", "loadout", "daemon"]
+const names = ["slider-demo", "menu-demo", "combobox-demo", "dialog-demo", "calendar-demo", "map-demo", "loadout", "daemon"]
 let addresses
 if (publicUrl) {
-  run("registry", ["x", "--bun", "shadcn@latest", "registry", "add", `@cyberspec=${publicUrl}/r/{name}.json`])
-  addresses = names.map((name) => `@cyberspec/${name}`)
+  run("registry", ["x", "--bun", "shadcn@latest", "registry", "add", `@cyberspec-ui=${publicUrl}/r/{name}.json`])
+  addresses = names.map((name) => `@cyberspec-ui/${name}`)
 } else {
   // Local JSON addresses keep the test on this exact generated registry,
   // including transitive items, without a second dev server or live publish.
@@ -77,10 +77,11 @@ import MenuDemo from "@/components/examples/menu-demo"
 import ComboboxDemo from "@/components/examples/combobox-demo"
 import DialogDemo from "@/components/examples/dialog-demo"
 import CalendarDemo from "@/components/examples/calendar-demo"
+import MapDemo from "@/components/examples/map-demo"
 import Loadout from "@/components/blocks/loadout/loadout"
 import Daemon from "@/components/blocks/daemon/daemon"
 `
-const children = "<Cyber><SliderDemo/><MenuDemo/><ComboboxDemo/><DialogDemo/><CalendarDemo/><Loadout/><Daemon/></Cyber>"
+const children = "<Cyber><SliderDemo/><MenuDemo/><ComboboxDemo/><DialogDemo/><CalendarDemo/><MapDemo/><Loadout/><Daemon/></Cyber>"
 write("src/main.tsx", `import { createRoot } from "react-dom/client"\n${imports}import "./index.css"\ncreateRoot(document.getElementById("root")!).render(${children})\n`)
 const installed = JSON.parse(readFileSync(join(fixture, "package.json"), "utf8"))
 for (const name of ["@ui-sdk/core", "@ui-sdk/react"]) assert.equal(installed.dependencies[name], sourcePackage.dependencies[name], `${name}: exact SDK version`)

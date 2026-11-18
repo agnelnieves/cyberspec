@@ -2,8 +2,8 @@
 // localhost or a deployment preview. Always share the public registry.
 const siteUrl = "https://www.cyberspec.dev"
 const repositoryUrl = "https://github.com/agnelnieves/cyberspec"
-const installCommands = `bunx --bun shadcn@latest registry add '@cyberspec=${siteUrl}/r/{name}.json'
-bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button`
+const installCommands = `bunx --bun shadcn@latest registry add '@cyberspec-ui=${siteUrl}/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button`
 
 const installationPrompt = `Install CyberSpec in this project: a cyberpunk component kit for React, built on UI SDK.
 
@@ -11,7 +11,7 @@ Read ${siteUrl}/llms.txt and ${siteUrl}/r/registry.json first. The source and us
 
 Inspect the project's framework, package manager, React version, components.json, aliases, and global stylesheet. CyberSpec requires React and React DOM 19 or newer; TypeScript projects need @types/react 19.2.10 or newer. If the project is incompatible, explain what needs to change before migrating it.
 
-Configure the @cyberspec registry as ${siteUrl}/r/{name}.json and install the components needed for my request. Start with the foundation and a working button. For Bun:
+Configure the @cyberspec-ui registry as ${siteUrl}/r/{name}.json and install the components needed for my request. Start with the foundation and a working button. For Bun:
 
 ${installCommands}
 

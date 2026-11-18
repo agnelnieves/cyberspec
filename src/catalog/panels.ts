@@ -97,6 +97,7 @@ const panels: PanelSpec[] = [
   { name: "reticle", title: "Reticle", uses: [], group: "HUD" },
   { name: "micro", title: "Micro-print", uses: [], group: "HUD" },
   { name: "terminal", title: "Terminal", uses: ["scroll-area"], wide: true, group: "HUD" },
+  { name: "map", title: "Map", uses: ["core", "radio", "button", "toggle"], wide: true, group: "HUD" },
 ]
 
 export { panels }

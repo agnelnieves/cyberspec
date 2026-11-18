@@ -65,7 +65,7 @@ try {
     assert(text.includes("https://github.com/agnelnieves/cyberspec"))
     assert(!/localhost|127\.0\.0\.1|vercel\.app/.test(text), "Copied instructions use public production URLs")
     assert(text.includes("React and React DOM 19"))
-    assert(text.includes("'@cyberspec=https://www.cyberspec.dev/r/{name}.json'"), "Registry command quotes the template for shells")
+    assert(text.includes("'@cyberspec-ui=https://www.cyberspec.dev/r/{name}.json'"), "Registry command quotes the template for shells")
     console.log(`ok - ${mode} clipboard copies canonical install instructions via keyboard`)
   }
 
@@ -74,8 +74,8 @@ try {
   await page.click(copyCode)
   await page.waitForFunction(() => document.querySelector('[data-masthead-install] [data-kit="code-block"]')?.getAttribute("data-state") === "copied")
   const commands = await page.evaluate(() => navigator.clipboard.readText())
-  assert(commands.startsWith("bunx --bun shadcn@latest registry add '@cyberspec=https://www.cyberspec.dev/r/{name}.json'"))
-  assert(commands.includes("bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button"))
+  assert(commands.startsWith("bunx --bun shadcn@latest registry add '@cyberspec-ui=https://www.cyberspec.dev/r/{name}.json'"))
+  assert(commands.includes("bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button"))
   console.log("ok - install commands copy to the actual clipboard")
 
   await page.goto(base, { waitUntil: "networkidle0" })

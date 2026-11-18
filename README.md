@@ -25,8 +25,8 @@ npm; no token, private registry or GitHub access is required.
 From that project's directory, add the registry and install what you need:
 
 ```sh
-bunx --bun shadcn@latest registry add '@cyberspec=https://www.cyberspec.dev/r/{name}.json'
-bunx --bun shadcn@latest add @cyberspec/slider @cyberspec/panel
+bunx --bun shadcn@latest registry add '@cyberspec-ui=https://www.cyberspec.dev/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button
 ```
 
 (`https://www.cyberspec.dev` is the kit's site and the registry's default
@@ -100,6 +100,52 @@ export function App() {
   it on (`setSoundEnabled(true)` in `lib/sound`). The samples ship inside the
   registry's `lib/sound-samples.ts`; no separately hosted audio is needed.
   [Sound mappings and replacement guide](./docs/SOUNDS.md).
+
+## Geographic maps
+
+Install `@cyberspec-ui/map` for a map with real coastlines, selectable markers,
+and routes. The bundled world map works offline. Marker coordinates are
+`[longitude, latitude]` pairs in degrees, and routes connect marker IDs.
+
+```tsx
+import { Map } from "@/components/ui/map"
+
+export function RelayMap() {
+  return (
+    <Map
+      label="Atlantic relays"
+      markers={[
+        { id: "west", label: "Deep Sound station", code: "DS-02", coordinate: [-52.71, 47.56] },
+        { id: "east", label: "Meridian exchange", code: "ME-04", coordinate: [-10.30, 51.93] },
+      ]}
+      routes={[{ id: "main", from: "west", to: "east" }]}
+      defaultValue="west"
+    />
+  )
+}
+```
+
+The camera fits the markers on first render. Drag or use the arrow keys to
+pan, press `+` or `-` to zoom, and press Home to restore the opening view.
+Tab to the markers and use the arrow keys to select a station. Its connected
+routes become solid and its coordinates appear below the map.
+
+Use `value` and `onValueChange` to control marker selection. Use `view`
+and `onViewChange` to control the camera, or pass `defaultView={{ center,
+zoom }}` to set its starting position. The camera uses ui-sdk’s
+`createViewport`, and the markers use its radio group, including form
+submission and controller support.
+
+For street detail, pass a `tiles` object with a raster URL template
+containing `{z}`, `{x}`, and `{y}`, the source’s `maxZoom`, and its
+`attribution` text or link. Pass `via` coordinates on a route to plot a
+known path. Routes without waypoints follow a great circle.
+
+Set `projection="globe"` to draw the same markers and routes on a globe.
+Drag or use the arrow keys to rotate it. Selecting a station with the
+keyboard or an SDK controller brings it into view. Globe zoom level zero
+shows the whole sphere. Both projections use the bundled geography, and
+the flat map also accepts raster tiles.
 
 ## What makes it this kit
 
@@ -188,7 +234,7 @@ meta tags unless it is explicitly selected later.
 | `/jobs` | The job board: what's open, what's tracked, and the brief. |
 | `/comms` | Contacts, a message thread, and how you answer. |
 | `/archive` | The database: people, places and machines, one dossier each. |
-| `/grid` | The district from above, with filters and a route. |
+| `/grid` | The district street map and waypoint planner, plus a relay atlas and rotatable globe. Open `/grid?view=atlas` or `/grid?view=globe` directly. |
 | `/daemon` | An agent on the page: what it sees, what it does, and how to stop it. |
 | `/preview/<name>` | One component's example alone, for screenshots. |
 
@@ -230,4 +276,5 @@ The fonts are [Rajdhani](https://fonts.google.com/specimen/Rajdhani) and
 Open Font License 1.1. Icons are [Lucide](https://lucide.dev), ISC with MIT
 notices for Feather-derived icons.
 
-All names, places and text in the examples and screens are original fiction.
+The stories and relay stations in the examples are fictional. The geographic
+map uses real coastlines and boundaries from Natural Earth.

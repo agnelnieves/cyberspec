@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Briefcase, House, LocateFixed, MessageSquare, Minus, Navigation, Plus, Store } from "lucide-react"
 import { sfx } from "@/registry/cyber/lib/sound"
+import { relayAnnotations, relayGlobeAnnotations, relayMarkers, relayRoutes } from "@/registry/cyber/examples/map-demo"
 import {
   H,
   SECTOR_H,
@@ -20,11 +21,13 @@ import { Badge } from "@/registry/cyber/ui/badge"
 import { Button } from "@/registry/cyber/ui/button"
 import { ButtonGroup } from "@/registry/cyber/ui/button-group"
 import { Collapsible } from "@/registry/cyber/ui/collapsible"
+import { Map, type MapView } from "@/registry/cyber/ui/map"
 import { Corners, Micro } from "@/registry/cyber/ui/micro"
 import { Panel } from "@/registry/cyber/ui/panel"
 import { Readout } from "@/registry/cyber/ui/readout"
 import { Reticle } from "@/registry/cyber/ui/reticle"
 import { Screen } from "@/registry/cyber/ui/screen"
+import { SegmentedControl } from "@/registry/cyber/ui/segmented-control"
 import { notify } from "@/registry/cyber/ui/toaster"
 import { ToggleGroup } from "@/registry/cyber/ui/toggle-group"
 import { Tooltip } from "@/registry/cyber/ui/tooltip"
@@ -68,6 +71,18 @@ const BASE = 1.14
 
 type View = { zoom: number; x: number; y: number }
 type Size = { w: number; h: number; l: number; r: number }
+type MapMode = "district" | "atlas" | "globe"
+const mapModes = [
+  { value: "district", label: "District" },
+  { value: "atlas", label: "Atlas" },
+  { value: "globe", label: "Globe" },
+] satisfies { value: MapMode; label: string }[]
+
+// The example page has shareable views. Embedding this block elsewhere
+// leaves the host application's URL and history alone.
+function isGridPage() {
+  return window.location.pathname.replace(/\/$/, "") === "/grid"
+}
 
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value))
 
@@ -214,6 +229,10 @@ function useClock() {
 }
 
 export default function Grid() {
+  const [mode, setMode] = React.useState<MapMode>("district")
+  const [relayId, setRelayId] = React.useState<string | null>("sound")
+  const [relayViews, setRelayViews] = React.useState<Partial<Record<"atlas" | "globe", MapView>>>({})
+  const isDistrict = mode === "district"
   const stage = React.useRef<HTMLDivElement>(null)
   const viewport = React.useRef<HTMLDivElement>(null)
   const measured = React.useRef<Size | null>(null)
@@ -225,6 +244,28 @@ export default function Grid() {
   const [waypointId, setWaypointId] = React.useState(tracked.id)
   const help = React.useId()
   const time = useClock()
+
+  React.useLayoutEffect(() => {
+    if (!isGridPage()) return
+    const readView = () => {
+      const next = new URLSearchParams(window.location.search).get("view")
+      setMode(next === "globe" || next === "atlas" ? next : "district")
+    }
+    readView()
+    window.addEventListener("popstate", readView)
+    return () => window.removeEventListener("popstate", readView)
+  }, [])
+
+  const chooseMode = (next: MapMode | null) => {
+    if (!next) return
+    setMode(next)
+    if (isGridPage()) {
+      const url = new URL(window.location.href)
+      if (next === "district") url.searchParams.delete("view")
+      else url.searchParams.set("view", next)
+      window.history.replaceState(window.history.state, "", url)
+    }
+  }
 
   React.useLayoutEffect(() => {
     const el = viewport.current
@@ -245,7 +286,7 @@ export default function Grid() {
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [isDistrict])
 
   const at = place(view, size)
   const latest = React.useRef(at)
@@ -349,11 +390,50 @@ export default function Grid() {
   const percent = Math.round(zooms[view.zoom] * 100)
   const route = pathOf(waypoint.route)
 
+  const picker = (
+    <div data-grid-picker="">
+      <SegmentedControl label="Map view" options={mapModes} value={mode} onValueChange={chooseMode} />
+    </div>
+  )
+  if (!isDistrict) {
+    return (
+      <Screen
+        label={mode === "globe" ? "Relay globe" : "Relay atlas"}
+        status={
+          <>
+            {picker}
+            <Readout label="Stations" value={relayMarkers.length} size="sm" />
+            <Readout label="Links" value={relayRoutes.length} size="sm" />
+          </>
+        }
+        hints={[
+          { keys: ["←", "↑", "↓", "→"], label: mode === "globe" ? "Rotate" : "Pan" },
+          { keys: ["+", "-"], label: "Zoom" },
+          { keys: "Home", label: "Reset view" },
+        ]}
+      >
+        <div data-grid-relays="">
+          <Map
+            label="Atlantic relay network"
+            projection={mode === "globe" ? "globe" : "mercator"}
+            markers={relayMarkers}
+            routes={relayRoutes}
+            annotations={mode === "globe" ? relayGlobeAnnotations : relayAnnotations}
+            value={relayId}
+            onValueChange={setRelayId}
+            view={relayViews[mode]}
+            onViewChange={(next) => setRelayViews((views) => ({ ...views, [mode]: next }))}
+          />
+        </div>
+      </Screen>
+    )
+  }
   return (
     <Screen
       label="District map"
       status={
         <>
+          {picker}
           <Readout label="Markers shown" value={visible.length} size="sm" tone="accent" />
           <Readout label="Route" value={waypoint.metres} unit="m" size="sm" tone="flag" />
           <Readout label="Zoom" value={percent} unit="%" size="sm" />

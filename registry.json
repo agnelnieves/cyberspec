@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "cyberspec",
+  "name": "cyberspec-ui",
   "homepage": "https://www.cyberspec.dev",
   "items": [
     {
@@ -895,6 +895,59 @@
           "path": "registry/cyber/ui/cyber/loader.css",
           "type": "registry:file",
           "target": "@ui/cyber/loader.css"
+        }
+      ]
+    },
+    {
+      "name": "map",
+      "type": "registry:ui",
+      "title": "Map",
+      "description": "A flat map or rotatable globe with selectable markers, routes, and a bundled world basemap.",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.5",
+        "@ui-sdk/react@0.1.0-beta.5",
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/cyber.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/ui/map.tsx",
+          "type": "registry:ui",
+          "target": "@ui/map.tsx"
+        },
+        {
+          "path": "registry/cyber/ui/cyber/map.css",
+          "type": "registry:file",
+          "target": "@ui/cyber/map.css"
+        },
+        {
+          "path": "registry/cyber/lib/map/camera.ts",
+          "type": "registry:lib",
+          "target": "@lib/map/camera.ts"
+        },
+        {
+          "path": "registry/cyber/lib/map/chart.ts",
+          "type": "registry:lib",
+          "target": "@lib/map/chart.ts"
+        },
+        {
+          "path": "registry/cyber/lib/map/geography.ts",
+          "type": "registry:lib",
+          "target": "@lib/map/geography.ts"
+        },
+        {
+          "path": "registry/cyber/lib/map/globe.tsx",
+          "type": "registry:lib",
+          "target": "@lib/map/globe.tsx"
+        },
+        {
+          "path": "registry/cyber/lib/map/orthographic.ts",
+          "type": "registry:lib",
+          "target": "@lib/map/orthographic.ts"
         }
       ]
     },
@@ -2476,6 +2529,27 @@
       ]
     },
     {
+      "name": "map-demo",
+      "type": "registry:component",
+      "title": "Map demo",
+      "description": "How to use map, as the catalog shows it.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/cyber.json",
+        "https://www.cyberspec.dev/r/map.json",
+        "https://www.cyberspec.dev/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/examples/map-demo.tsx",
+          "type": "registry:component",
+          "target": "@components/examples/map-demo.tsx"
+        }
+      ],
+      "categories": [
+        "example"
+      ]
+    },
+    {
       "name": "menu-demo",
       "type": "registry:component",
       "title": "Menu demo",
@@ -3438,7 +3512,7 @@
       "name": "grid",
       "type": "registry:block",
       "title": "Grid",
-      "description": "A generated district map with filters, markers and a route.",
+      "description": "A district map with filters and waypoints, plus an atlas and globe of the Atlantic relay network.",
       "dependencies": [
         "lucide-react@1.73.0"
       ],
@@ -3448,11 +3522,14 @@
         "https://www.cyberspec.dev/r/button.json",
         "https://www.cyberspec.dev/r/button-group.json",
         "https://www.cyberspec.dev/r/collapsible.json",
+        "https://www.cyberspec.dev/r/map.json",
+        "https://www.cyberspec.dev/r/map-demo.json",
         "https://www.cyberspec.dev/r/micro.json",
         "https://www.cyberspec.dev/r/panel.json",
         "https://www.cyberspec.dev/r/readout.json",
         "https://www.cyberspec.dev/r/reticle.json",
         "https://www.cyberspec.dev/r/screen.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
         "https://www.cyberspec.dev/r/toaster.json",
         "https://www.cyberspec.dev/r/toggle-group.json",
         "https://www.cyberspec.dev/r/tooltip.json"

@@ -23,7 +23,7 @@ class Boundary extends React.Component<{ children: React.ReactNode }, { error: E
   }
 }
 
-function Panel({ spec, index }: { spec: PanelSpec; index: number }) {
+function Panel({ spec, index, heading: Heading = "h3" }: { spec: PanelSpec; index: number; heading?: "h1" | "h3" }) {
   const Demo = demoOf(spec.name)
   const n = String(index + 1).padStart(2, "0")
   return (
@@ -32,7 +32,7 @@ function Panel({ spec, index }: { spec: PanelSpec; index: number }) {
         <span data-kit="module-n" aria-hidden>
           {n}
         </span>
-        <h3 data-kit="module-title">{spec.title}</h3>
+        <Heading data-kit="module-title">{spec.title}</Heading>
         <span data-kit="module-uses">{spec.uses.length ? spec.uses.join(" · ") : "presentational"}</span>
       </header>
       <div data-kit="stage" data-frame="tr bl">
@@ -74,7 +74,7 @@ function Preview({ name }: { name: string }) {
   const width = asked || (spec.wide ? 660 : 320)
   return (
     <div data-kit="preview" style={{ "--preview-w": `${width}px` } as React.CSSProperties}>
-      <Panel spec={spec} index={Math.max(0, index)} />
+      <Panel spec={spec} index={Math.max(0, index)} heading="h1" />
     </div>
   )
 }

@@ -50,7 +50,12 @@ function dependencyVersion(name, file) {
 // Which registry item a `@/registry/cyber/...` import belongs to.
 function ownerOf(spec, file) {
   const rest = spec.slice(prefix.length)
-  if (rest.startsWith("lib/")) return "cyber"
+  // Files directly under lib are shared. A lib/<component>/ directory
+  // travels with that component, keeping its data out of the foundation.
+  if (rest.startsWith("lib/")) {
+    const parts = rest.split("/")
+    return parts.length > 2 ? parts[1] : "cyber"
+  }
   if (rest.startsWith("ui/cyber/")) {
     const sheet = rest.slice("ui/cyber/".length)
     return foundation.includes(sheet) ? "cyber" : sheet.replace(/\.css$/, "")
@@ -147,6 +152,8 @@ for (const f of list(`${reg}/ui`, (f) => f.endsWith(".tsx") && f !== "cyber.tsx"
   if (!info) warnings.push(`no title and description in meta.json for ui/${f}`)
   const files = [file(`${reg}/ui/${f}`, "registry:ui")]
   if (existsSync(join(root, reg, "ui/cyber", `${name}.css`))) files.push(file(`${reg}/ui/cyber/${name}.css`, "registry:file"))
+  const lib = `${reg}/lib/${name}`
+  for (const helper of list(lib, (f) => /\.tsx?$/.test(f))) files.push(file(`${lib}/${helper}`, "registry:lib"))
   items.push(item(name, "registry:ui", info?.[0] ?? titled(name), info?.[1] ?? `The ${titled(name).toLowerCase()} component.`, files, { after: ["cyber"] }))
 }
 
@@ -183,7 +190,7 @@ for (const it of items)
 
 const registry = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
-  name: "cyberspec",
+  name: "cyberspec-ui",
   homepage: base,
   items,
 }
@@ -223,8 +230,8 @@ CyberSpec's original code is MIT-licensed. Bundled recorded audio is excluded fr
 Use a React 19 project with a configured shadcn \`components.json\` and a working \`@/\` import alias. React 18 is not supported by the underlying SDK. In TypeScript projects use \`@types/react >=19.2.10\`. The pinned \`@ui-sdk/core@${dependencyVersion("@ui-sdk/core", "llms.txt")}\` and \`@ui-sdk/react@${dependencyVersion("@ui-sdk/react", "llms.txt")}\` dependencies install from public npm; no token, private registry or GitHub access is needed.
 
 \`\`\`sh
-bunx --bun shadcn@latest registry add '@cyberspec=${base}/r/{name}.json'
-bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
+bunx --bun shadcn@latest registry add '@cyberspec-ui=${base}/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button
 \`\`\`
 
 Any item also installs from its URL: \`bunx --bun shadcn@latest add ${itemUrl("panel")}\`. Every item depends on \`cyber\`, which adds the \`<Cyber>\` root, the foundation stylesheets, the fonts and the page-wide behaviors. Tailwind is not required; the \`tailwind.css\` entry in \`components.json\` can point at the application's plain CSS entry file. See the [installation setup](https://github.com/agnelnieves/cyberspec#install-from-the-registry) for a minimal configuration.

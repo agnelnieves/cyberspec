@@ -35,6 +35,14 @@ are CyberSpec code covered by MIT; the recorded PCM data is not.
 Registry installations include this notice and CyberSpec's MIT license under
 the project's configured library directory in `cyberspec/`.
 
+## Map geography
+
+The map component uses land, lake and country boundary data from
+[Natural Earth v5.1.2](https://github.com/nvkelso/natural-earth-vector/tree/v5.1.2/geojson)
+at 1:110 million scale. CyberSpec projects and simplifies these layers for its
+SVG basemap. Natural Earth provides the data in the
+[public domain](https://www.naturalearthdata.com/about/terms-of-use/).
+
 ## Software, fonts and icons
 
 - [UI SDK](https://ui-sdk.dev): Apache-2.0. Installed as the public

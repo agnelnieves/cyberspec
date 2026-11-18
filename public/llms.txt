@@ -1,6 +1,6 @@
 # CYBERSPEC
 
-> A cyberpunk theme for ui-sdk (https://ui-sdk.dev): 70 components and 7 screens with cut-corner frames, glitch and scan effects that respect reduced motion, sampled and synthesized interface sounds, and a visible signal when an agent changes something. Plain CSS, React, installable from a shadcn registry.
+> A cyberpunk theme for ui-sdk (https://ui-sdk.dev): 71 components and 7 screens with cut-corner frames, glitch and scan effects that respect reduced motion, sampled and synthesized interface sounds, and a visible signal when an agent changes something. Plain CSS, React, installable from a shadcn registry.
 
 Every control is a ui-sdk component underneath (`@ui-sdk/react`, `@ui-sdk/core`), so keyboard behavior, ARIA and the ui-sdk agent bridge come with it.
 
@@ -11,8 +11,8 @@ CyberSpec's original code is MIT-licensed. Bundled recorded audio is excluded fr
 Use a React 19 project with a configured shadcn `components.json` and a working `@/` import alias. React 18 is not supported by the underlying SDK. In TypeScript projects use `@types/react >=19.2.10`. The pinned `@ui-sdk/core@0.1.0-beta.5` and `@ui-sdk/react@0.1.0-beta.5` dependencies install from public npm; no token, private registry or GitHub access is needed.
 
 ```sh
-bunx --bun shadcn@latest registry add '@cyberspec=https://www.cyberspec.dev/r/{name}.json'
-bunx --bun shadcn@latest add @cyberspec/cyber @cyberspec/button @cyberspec/slider
+bunx --bun shadcn@latest registry add '@cyberspec-ui=https://www.cyberspec.dev/r/{name}.json'
+bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button
 ```
 
 Any item also installs from its URL: `bunx --bun shadcn@latest add https://www.cyberspec.dev/r/panel.json`. Every item depends on `cyber`, which adds the `<Cyber>` root, the foundation stylesheets, the fonts and the page-wide behaviors. Tailwind is not required; the `tailwind.css` entry in `components.json` can point at the application's plain CSS entry file. See the [installation setup](https://github.com/agnelnieves/cyberspec#install-from-the-registry) for a minimal configuration.
@@ -84,6 +84,7 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Item slot](https://www.cyberspec.dev/r/item-slot.json): A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.
 - [Key hint](https://www.cyberspec.dev/r/key-hint.json): An input hint: a key glyph and what it does, optionally pressable.
 - [Loader](https://www.cyberspec.dev/r/loader.json): A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line.
+- [Map](https://www.cyberspec.dev/r/map.json): A flat map or rotatable globe with selectable markers, routes, and a bundled world basemap.
 - [Menu](https://www.cyberspec.dev/r/menu.json): A key that opens a menu of actions, with checkable items, groups and a submenu.
 - [Menubar](https://www.cyberspec.dev/r/menubar.json): A bar of menus with one tab stop.
 - [Meter](https://www.cyberspec.dev/r/meter.json): A segmented gauge with thresholds that change its tone and print a word.
@@ -129,7 +130,7 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Augments](https://www.cyberspec.dev/r/augments.json): Five attributes on a hexagonal lattice, with points to spend and an info panel.
 - [Comms](https://www.cyberspec.dev/r/comms.json): Contacts, a message thread, and replies to choose from.
 - [Daemon](https://www.cyberspec.dev/r/daemon.json): An agent console: what the agent sees, what it does, a permission prompt, and undo.
-- [Grid](https://www.cyberspec.dev/r/grid.json): A generated district map with filters, markers and a route.
+- [Grid](https://www.cyberspec.dev/r/grid.json): A district map with filters and waypoints, plus an atlas and globe of the Atlantic relay network.
 - [Jobs](https://www.cyberspec.dev/r/jobs.json): A job board: tabs, a list of jobs, objectives to tick off, and the brief.
 - [Loadout](https://www.cyberspec.dev/r/loadout.json): Gear slots, a weapon's sheet with its stats, and what's in the pack.
 
