@@ -1,0 +1,54 @@
+name: Safari Simulator frame evidence
+on:
+  push:
+    branches:
+      - 'verify/ios-safari-*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safari:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [baseline, candidate]
+        runner: [xcode-27]
+    env:
+      IOS_FAMILY: ${{ matrix.runner == 'xcode-27' && '27' || '26' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: harness
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: site
+          persist-credentials: false
+          ref: ${{ matrix.site == 'baseline' && '94c2837b111cdff296629927e12bd135169d97b7' || 'c7b9eedad829642920025575e0a6f3aef5621131' }}
+      - name: Install Bun and XcodeBuildMCP
+        run: |
+          command -v bun || brew install oven-sh/bun/bun
+          command -v xcodebuildmcp || brew install getsentry/xcodebuildmcp/xcodebuildmcp
+          bun --version
+          xcodebuildmcp --version
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+      - name: Build site
+        working-directory: site
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+      - name: Exercise Mobile Safari
+        timeout-minutes: 18
+        working-directory: site
+        run: bash ../harness/.github/sim-tools/capture.sh
+      - name: Upload screenshots, AX trees and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-ios${{ env.IOS_FAMILY }}-${{ matrix.site }}
+          path: ${{ runner.temp }}/safari-evidence
+          if-no-files-found: warn
+          retention-days: 5
