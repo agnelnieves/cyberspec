@@ -11,6 +11,10 @@
    It's in the cyber.blocks layer, alongside the screens, so the kit's focus
    and reduced-motion rules still sit above it. */
 @layer cyber.blocks {
+  [data-site] [data-kit="panel-code"] {
+    color: var(--tone-ink);
+  }
+
   [data-site] {
     --bar-h: 60px;
     --gutter: clamp(16px, 4vw, 56px);
