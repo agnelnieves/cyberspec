@@ -35,15 +35,19 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       border-block-start: 1px solid var(--cy-line-ctl);
+      /* Leave the outer frame's diagonal stroke visible above the button fills. */
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--frame-cut)), calc(100% - var(--frame-cut)) 100%, 0 100%);
     }
     & [data-cta-actions] > [data-kit="button"] {
       --frame-image: none;
       --frame-cut: 0px;
       --frame-notch: 0px;
+      --frame-notch-x: 0px;
       --frame-focus: var(--cy-signal);
 
       width: 100%;
-      height: clamp(52px, 5vw, 70px);
+      height: auto;
+      min-height: clamp(52px, 5vw, 70px);
       border: 0;
       font-weight: 600;
       font-size: clamp(15px, 1.55vw, 21px);

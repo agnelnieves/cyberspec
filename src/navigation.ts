@@ -28,15 +28,21 @@ function canonicalizeLocation() {
   if (url.href !== location.href) history.replaceState(history.state, "", url)
 }
 
-function navigate(href: string) {
-  const url = canonicalUrl(href)
-  if (url.href === location.href) {
-    if (!url.hash) scrollTo(0, 0)
-    return
+function rememberFrameScroll(scroller: HTMLElement) {
+  if (scroller.scrollTop !== (history.state?.frameScrollTop ?? 0)) {
+    history.replaceState({ ...history.state, frameScrollTop: scroller.scrollTop }, "")
   }
-  history.pushState(null, "", url)
-  dispatchEvent(new Event(navigated))
-  if (!url.hash) scrollTo(0, 0)
 }
 
-export { canonicalizeLocation, fragmentId, navigate, navigated }
+function navigate(href: string) {
+  const url = canonicalUrl(href)
+  if (url.href !== location.href) {
+    const scroller = document.querySelector<HTMLElement>("[data-site-scroll]")
+    if (scroller) rememberFrameScroll(scroller)
+    history.pushState(null, "", url)
+    dispatchEvent(new Event(navigated))
+  }
+  if (!url.hash) document.getElementById("main")?.scrollIntoView()
+}
+
+export { canonicalizeLocation, fragmentId, navigate, navigated, rememberFrameScroll }

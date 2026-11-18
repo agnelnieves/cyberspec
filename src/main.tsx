@@ -51,7 +51,12 @@ function App() {
   const href = useSyncExternalStore(subscribe, currentHref)
   const { pathname, hash } = new URL(href)
   useLayoutEffect(() => {
-    if (!hash) return
+    if (!hash) {
+      // The browser restores the document on traversal. Restore the mobile
+      // frame's own scroll position after the destination content mounts.
+      document.querySelector("[data-site-scroll]")?.scrollTo(0, history.state?.frameScrollTop ?? 0)
+      return
+    }
     // A cross-route fragment only exists after React commits the destination.
     const target = document.getElementById(fragmentId(hash))
     target?.scrollIntoView()

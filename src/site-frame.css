@@ -13,8 +13,7 @@
     background: var(--cy-void);
   }
 
-  /* The mask follows the viewport through the footer and browser-bar resizes.
-     Only its width is capped. The document owns scrolling and anchor links. */
+  /* On desktop the housing stays in place while the document scrolls. */
   .site-housing {
     position: fixed;
     inset: 0;
@@ -299,6 +298,25 @@
 
   @media (min-width: 761px) and (max-width: 975px) {
     .site-housing [data-site-bar] { padding-block-start: 29px; }
+  }
+
+  @media (max-width: 760px), (hover: none) and (pointer: coarse) {
+    /* Give the outline and the scrollport the same viewport bounds as Safari's
+       controls resize. Only the page background extends behind the controls. */
+    .site-sheet {
+      position: fixed;
+      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      width: auto;
+    }
+
+    .site-housing { position: absolute; }
+
+    .site-sheet [data-site-scroll] {
+      position: absolute;
+      inset: var(--site-edge) 0;
+      min-height: 0;
+      overflow-y: auto;
+    }
   }
 
   @media (max-width: 760px) {

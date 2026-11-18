@@ -9,8 +9,6 @@
     display: grid;
     min-width: 0;
     margin-block-start: clamp(28px, 4vw, 60px);
-    border-inline: 1px solid var(--hairline);
-    background: var(--sheet);
   }
 
   .landing-sections :is(.landing-showcase, .landing-agent) {
@@ -20,7 +18,9 @@
     gap: 0;
     margin: 0;
     padding: 0;
+    border-inline: 1px solid var(--hairline);
     border-block-start: 1px solid var(--hairline);
+    background: var(--sheet);
   }
 
   .landing-sections :is(.landing-showcase > h2, .landing-agent-copy h2) {
@@ -159,7 +159,7 @@
 
   .landing-sections [data-landing-cta] [data-cta-actions] {
     grid-template-columns: minmax(0, 1fr);
-    align-content: center;
+    grid-template-rows: repeat(2, 1fr);
     border: 0;
     border-inline-start: 1px solid var(--cy-line-ctl);
   }

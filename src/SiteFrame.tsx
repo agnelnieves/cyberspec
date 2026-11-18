@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { rememberFrameScroll } from "./navigation"
 import "./site-frame.css"
 
 function FrameOutline({ narrow = false }: { narrow?: boolean }) {
@@ -26,7 +27,7 @@ function SiteFrame({ header, children }: { header: ReactNode; children: ReactNod
           <FrameOutline narrow />
         </div>
       </div>
-      <div data-site-scroll="">{children}</div>
+      <div data-site-scroll="" onScrollEnd={(event) => rememberFrameScroll(event.currentTarget)}>{children}</div>
     </div>
   )
 }
