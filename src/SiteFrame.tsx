@@ -18,16 +18,20 @@ function FrameOutline({ narrow = false }: { narrow?: boolean }) {
 
 function SiteFrame({ header, children }: { header: ReactNode; children: ReactNode }) {
   return (
-    <div className="site-sheet">
-      <div className="site-housing">
-        {header}
-        <div className="site-bezel" aria-hidden="true">
-          <FrameOutline />
-          <FrameOutline narrow />
+    <>
+      <div className="site-sheet">
+        <div className="site-housing">
+          {header}
+          <div className="site-bezel" aria-hidden="true">
+            <FrameOutline />
+            <FrameOutline narrow />
+          </div>
         </div>
+        <div data-site-scroll="">{children}</div>
       </div>
-      <div data-site-scroll="">{children}</div>
-    </div>
+      <div className="site-frame-edge top" aria-hidden="true" />
+      <div className="site-frame-edge bottom" aria-hidden="true" />
+    </>
   )
 }
 
