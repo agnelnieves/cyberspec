@@ -8,6 +8,7 @@ import "@/registry/cyber/ui/cyber/skin.css"
 import "./site.css"
 import { StrictMode, useSyncExternalStore } from "react"
 import { createRoot } from "react-dom/client"
+import { Analytics } from "@vercel/analytics/react"
 import { installCyber } from "@/registry/cyber/lib/install"
 import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
@@ -43,7 +44,12 @@ document.addEventListener("click", (event) => {
 
 function App() {
   const route = useRoute()
-  return <Site route={route} />
+  return (
+    <>
+      <Site route={route} />
+      <Analytics />
+    </>
+  )
 }
 
 installCyber()
