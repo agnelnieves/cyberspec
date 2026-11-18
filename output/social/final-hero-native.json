@@ -1,0 +1,100 @@
+{
+  "checks": [
+    "native RAF moves cursor across real frames",
+    "offscreen interrupts and holds the reset pose",
+    "return onscreen starts a fresh loop and reaches switch activation",
+    "hidden tab pauses stage",
+    "reduced-motion toggle shows stable completed poster",
+    "restoring motion begins one fresh loop"
+  ],
+  "live": {
+    "frames": 242,
+    "movingFrames": 140,
+    "medianGapMs": 16.699999999999818,
+    "maxGapMs": 16.800000000000182,
+    "maxTravelPx": 27.404293404501423
+  },
+  "wideButtons": [
+    {
+      "label": "",
+      "width": 75.1583251953125,
+      "scroll": 56,
+      "client": 56
+    },
+    {
+      "label": "",
+      "width": 23.32500457763672,
+      "scroll": 16,
+      "client": 16
+    },
+    {
+      "label": "",
+      "width": 103.86914825439453,
+      "scroll": 78,
+      "client": 78
+    },
+    {
+      "label": "",
+      "width": 103.88937377929688,
+      "scroll": 78,
+      "client": 78
+    },
+    {
+      "label": "Reset",
+      "width": 118.9129638671875,
+      "scroll": 90,
+      "client": 90
+    },
+    {
+      "label": "Link active",
+      "width": 171.05001831054688,
+      "scroll": 130,
+      "client": 130
+    }
+  ],
+  "mobileButtons": [
+    {
+      "label": "",
+      "width": 60.729400634765625,
+      "scroll": 56,
+      "client": 56
+    },
+    {
+      "label": "",
+      "width": 18.847061157226562,
+      "scroll": 16,
+      "client": 16
+    },
+    {
+      "label": "",
+      "width": 46.23419189453125,
+      "scroll": 42,
+      "client": 42
+    },
+    {
+      "label": "",
+      "width": 46.23419189453125,
+      "scroll": 42,
+      "client": 42
+    },
+    {
+      "label": "Reset",
+      "width": 96.08399963378906,
+      "scroll": 90,
+      "client": 90
+    },
+    {
+      "label": "Link active",
+      "width": 138.21176147460938,
+      "scroll": 130,
+      "client": 130
+    }
+  ],
+  "liveAfterBuild": {
+    "frames": 233,
+    "movingFrames": 140,
+    "medianGapMs": 16.699999999999818,
+    "maxGapMs": 166.59999999999945,
+    "maxTravelPx": 27.271454746676042
+  }
+}

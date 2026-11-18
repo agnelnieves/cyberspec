@@ -124,6 +124,25 @@
     gap: 12px;
   }
 
+  [data-site-repo] {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--cy-ink-mute);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--cy-ink);
+    }
+  }
+
+  [data-site-github-mark] {
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    mask: url("./social/kit/brands/github-dark.svg") center / contain no-repeat;
+  }
+
   [data-site-fx],
   [data-site-accents] {
     display: flex;
@@ -510,11 +529,20 @@
 
   [data-site-footer] {
     display: grid;
+    grid-template-columns: 1fr auto;
     gap: 6px;
     padding: 24px var(--gutter) 40px;
     border-block-start: 1px solid var(--cy-line-deco);
     color: var(--cy-ink-mute);
     font-size: var(--cy-text-sm);
+
+    & [data-site-repo] {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: center;
+      min-height: 36px;
+      font-weight: 600;
+    }
   }
 
   @media (max-width: 860px) {
@@ -540,6 +568,14 @@
     }
     [data-site-brand-compact] {
       display: block;
+    }
+    [data-site-footer] {
+      grid-template-columns: 1fr;
+
+      & [data-site-repo] {
+        grid-area: auto;
+        justify-self: start;
+      }
     }
   }
 }

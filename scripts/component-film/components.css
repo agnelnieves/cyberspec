@@ -1,0 +1,75 @@
+.component-film-specimen {
+  position: relative;
+  width: 480px;
+  height: 360px;
+  --cy-text-micro: 9px;
+  --cy-text-xs: 12px;
+  --cy-text-sm: 15px;
+  --cy-text-md: 17px;
+  --cy-text-lg: 21px;
+  --cy-text-3xl: 58px;
+  background-color: transparent;
+}
+.component-film-specimen > [data-kit="panel"] {
+  height: 100%;
+  --panel-pad: 18px;
+  --panel-spine: 12px;
+}
+.component-film-specimen [data-kit="panel-code"] {
+  margin-bottom: 3px;
+}
+.component-film-specimen [data-kit="panel-bar"] {
+  min-height: 36px;
+}
+.component-film-specimen [data-kit="panel-footer"] {
+  min-height: 53px;
+}
+.component-film-specimen[data-film-shot="0"] [data-kit="panel-body"] {
+  align-content: space-evenly;
+  gap: 9px;
+  padding-block: 12px;
+}
+.component-film-deck-reading,
+.component-film-telemetry-row {
+  display: grid;
+  grid-template-columns: 1.32fr 1fr;
+  align-items: center;
+  gap: 22px;
+}
+.component-film-deck-reading [data-kit="meter"] {
+  align-self: end;
+  margin-bottom: 6px;
+}
+.component-film-specimen[data-film-shot="1"] [data-kit="panel-body"] {
+  align-content: center;
+  gap: 14px;
+}
+.component-film-specimen .component-film-trace { --graph-height: 84px; }
+.component-film-specimen .component-film-load { --graph-height: 37px; }
+.component-film-telemetry-row {
+  grid-template-columns: 1fr 1.48fr;
+  align-items: end;
+}
+.component-film-telemetry-row [data-kit="readout"] {
+  --readout-size: 44px;
+}
+.component-film-footnote {
+  font: 500 10px var(--cy-mono);
+  letter-spacing: .07em;
+  color: var(--cy-ink-mute);
+}
+.component-film-specimen[data-film-shot="2"] [data-kit="panel-body"] {
+  padding: 12px 16px;
+  align-content: center;
+}
+.component-film-attributes {
+  display: grid;
+  grid-template-columns: 296px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+.component-film-attribute-reading {
+  display: grid;
+  gap: 28px;
+}
+.component-film-attribute-reading [data-kit="meter-head"] { flex-wrap: wrap; }

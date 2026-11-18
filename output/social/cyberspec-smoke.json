@@ -1,0 +1,69 @@
+{
+  "url": "http://127.0.0.1:5720/social.html",
+  "output": "/Users/monz/Code/experiments/cyberspec/output/social/cyberspec-smoke.mp4",
+  "fps": 30,
+  "frames": 90,
+  "duration": 3,
+  "completeLoop": false,
+  "posterFrame": 0,
+  "seed": "43594252",
+  "marks": [
+    {
+      "mark": "loop-start",
+      "seconds": 0,
+      "frame": 0
+    },
+    {
+      "mark": "sound-on",
+      "seconds": 1.466666666666667,
+      "frame": 43
+    },
+    {
+      "mark": "sound-adjust",
+      "seconds": 2.2666666666666666,
+      "frame": 68
+    }
+  ],
+  "warnings": [
+    "Poster mark 'payoff' was not reached; the opening frame was used"
+  ],
+  "probe": {
+    "codec_name": "h264",
+    "width": 1080,
+    "height": 1350,
+    "pix_fmt": "yuv420p",
+    "r_frame_rate": "30/1",
+    "duration": "3.000000",
+    "nb_read_frames": "90"
+  },
+  "ffmpegArgs": [
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-f",
+    "image2pipe",
+    "-framerate",
+    "30",
+    "-vcodec",
+    "png",
+    "-i",
+    "pipe:0",
+    "-an",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-b:v",
+    "8M",
+    "-maxrate",
+    "10M",
+    "-bufsize",
+    "16M",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    "/Users/monz/Code/experiments/cyberspec/output/social/cyberspec-smoke.mp4"
+  ]
+}

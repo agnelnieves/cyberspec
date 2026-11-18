@@ -30,6 +30,15 @@ const sections = [
   { route: "examples", title: "Examples", line: "The kit composed into whole screens. Each one works: open it and use it." },
 ]
 
+function RepositoryLink({ iconOnly = false }: { iconOnly?: boolean }) {
+  return (
+    <a href={repositoryUrl} target="_blank" rel="noreferrer" data-site-repo title="Star Cyberspec on GitHub">
+      <span data-site-github-mark aria-hidden="true" />
+      <span data-sr-only={iconOnly || undefined}>Star on GitHub</span>
+    </a>
+  )
+}
+
 // The accent, as OKLCH lightness, chroma and hue.
 const accents = [
   { id: "crimson", name: "Crimson", l: 0.656, c: 0.23, h: 24 },
@@ -294,6 +303,7 @@ function Site({ route }: { route: string }) {
               )}
             </a>
           ))}
+          <RepositoryLink iconOnly />
         </nav>
         <div data-site-tools>
           <AccentPicker root={root} />
@@ -332,6 +342,7 @@ function Site({ route }: { route: string }) {
           </a>
           .
         </p>
+        <RepositoryLink />
       </footer>
       <AgentPrompt />
       <Toasts />

@@ -1,0 +1,47 @@
+{
+  "status": "inconclusive",
+  "mode": "motion",
+  "stages": [
+    {
+      "key": "stage-1",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 1248,
+        "durationMs": 20814.69999998808,
+        "medianMs": 16.600000023841858,
+        "maxGapMs": 33,
+        "skippedGaps": 7,
+        "cameraFrames": 0,
+        "reasons": [
+          "7 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 30,
+        "layout": {
+          "controls": 4,
+          "paddedContainers": 5,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.30, grown past the design size",
+        "jump: div width +3.8px in one frame at 2.45s [sound-adjust], 7 times",
+        "jump: lucide x -10.7px in one frame at 4.91s [sound-press], 4 times",
+        "jump: span \"Standby\" x +6.4px in one frame at 6.47s [sound-press], 3 times",
+        "jump: span \"Standby\" width -6.4px in one frame at 6.47s [sound-press], 3 times",
+        "jump: reel-footnote \"NODE 3F:A2\" width +42.8px in one frame at 6.47s [sound-press], 3 times",
+        "jump: span x +27.7px in one frame at 10.24s [sound-reset]",
+        "jump: span width +5.8px in one frame at 10.24s [sound-reset]",
+        "steps in its box: span \"Linked\" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform"
+      ],
+      "manual": [
+        "same-box content change: output \"42%\" changes text or drawing at 2.45s [sound-adjust]; inspect the transition in motion (geometry alone cannot judge it)",
+        "same-box content change: span \"Standby\" changes text or drawing at 4.91s [sound-press]; inspect the transition in motion (geometry alone cannot judge it)",
+        "same-box content change: button \"Commit link\" changes text or drawing at 4.91s [sound-press]; inspect the transition in motion (geometry alone cannot judge it)"
+      ]
+    }
+  ],
+  "errors": [],
+  "manualReviewRequired": true,
+  "exitCode": 2
+}

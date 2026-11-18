@@ -1,0 +1,104 @@
+{
+  "status": "complete",
+  "url": "http://127.0.0.1:5720/social.html",
+  "output": "/Users/monz/Code/experiments/cyberspec/output/social/cyberspec-loop.mp4",
+  "fps": 30,
+  "frames": 356,
+  "duration": 11.866666666666667,
+  "completeLoop": true,
+  "posterFrame": 217,
+  "warmupFrames": 356,
+  "seed": "43594252",
+  "marks": [
+    {
+      "mark": "loop-start",
+      "seconds": 0,
+      "frame": 0
+    },
+    {
+      "mark": "sound-on",
+      "seconds": 1.466666666666668,
+      "frame": 44
+    },
+    {
+      "mark": "sound-adjust",
+      "seconds": 2.5666666666666678,
+      "frame": 77
+    },
+    {
+      "mark": "sound-adjust-end",
+      "seconds": 3.366666666666668,
+      "frame": 101
+    },
+    {
+      "mark": "sound-increment",
+      "seconds": 4.06666666666667,
+      "frame": 122
+    },
+    {
+      "mark": "sound-press",
+      "seconds": 4.900000000000002,
+      "frame": 147
+    },
+    {
+      "mark": "payoff",
+      "seconds": 7.233333333333334,
+      "frame": 217
+    },
+    {
+      "mark": "sound-reset",
+      "seconds": 10.266666666666666,
+      "frame": 308
+    },
+    {
+      "mark": "loop-end",
+      "seconds": 11.866666666666665,
+      "frame": 356
+    },
+    {
+      "mark": "loop-start",
+      "seconds": 11.866666666666665,
+      "frame": 356
+    }
+  ],
+  "warnings": [],
+  "probe": {
+    "codec_name": "h264",
+    "width": 1080,
+    "height": 1350,
+    "pix_fmt": "yuv420p",
+    "r_frame_rate": "30/1",
+    "duration": "11.866667",
+    "nb_read_frames": "356"
+  },
+  "ffmpegArgs": [
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-f",
+    "image2pipe",
+    "-framerate",
+    "30",
+    "-vcodec",
+    "png",
+    "-i",
+    "pipe:0",
+    "-an",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-b:v",
+    "8M",
+    "-maxrate",
+    "10M",
+    "-bufsize",
+    "16M",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    "/Users/monz/Code/experiments/cyberspec/output/social/cyberspec-loop.rendering.mp4"
+  ]
+}

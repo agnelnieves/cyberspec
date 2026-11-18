@@ -1,0 +1,43 @@
+.solo-specimen {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Optical enlargements of the original controls. Their cut lines, hit
+   regions and tick spacing scale together exactly as they do in the kit. */
+.solo-specimen[data-solo-shot="switch"] .solo-object {
+  zoom: 4.25;
+}
+.solo-specimen[data-solo-shot="switch"] [data-kit="switch-row"] {
+  flex-direction: column;
+  gap: 7px;
+}
+.solo-specimen[data-solo-shot="switch"] [data-kit="label"] {
+  white-space: nowrap;
+  font-size: 11px;
+}
+.solo-specimen[data-solo-shot="slider"] .solo-object {
+  width: 263px;
+  zoom: 2.6;
+  --cy-text-sm: 15px;
+  --cy-h: 41px;
+}
+.solo-specimen[data-solo-shot="graph"] .solo-object {
+  width: 340px;
+  zoom: 2;
+  display: grid;
+  justify-items: center;
+  gap: 15px;
+  --cy-text-sm: 15px;
+  --cy-text-md: 18px;
+}
+.solo-specimen[data-solo-shot="graph"] [data-kit="signal-graph"] {
+  --graph-height: 86px;
+}
+.solo-specimen[data-solo-shot="stat"] .solo-object {
+  display: grid;
+  padding-bottom: 11px;
+  zoom: 2.75;
+}

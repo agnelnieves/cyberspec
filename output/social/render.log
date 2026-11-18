@@ -1,0 +1,16 @@
+warming up 5s
+warming up 10s
+warmup complete; capturing the next story at frame 356
+rendered 1s (30 frames)
+rendered 2s (60 frames)
+rendered 3s (90 frames)
+rendered 4s (120 frames)
+rendered 5s (150 frames)
+rendered 6s (180 frames)
+rendered 7s (210 frames)
+rendered 8s (240 frames)
+rendered 9s (270 frames)
+rendered 10s (300 frames)
+rendered 11s (330 frames)
+wrote /Users/monz/Code/experiments/cyberspec/output/social/cyberspec-loop.mp4: 1080×1350, 11.866666666666667s, 30fps, H.264, target 8Mbps
+wrote /Users/monz/Code/experiments/cyberspec/output/social/cyberspec-loop-poster.png and seam comparison frames

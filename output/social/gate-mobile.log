@@ -1,0 +1,61 @@
+16 frames every 1000ms -> /Users/monz/Code/experiments/cyberspec/output/social/mobile-film.png
+coverage stage-1: 915 frames, 16.07s, largest gap 666.5ms (inconclusive)
+  incomplete: 8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged
+[stage-1] scale: 1.05, grown past the design size
+[stage-1] small text: span.reel-footnote "NODE 3F:A2" renders at 8.4px on a phone; the floor is about 10px, so lay compact out at the column's width and set its type for it, not shrunk from the wide design (12 frames from 0.0s)
+[stage-1] small text: span.reel-footnote "ROUTE ESTABLISHED" renders at 8.4px on a phone; the floor is about 10px, so lay compact out at the column's width and set its type for it, not shrunk from the wide design (4 frames from 6.0s)
+[stage-1] jump: span x -27.7px in one frame at 1.50s [sound-on], 3 times
+[stage-1] jump: span width -5.7px in one frame at 1.50s [sound-on], 3 times
+[stage-1] jump: div width +2.5px in one frame at 2.43s [sound-adjust], 5 times
+[stage-1] jump: button "Commit link" x +21.4px in one frame at 4.89s [sound-press], 3 times
+[stage-1] jump: button "Commit link" width -21.4px in one frame at 4.89s [sound-press], 3 times
+[stage-1] jump: span "Standby" x +7.5px in one frame at 6.46s [sound-press], 2 times
+[stage-1] jump: span "Standby" width -7.5px in one frame at 6.46s [sound-press], 2 times
+[stage-1] jump: reel-footnote "NODE 3F:A2" width +38.1px in one frame at 6.46s [sound-press], 2 times
+[stage-1] steps in its box: button "Linking…" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform
+[stage-1] steps in its box: span "Linked" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform
+[stage-1] manual: same-box content change: output "42%" changes text or drawing at 2.43s [sound-adjust]; inspect the transition in motion (geometry alone cannot judge it)
+[stage-1] manual: same-box content change: span "Standby" changes text or drawing at 4.89s [sound-press]; inspect the transition in motion (geometry alone cannot judge it)
+coverage stage-2: 915 frames, 16.07s, largest gap 666.6ms (inconclusive)
+  incomplete: 8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged
+[stage-2] scale: 1.41, grown past the design size
+[stage-2] jump: span "Awaiting link" width +12.1px in one frame at 6.46s, 2 times
+[stage-2] manual: same-box content change: span "48" changes text or drawing at 6.49s; inspect the transition in motion (geometry alone cannot judge it)
+coverage stage-3: 915 frames, 16.07s, largest gap 666.6ms (inconclusive)
+  incomplete: 8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged
+[stage-3] scale: 1.66, grown past the design size
+[stage-3] uneven gutters: button sits 31px from the left of section.reel-tile, 167px from the right and 74px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)
+[stage-3] uneven gutters: span sits 169px from the left of section.reel-tile, 33px from the right and 154px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)
+[stage-3] jump: lucide x -6.0px in one frame at 6.46s, 2 times
+[stage-3] jump: span "8" x -6.0px in one frame at 6.46s, 2 times
+[stage-3] jump: span "8" width +12.0px in one frame at 6.46s, 2 times
+coverage stage-4: 915 frames, 16.07s, largest gap 666.5ms (inconclusive)
+  incomplete: 8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged
+[stage-4] scale: 1.41, grown past the design size
+[stage-4] jump: div "SYSSystem: Vanta M" height +37.0px in one frame at 4.89s, 3 times
+[stage-4] jump: span y +18.5px in one frame at 5.77s
+[stage-4] appears with no entrance: div "USRUser: link --stea" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole
+[stage-4] appears with no entrance: div "Working" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole
+[stage-4] appears with no entrance: div "AGTAgent: Encrypted." shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole
+[stage-4] appears with no entrance: div "OKOK: Link establish" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole
+[stage-4] vanishes with no exit: div "Working" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed
+[stage-4] vanishes with no exit: div "USRUser: link --stea" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed
+[stage-4] vanishes with no exit: div "AGTAgent: Encrypted." goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed
+[stage-4] vanishes with no exit: div "OKOK: Link establish" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed
+coverage stage-5: 915 frames, 16.07s, largest gap 666.7ms (inconclusive)
+  incomplete: 8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged
+[stage-5] scale: 1.41, grown past the design size
+[stage-5] uneven gutters: div sits 26px from the left of section.reel-tile, 26px from the right and 118px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)
+[stage-5] uneven inset: the ring on span hangs 1px past its column on the right; inset the field by the ring's reach (or pad the field itself) so the box's edges sit on the column: the name's left edge, the buttons' right (16 frames from 0.0s)
+[stage-5] jump: polygon y -17.1px in one frame at 6.46s, 2 times
+[stage-5] jump: polygon height +17.1px in one frame at 6.46s, 2 times
+[stage-5] jump: polyline y -17.1px in one frame at 6.46s, 2 times
+[stage-5] jump: polyline height +14.6px in one frame at 6.46s, 2 times
+[stage-5] jump: span y -20.2px in one frame at 6.46s, 2 times
+[stage-5] jump: span "Idle" x -15.0px in one frame at 6.46s, 2 times
+[stage-5] jump: span "Idle" width +15.0px in one frame at 6.46s, 2 times
+[stage-5] steps in its box: span "Stable" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform
+[stage-5] manual: same-box content change: span "42dB" changes text or drawing at 6.46s; inspect the transition in motion (geometry alone cannot judge it)
+[stage-5] manual: same-box content change: svg changes text or drawing at 6.46s; inspect the transition in motion (geometry alone cannot judge it)
+film: inconclusive; watch the motion and inspect every image before approval
+rehearsal failed: 4 never-intentional line(s) above

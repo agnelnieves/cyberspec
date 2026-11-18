@@ -1,0 +1,185 @@
+{
+  "status": "inconclusive",
+  "mode": "motion",
+  "stages": [
+    {
+      "key": "stage-1",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 915,
+        "durationMs": 16071.600000023842,
+        "medianMs": 16.69999998807907,
+        "maxGapMs": 666.5,
+        "skippedGaps": 8,
+        "cameraFrames": 0,
+        "reasons": [
+          "8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 16,
+        "layout": {
+          "controls": 4,
+          "paddedContainers": 5,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.05, grown past the design size",
+        "small text: span.reel-footnote \"NODE 3F:A2\" renders at 8.4px on a phone; the floor is about 10px, so lay compact out at the column's width and set its type for it, not shrunk from the wide design (12 frames from 0.0s)",
+        "small text: span.reel-footnote \"ROUTE ESTABLISHED\" renders at 8.4px on a phone; the floor is about 10px, so lay compact out at the column's width and set its type for it, not shrunk from the wide design (4 frames from 6.0s)",
+        "jump: span x -27.7px in one frame at 1.50s [sound-on], 3 times",
+        "jump: span width -5.7px in one frame at 1.50s [sound-on], 3 times",
+        "jump: div width +2.5px in one frame at 2.43s [sound-adjust], 5 times",
+        "jump: button \"Commit link\" x +21.4px in one frame at 4.89s [sound-press], 3 times",
+        "jump: button \"Commit link\" width -21.4px in one frame at 4.89s [sound-press], 3 times",
+        "jump: span \"Standby\" x +7.5px in one frame at 6.46s [sound-press], 2 times",
+        "jump: span \"Standby\" width -7.5px in one frame at 6.46s [sound-press], 2 times",
+        "jump: reel-footnote \"NODE 3F:A2\" width +38.1px in one frame at 6.46s [sound-press], 2 times",
+        "steps in its box: button \"Linking…\" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform",
+        "steps in its box: span \"Linked\" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform"
+      ],
+      "manual": [
+        "same-box content change: output \"42%\" changes text or drawing at 2.43s [sound-adjust]; inspect the transition in motion (geometry alone cannot judge it)",
+        "same-box content change: span \"Standby\" changes text or drawing at 4.89s [sound-press]; inspect the transition in motion (geometry alone cannot judge it)"
+      ]
+    },
+    {
+      "key": "stage-2",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 915,
+        "durationMs": 16071.600000023842,
+        "medianMs": 16.69999998807907,
+        "maxGapMs": 666.6000000238419,
+        "skippedGaps": 8,
+        "cameraFrames": 0,
+        "reasons": [
+          "8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 16,
+        "layout": {
+          "controls": 0,
+          "paddedContainers": 0,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.41, grown past the design size",
+        "jump: span \"Awaiting link\" width +12.1px in one frame at 6.46s, 2 times"
+      ],
+      "manual": [
+        "same-box content change: span \"48\" changes text or drawing at 6.49s; inspect the transition in motion (geometry alone cannot judge it)"
+      ]
+    },
+    {
+      "key": "stage-3",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 915,
+        "durationMs": 16071.5,
+        "medianMs": 16.69999998807907,
+        "maxGapMs": 666.6000000238419,
+        "skippedGaps": 8,
+        "cameraFrames": 0,
+        "reasons": [
+          "8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 16,
+        "layout": {
+          "controls": 0,
+          "paddedContainers": 1,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.66, grown past the design size",
+        "uneven gutters: button sits 31px from the left of section.reel-tile, 167px from the right and 74px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)",
+        "uneven gutters: span sits 169px from the left of section.reel-tile, 33px from the right and 154px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)",
+        "jump: lucide x -6.0px in one frame at 6.46s, 2 times",
+        "jump: span \"8\" x -6.0px in one frame at 6.46s, 2 times",
+        "jump: span \"8\" width +12.0px in one frame at 6.46s, 2 times"
+      ],
+      "manual": []
+    },
+    {
+      "key": "stage-4",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 915,
+        "durationMs": 16071.600000023842,
+        "medianMs": 16.69999998807907,
+        "maxGapMs": 666.5,
+        "skippedGaps": 8,
+        "cameraFrames": 0,
+        "reasons": [
+          "8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 16,
+        "layout": {
+          "controls": 0,
+          "paddedContainers": 1,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.41, grown past the design size",
+        "jump: div \"SYSSystem: Vanta M\" height +37.0px in one frame at 4.89s, 3 times",
+        "jump: span y +18.5px in one frame at 5.77s",
+        "appears with no entrance: div \"USRUser: link --stea\" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole",
+        "appears with no entrance: div \"Working\" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole",
+        "appears with no entrance: div \"AGTAgent: Encrypted.\" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole",
+        "appears with no entrance: div \"OKOK: Link establish\" shows at full size and opacity in one frame; fade it in, or grow it out of what it comes from (a chip budding off a value scales from it as it fades in: Fly with held), never pop it in whole",
+        "vanishes with no exit: div \"Working\" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed",
+        "vanishes with no exit: div \"USRUser: link --stea\" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed",
+        "vanishes with no exit: div \"AGTAgent: Encrypted.\" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed",
+        "vanishes with no exit: div \"OKOK: Link establish\" goes from full opacity to gone in one frame; fade it out (or move it out of view) before it is removed"
+      ],
+      "manual": []
+    },
+    {
+      "key": "stage-5",
+      "label": "ss-fit reel-stage",
+      "coverage": {
+        "status": "inconclusive",
+        "frames": 915,
+        "durationMs": 16071.5,
+        "medianMs": 16.69999998807907,
+        "maxGapMs": 666.7000000476837,
+        "skippedGaps": 8,
+        "cameraFrames": 0,
+        "reasons": [
+          "8 sampling gap(s) exceeded 27ms; motion during those gaps was not judged"
+        ],
+        "framingSamples": 16,
+        "layout": {
+          "controls": 0,
+          "paddedContainers": 0,
+          "compositionCrops": 0
+        }
+      },
+      "findings": [
+        "scale: 1.41, grown past the design size",
+        "uneven gutters: div sits 26px from the left of section.reel-tile, 26px from the right and 118px from the bottom; bleed it off an edge, or keep one gutter on every side it doesn't bleed (16 frames from 0.0s)",
+        "uneven inset: the ring on span hangs 1px past its column on the right; inset the field by the ring's reach (or pad the field itself) so the box's edges sit on the column: the name's left edge, the buttons' right (16 frames from 0.0s)",
+        "jump: polygon y -17.1px in one frame at 6.46s, 2 times",
+        "jump: polygon height +17.1px in one frame at 6.46s, 2 times",
+        "jump: polyline y -17.1px in one frame at 6.46s, 2 times",
+        "jump: polyline height +14.6px in one frame at 6.46s, 2 times",
+        "jump: span y -20.2px in one frame at 6.46s, 2 times",
+        "jump: span \"Idle\" x -15.0px in one frame at 6.46s, 2 times",
+        "jump: span \"Idle\" width +15.0px in one frame at 6.46s, 2 times",
+        "steps in its box: span \"Stable\" moves by layout, so its text snaps to whole pixels while the box glides, and hops inside it as it lands; give it or a parent a lasting layer (will-change: transform), and glide it by a transform"
+      ],
+      "manual": [
+        "same-box content change: span \"42dB\" changes text or drawing at 6.46s; inspect the transition in motion (geometry alone cannot judge it)",
+        "same-box content change: svg changes text or drawing at 6.46s; inspect the transition in motion (geometry alone cannot judge it)"
+      ]
+    }
+  ],
+  "errors": [],
+  "manualReviewRequired": true,
+  "exitCode": 2
+}

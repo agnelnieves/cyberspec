@@ -25,6 +25,8 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
     "axe-core": "^4.14.1",
+    "playwright-core": "^1.65.1",
+    "postcss": "^8.5.33",
     "puppeteer-core": "^25.17.0",
     "shadcn": "^4.23.0",
     "typescript": "~5.9.3",

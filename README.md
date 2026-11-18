@@ -1,5 +1,7 @@
 # CYBERSPEC
 
+[![Cyberspec — cyberpunk components built on ui-sdk](./public/og-v2.png)](https://www.cyberspec.dev/)
+
 Live: https://www.cyberspec.dev
 
 A component kit in the style of a machine from a darker future: a blue-black
@@ -210,6 +212,10 @@ and a review page with playback controls are written to `output/social/`.
 These generated review exports are ignored by Git.
 The review page shows the static card instead of autoplaying when reduced
 motion is enabled, with an explicit option to play.
+
+The full-length demo video, `output/social/cyberspec-demo-full.mp4`, uses
+Git LFS. Run `git lfs pull` to download it after cloning.
+
 `index.html` references `public/og-v2.png` (1200 × 630) and
 `public/og-video-v3.mp4` (1200 × 630). `public/og-square-v2.png` is a square
 variant for social posts. The original `public/og.png` and earlier video
