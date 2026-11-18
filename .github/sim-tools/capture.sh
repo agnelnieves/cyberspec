@@ -64,7 +64,8 @@ sleep 2
 native_shot anchored-before-ui
 
 # Darwin's Unix socket path is short. Keep the listener in the foreground under this shell.
-socket="/tmp/cs-xb-$$.sock"
+socket_dir=$(mktemp -d /private/tmp/cs-xb.XXXXXX)
+socket="$socket_dir/ui.sock"
 xcodebuildmcp --version >> "$evidence/xcode.txt"
 xcodebuildmcp --socket "$socket" daemon start --foreground --daemon-log-path "$evidence/daemon.log" --daemon-log-level debug > "$evidence/daemon-console.log" 2>&1 &
 daemon_pid=$!
@@ -87,6 +88,16 @@ fi
 if [[ ! -x "$axe" ]]; then
   if brew install cameroncooke/axe/axe > "$evidence/axe-install.log" 2>&1; then axe=$(command -v axe); else log "AXe fallback unavailable."; fi
 fi
+# Match the framework search path XcodeBuildMCP passes to its bundled AXe.
+run_axe() {
+  local frameworks
+  frameworks="$(dirname "$axe")/Frameworks"
+  if [[ -d "$frameworks" ]]; then
+    DYLD_FRAMEWORK_PATH="$frameworks${DYLD_FRAMEWORK_PATH:+:$DYLD_FRAMEWORK_PATH}" "$axe" "$@"
+  else
+    "$axe" "$@"
+  fi
+}
 ui() {
   local action=$1 destination=$2
   shift 2
@@ -101,7 +112,7 @@ ui() {
 snapshot() {
   local label=$1
   if ui snapshot-ui "$evidence/$label-ax.json" --verbose; then return 0; fi
-  if [[ -x "$axe" ]] && "$axe" describe-ui --udid "$udid" > "$evidence/$label-raw-ax.json" 2>>"$evidence/ui-stderr.log"; then return 0; fi
+  if [[ -x "$axe" ]] && run_axe describe-ui --udid "$udid" > "$evidence/$label-raw-ax.json" 2>>"$evidence/ui-stderr.log"; then return 0; fi
   log "Accessibility snapshot unavailable at $label."
   return 1
 }
@@ -114,7 +125,7 @@ shot() {
 gesture() {
   local preset=$1 label=$2
   if ! ui gesture "$evidence/$label-gesture.json" --preset "$preset" --duration 0.42; then
-    if [[ -x "$axe" ]] && "$axe" gesture "$preset" --duration 0.42 --udid "$udid" > "$evidence/$label-raw-gesture.txt" 2>>"$evidence/ui-stderr.log"; then
+    if [[ -x "$axe" ]] && run_axe gesture "$preset" --duration 0.42 --udid "$udid" > "$evidence/$label-raw-gesture.txt" 2>>"$evidence/ui-stderr.log"; then
       log "Sent $preset using AXe at $label."
     else
       native_shot "$label-failed"
@@ -138,7 +149,7 @@ for attempt in {1..5}; do
   ref=$(jq -r '.ref' <<< "$match")
   label=$(jq -r '.label' <<< "$match")
   if [[ -n "$ref" ]] && ui tap "$evidence/$stage-tap.json" --element-ref "$ref"; then :
-  elif [[ -x "$axe" ]] && "$axe" tap --label "$label" --udid "$udid" > "$evidence/$stage-raw-tap.txt" 2>>"$evidence/ui-stderr.log"; then :
+  elif [[ -x "$axe" ]] && run_axe tap --label "$label" --udid "$udid" > "$evidence/$stage-raw-tap.txt" 2>>"$evidence/ui-stderr.log"; then :
   else log "Could not dismiss Safari's $label button."; break
   fi
   sleep 2
@@ -166,10 +177,3 @@ print("Visual viewport heights:", [r["viewport"][1] for r in rows])
 if max(offsets)-min(offsets) < 50:
     sys.exit("Safari gestures did not measurably move the anchored page.")
 PY
-if rg --quiet --fixed-strings 'site-frame-edge' dist --glob '*.js' --glob '*.html'; then
-  visit "?frame-test=clip#try-controls"
-  sleep 3
-  shot experiment-anchored
-  gesture scroll-down experiment-down
-  gesture scroll-up experiment-up
-fi

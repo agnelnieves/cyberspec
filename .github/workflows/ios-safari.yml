@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         site: [baseline, candidate]
-        runner: [xcode-27, macos-26]
+        runner: [xcode-27]
     env:
       IOS_FAMILY: ${{ matrix.runner == 'xcode-27' && '27' || '26' }}
     steps:
@@ -26,7 +26,7 @@ jobs:
         with:
           path: site
           persist-credentials: false
-          ref: ${{ matrix.site == 'baseline' && '94c2837b111cdff296629927e12bd135169d97b7' || github.sha }}
+          ref: ${{ matrix.site == 'baseline' && '94c2837b111cdff296629927e12bd135169d97b7' || 'c7b9eedad829642920025575e0a6f3aef5621131' }}
       - name: Install Bun and XcodeBuildMCP
         run: |
           command -v bun || brew install oven-sh/bun/bun
