@@ -7,7 +7,9 @@ export default function Landing() {
     <>
       <section className="landing-hero" aria-labelledby="landing-heading">
         <div className="landing-plot">
-          <div className="landing-earth"><LandingGlobe /></div>
+          <div className="landing-orbit">
+            <div className="landing-earth"><LandingGlobe /></div>
+          </div>
         </div>
         <div className="landing-intro">
           <p className="landing-kicker">Open-source React library</p>

@@ -1,8 +1,8 @@
-import { Blocks, CalendarDays, ListMusic, Monitor, Search } from "lucide-react"
+import { Blocks, CalendarDays, ListMusic, Monitor, PanelLeft, Search } from "lucide-react"
 import { CommandPalette, type PaletteCommand, type PaletteGroup } from "@/registry/cyber/ui/command-palette"
 import { panels } from "./catalog/panels"
 import { examples } from "./Examples"
-import { navigate } from "./navigation"
+import { isCatalogSidebarOpen, navigate, sidebarRoute } from "./navigation"
 
 type SearchSetting = PaletteCommand & { apply: () => void }
 
@@ -10,6 +10,7 @@ const pages: PaletteGroup = {
   label: "Pages",
   commands: [
     { value: "/components", label: "All components", keywords: ["catalog", "library"], icon: <Blocks aria-hidden /> },
+    { value: `/${sidebarRoute}`, label: "Component sidebar", keywords: ["catalog", "sidebar view", "browse components"], icon: <PanelLeft aria-hidden /> },
     { value: "/examples", label: "All examples", keywords: ["screens", "blocks"], icon: <Monitor aria-hidden /> },
     { value: "/", label: "Home", keywords: ["landing page", "overview", "homepage"], icon: <Monitor aria-hidden /> },
     { value: "/#relay-schedule", label: "Radio schedule", keywords: ["relay schedule", "calendar", "broadcasts", "daily lineup", "feed"], icon: <CalendarDays aria-hidden /> },
@@ -37,7 +38,7 @@ const componentPages: PaletteGroup = {
   })),
 }
 
-function SiteSearch({ settings }: { settings: SearchSetting[] }) {
+function SiteSearch({ settings, shortcut }: { settings: SearchSetting[]; shortcut: string | null }) {
   const commands: PaletteGroup = {
     label: "Commands",
     commands: settings.map((setting) => ({
@@ -48,6 +49,7 @@ function SiteSearch({ settings }: { settings: SearchSetting[] }) {
   return (
     <div data-site-search>
       <CommandPalette
+        shortcut={shortcut}
         trigger={<span data-site-search-label>Search</span>}
         triggerIcon={<Search aria-hidden />}
         title="Search Cyberspec"
@@ -57,7 +59,9 @@ function SiteSearch({ settings }: { settings: SearchSetting[] }) {
         rankResults
         commands={[pages, commands, examplePages, componentPages]}
         onAction={(value) => {
-          if (value.startsWith("/")) navigate(value)
+          if (value.startsWith("/preview/") && isCatalogSidebarOpen(location.pathname.replace(/^\/+|\/+$/g, "")))
+            navigate(`/${sidebarRoute}/${value.slice("/preview/".length)}`)
+          else if (value.startsWith("/")) navigate(value)
           else settings.find((setting) => setting.value === value)?.apply()
         }}
       />

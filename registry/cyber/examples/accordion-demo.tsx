@@ -4,6 +4,8 @@ export default function AccordionDemo() {
   return (
     <>
       <Accordion
+        role="group"
+        aria-label="Deck details"
         defaultValue={["core"]}
         items={[
           {

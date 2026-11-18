@@ -228,6 +228,20 @@
     outline: none;
   }
 
+  .catalog-grid-content {
+    min-width: 0;
+    container: catalog-content / inline-size;
+  }
+
+  .catalog-index-expand {
+    position: sticky;
+    inset-block-start: var(--site-header-clear);
+    z-index: 2;
+    min-height: 40px;
+    margin-block-end: 18px;
+    --frame-fill: var(--cy-panel);
+  }
+
   [data-kit="masthead"] {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
@@ -235,16 +249,15 @@
     gap: 32px clamp(24px, 5vw, 72px);
     margin-block-end: clamp(40px, 6vw, 80px);
 
-    @media (max-width: 1040px) {
+    @container catalog-content (max-width: 900px) {
       grid-template-columns: minmax(0, 1fr);
     }
 
     & h1 {
-      width: 100%;
-      max-width: 720px;
       margin: 0;
-      line-height: 1;
-      color: var(--cy-ink);
+      font: 500 clamp(34px, 4vw, 58px) / 1.08 "Kode Mono Variable", var(--cy-mono);
+      letter-spacing: -.055em;
+      color: var(--cy-ink-hi);
     }
 
     & [data-masthead-lead] {
@@ -377,14 +390,9 @@
     min-width: 0;
     scroll-margin-block-start: calc(var(--bar-h) + 16px);
 
-    &[data-wide] {
-      grid-column: span 2;
-    }
-
-    @media (max-width: 680px) {
-      &[data-wide] {
-        grid-column: auto;
-      }
+    /* Two 300px cards and their 18px gap must fit beside the index. */
+    @container catalog-content (min-width: 618px) {
+      &[data-wide] { grid-column: span 2; }
     }
   }
 

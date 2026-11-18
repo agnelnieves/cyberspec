@@ -1,0 +1,144 @@
+@layer cyber.blocks {
+  .component-index {
+    --index-top: calc(var(--site-page-top) + env(safe-area-inset-top, 0px));
+    --index-available-height: calc(100dvh - var(--index-top) - var(--site-edge) - env(safe-area-inset-bottom, 0px) - 8px);
+    position: sticky;
+    top: var(--index-top);
+    align-self: start;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 14px;
+    min-width: 0;
+    height: var(--index-available-height);
+  }
+
+  .component-index-overview {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 8px;
+    min-height: 32px;
+    color: var(--cy-ink-hi);
+    text-decoration: none;
+    font: 600 16px / 1.2 var(--cy-font);
+  }
+  .component-index-overview svg { width: 15px; height: 15px; color: var(--cy-ink); }
+  .component-index-overview:is(:hover, [aria-current="page"]) { color: var(--cy-signal); }
+  .component-index-picker { display: none; }
+
+  .component-index-skip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 5px 9px;
+    background: var(--cy-signal);
+    color: var(--cy-on-solid);
+    clip-path: inset(50%);
+  }
+  .component-index-skip:focus { clip-path: none; }
+
+  .component-index-list {
+    min-height: 0;
+  }
+  .component-index-list [data-kit="scroll-area-content"] > div + div { margin-block-start: 20px; }
+  .component-index-list h2 {
+    margin: 4px 0 6px;
+    color: var(--cy-ink-mute);
+    font: 550 11px / 1.4 var(--cy-mono);
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  .component-index-list ul { margin: 0; padding: 0; list-style: none; }
+  .component-index-list a {
+    display: block;
+    padding: 5px 10px;
+    border-inline-start: 2px solid transparent;
+    color: var(--cy-ink-hi);
+    text-decoration: none;
+    font: 500 16px / 1.2 var(--cy-font);
+  }
+  .component-index-list a:hover { background: var(--cy-fill-hover); }
+  .component-index-list a[aria-current="page"] {
+    border-color: var(--cy-signal);
+    color: var(--cy-signal);
+    background: var(--cy-signal-fill);
+    font-weight: 650;
+  }
+  .component-index-list a:focus-visible { outline-offset: -2px; }
+  .component-index-list p { margin-block: 4px; color: var(--cy-ink-mute); }
+
+  @media (width > 820px) {
+    /* The labels start partway across the diagonal. Reserve the remaining rise
+       inside the list so the track and arrow can reach the horizontal frame. */
+    .component-index-list {
+      --index-corner-inset: calc(var(--site-bottom-cut) * 2 / 3);
+      --area-height: calc(100% - var(--index-corner-inset));
+      /* Align the center line of the scrollbar with the filter's right edge. */
+      width: calc(100% + var(--area-bar) / 2);
+    }
+    .component-index-list [data-edge="end"] {
+      inset-block-end: var(--index-corner-inset);
+    }
+    .component-index-list [data-edge="end"]::after {
+      inset-block-end: calc(-1 * var(--index-corner-inset));
+    }
+  }
+
+  @media (max-width: 820px) {
+    .component-index {
+      position: static;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: 8px 12px;
+      height: auto;
+      padding: 0 0 12px;
+      border-block-end: 1px solid var(--cy-line-deco);
+    }
+    .component-index > [data-kit="field"] { grid-column: 1 / -1; }
+    .component-index-overview { justify-self: start; min-height: 44px; }
+    .component-index-skip, .component-index-list { display: none; }
+    .component-index[data-filtering] {
+      grid-template-rows: auto auto minmax(0, 1fr);
+      max-height: calc(var(--index-available-height) - var(--site-bottom-cut));
+    }
+    .component-index[data-filtering] .component-index-list {
+      --area-height: auto;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      grid-column: 1 / -1;
+      align-self: stretch;
+      max-height: min(36dvh, 15rem);
+    }
+    .component-index-list [data-kit="scroll-area-viewport"] { min-height: 0; }
+    .component-index-list a { display: flex; align-items: center; min-height: 44px; }
+    .component-index[data-filtering] .component-index-picker { display: none; }
+    .component-index-picker {
+      position: relative;
+      display: block;
+      min-width: 0;
+    }
+    .component-index-picker select {
+      appearance: none;
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 32px 8px 12px;
+      border: 1px solid var(--cy-line-ctl);
+      border-radius: 0;
+      color: var(--cy-ink-hi);
+      background: var(--cy-panel);
+      font: 600 16px / 1.2 var(--cy-font);
+    }
+    .component-index-picker svg {
+      position: absolute;
+      top: 50%;
+      inset-inline-end: 10px;
+      width: 14px;
+      height: 14px;
+      translate: 0 -50%;
+      color: var(--cy-ink);
+      pointer-events: none;
+    }
+  }
+}

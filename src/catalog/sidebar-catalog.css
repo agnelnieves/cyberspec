@@ -1,0 +1,67 @@
+@layer cyber.blocks {
+  .sidebar-reading { min-width: 0; }
+  .article-links { display: none; }
+
+  @media (min-width: 1200px) {
+    .sidebar-catalog {
+      grid-template-columns: var(--catalog-index-width) minmax(0, 1fr) clamp(130px, 10vw, 160px);
+    }
+    .article-links {
+      display: grid;
+      position: sticky;
+      top: calc(var(--site-header-clear) + 12px);
+      align-content: start;
+      justify-items: start;
+      border-inline-start: 1px solid var(--cy-line-deco);
+      padding-inline-start: 18px;
+    }
+    .article-links p {
+      color: var(--cy-ink-mute);
+      font: 500 11px / 1.4 var(--cy-mono);
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .article-links p { margin: 0 0 8px; }
+    .article-links a {
+      display: flex;
+      align-items: center;
+      min-height: 34px;
+      color: var(--cy-ink-mute);
+      font-size: 16px;
+      text-decoration: none;
+    }
+    .article-links a:is([aria-current], :hover) { color: var(--cy-signal); }
+  }
+
+  .component-pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    border-block-start: 1px solid var(--cy-line-deco);
+    margin-block-start: 36px;
+    padding-block-start: 14px;
+  }
+  .component-pager a {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    color: var(--cy-ink-hi);
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .component-pager a[rel="next"] { grid-column: 2; justify-self: end; text-align: end; }
+  .component-pager small {
+    display: block;
+    color: var(--cy-ink-mute);
+    font: 500 11px / 1.4 var(--cy-mono);
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  .component-pager svg { flex: none; width: 16px; color: var(--cy-accent); }
+  .component-pager a:hover { color: var(--cy-signal); }
+  .sidebar-reading :is(#example, #installation) { scroll-margin-block-start: calc(var(--site-header-clear) + 16px); }
+
+}

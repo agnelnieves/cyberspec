@@ -1,0 +1,71 @@
+@layer cyber.blocks {
+  .component-article {
+    display: grid;
+    align-content: start;
+    min-width: 0;
+    gap: clamp(30px, 3.4vw, 50px);
+    color: var(--cy-ink-hi);
+  }
+
+  .component-article > section {
+    min-width: 0;
+    scroll-margin-block-start: calc(var(--site-header-clear) + 18px);
+  }
+
+  .component-article-header {
+    display: grid;
+    gap: 12px;
+  }
+
+  .component-category {
+    margin: 0;
+    color: var(--cy-signal);
+    font: 500 11px/1.4 var(--cy-mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .component-article-header h1 {
+    margin: 0;
+    font: 500 clamp(36px, 4.2vw, 68px)/1.04 var(--cy-mono);
+    letter-spacing: -.055em;
+    overflow-wrap: anywhere;
+  }
+
+  .component-description,
+  .component-install p {
+    max-width: 55ch;
+    margin: 0;
+    font: 500 clamp(17px, 1.4vw, 21px)/1.45 var(--cy-font);
+  }
+
+  .component-article [data-kit="stage"] {
+    --frame-fill: var(--cy-panel);
+    --frame-image: radial-gradient(circle, var(--cy-line-deco) .75px, transparent 1px);
+    min-height: clamp(230px, 32vh, 360px);
+    padding: clamp(20px, 3vw, 44px);
+  }
+
+  .component-example-source,
+  .component-install {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .component-install {
+    border-block-start: 1px solid var(--cy-line-deco);
+    padding-block-start: clamp(20px, 2.3vw, 32px);
+  }
+
+  .component-install h2 {
+    margin: 0;
+    font: 500 clamp(23px, 2vw, 30px)/1.2 var(--cy-mono);
+    letter-spacing: -.035em;
+  }
+
+  .component-install p code {
+    font: .85em/1.2 var(--cy-mono);
+    color: var(--cy-signal);
+  }
+}

@@ -1,17 +1,24 @@
 import * as React from "react"
-import { ArrowUpRight, Menu, Palette, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { ArrowUpRight, Menu, Music2, Palette, PanelLeftOpen, Pause, Sparkles, Volume2, VolumeX } from "lucide-react"
 import { CatalogGrid, Preview } from "./catalog/Catalog"
+import { ComponentIndex } from "./catalog/ComponentIndex"
 import { panels } from "./catalog/panels"
 import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
 import { onSoundChange, setSoundEnabled, sfx, soundEnabled } from "@/registry/cyber/lib/sound"
 import { installCommands, repositoryUrl } from "./install"
 import { Brand } from "./Brand"
+import { BootScreen } from "./BootScreen"
+import { useEntrance } from "./useEntrance"
+import { usePageScroll } from "./usePageScroll"
+import { isCatalogSidebarOpen, isSidebarRoute, navigate, sidebarRoute } from "./navigation"
+import soundtrack from "./audio/cyberspec-theme.mp3"
 import { CopyPrompt } from "./CopyPrompt"
 import Landing from "./Landing"
 import { SiteFrame } from "./SiteFrame"
 import { LandingCTA } from "./LandingCTA"
 import { Drawer } from "@/registry/cyber/ui/drawer"
 import { Breadcrumb } from "@/registry/cyber/ui/breadcrumb"
+import { Button } from "@/registry/cyber/ui/button"
 import { Examples, examples } from "./Examples"
 import { SiteSearch, type SearchSetting } from "./SiteSearch"
 import { AgentPrompt } from "@/registry/cyber/blocks/daemon/agent-prompt"
@@ -19,13 +26,15 @@ import { CodeBlock } from "@/registry/cyber/ui/code-block"
 import { Ruler } from "@/registry/cyber/ui/micro"
 import { Panel } from "@/registry/cyber/ui/panel"
 import { Readout } from "@/registry/cyber/ui/readout"
-import { Toasts } from "@/registry/cyber/ui/toaster"
+import { notify, Toasts } from "@/registry/cyber/ui/toaster"
 import "./site-menu.css"
+import "./landing-entry.css"
 
 // A screen is registry/cyber/blocks/<name>/<name>.tsx, found by name and
 // loaded when its page opens.
 const blocks = import.meta.glob<{ default: React.ComponentType }>("/registry/cyber/blocks/*/*.tsx")
 const blockOf = (name: string) => blocks[`/registry/cyber/blocks/${name}/${name}.tsx`]
+const SidebarCatalog = React.lazy(() => import("./catalog/SidebarCatalog"))
 
 // The bar's sections. The example screens live under Examples rather than
 // each taking a place in the bar.
@@ -76,10 +85,7 @@ function Masthead() {
         <span data-micro aria-hidden>
           CS-00 // INTERFACE KIT // BUILT ON UI-SDK
         </span>
-        <h1>
-          <span data-sr-only>CYBERSPEC</span>
-          <Brand />
-        </h1>
+        <h1>Components</h1>
         <Ruler aria-hidden />
         <p>
           A cyberpunk theme for{" "}
@@ -113,16 +119,44 @@ function Masthead() {
 }
 
 function Page({ route }: { route: string }) {
+  const sidebarOpen = isCatalogSidebarOpen(route)
+  const wasOpen = React.useRef(sidebarOpen)
+  React.useLayoutEffect(() => {
+    if (route === "components" && wasOpen.current !== sidebarOpen && !location.hash) {
+      const index = document.getElementById("component-index")
+      // Desktop users can type immediately. On touch, keep the picker visible
+      // until the user explicitly opens the keyboard.
+      const indexFocus = matchMedia("(pointer: fine)").matches ? index?.querySelector("input") : index
+      const target = sidebarOpen ? indexFocus : document.getElementById("catalog-expand")
+      target?.focus({ preventScroll: true })
+    }
+    wasOpen.current = sidebarOpen
+  }, [route, sidebarOpen])
+
+  if (isSidebarRoute(route)) return (
+    <React.Suspense fallback={<p role="status">Loading components…</p>}>
+      <SidebarCatalog name={route.slice(sidebarRoute.length + 1)} />
+    </React.Suspense>
+  )
   if (route.startsWith("preview/")) return <Preview name={route.slice("preview/".length)} />
   if (!route) return <Landing />
   if (route === "examples") return <Examples />
   if (route !== "components") return <Screen name={route} />
   return (
-    <>
-      <Masthead />
-      <CatalogGrid />
-      <LandingCTA />
-    </>
+    <div className="catalog-overview" id="catalog-overview" data-sidebar-open={sidebarOpen || undefined}>
+      {sidebarOpen && <ComponentIndex />}
+      <div className="catalog-grid-content">
+        {!sidebarOpen && (
+          <Button id="catalog-expand" size="sm" className="catalog-index-expand" aria-expanded={false}
+            aria-controls="catalog-overview" onClick={() => navigate("/components?sidebar=open")}>
+            <PanelLeftOpen aria-hidden /> Expand sidebar
+          </Button>
+        )}
+        <Masthead />
+        <CatalogGrid />
+        <LandingCTA />
+      </div>
+    </div>
   )
 }
 
@@ -190,7 +224,9 @@ function AccentPicker({ chosen, choose }: { chosen: Accent; choose: (accent: Acc
   )
 }
 
-function useSitePreferences(root: React.RefObject<HTMLDivElement | null>) {
+type MusicControls = { playing: boolean; toggle: () => void }
+
+function useSitePreferences(root: React.RefObject<HTMLDivElement | null>, music: MusicControls) {
   const [chosen, setChosen] = React.useState<Accent>(accents[0])
   function choose(accent: Accent) {
     setChosen(accent)
@@ -225,6 +261,10 @@ function useSitePreferences(root: React.RefObject<HTMLDivElement | null>) {
       value: "sound-off", label: "Turn interface sounds off", keywords: ["disable audio", "mute"],
       icon: <VolumeX aria-hidden />, apply: () => setInterfaceSounds(false),
     },
+    {
+      value: "background-music", label: music.playing ? "Pause background music" : "Play background music",
+      keywords: ["song", "soundtrack", "CyberSpec Theme"], icon: <Music2 aria-hidden />, apply: music.toggle,
+    },
   ]
   return { chosen, choose, settings }
 }
@@ -254,15 +294,15 @@ function ExamplePager({ index }: { index: number }) {
   )
 }
 
-type SectionNavProps = { currentSection?: string; isExample: boolean }
+type SectionNavProps = { currentSection?: string; isSubpage: boolean }
 
-function SectionNav({ currentSection, isExample, onNavigate }: SectionNavProps & { onNavigate?: () => void }) {
+function SectionNav({ currentSection, isSubpage, onNavigate }: SectionNavProps & { onNavigate?: () => void }) {
   const inDrawer = Boolean(onNavigate)
   return (
     <nav aria-label="Sections" data-site-nav={inDrawer ? "drawer" : "bar"}>
       {sections.map((entry) => (
         <a key={entry.route} href={`/${entry.route}`} onClick={onNavigate}
-          aria-current={entry.route === currentSection ? (isExample ? "true" : "page") : undefined}>
+          aria-current={entry.route === currentSection ? (isSubpage ? "true" : "page") : undefined}>
           {entry.title}
           {entry.route === "examples" && (
             <>
@@ -297,10 +337,21 @@ function subscribeCompactHeader(notify: () => void) {
   return () => compactHeader.removeEventListener("change", notify)
 }
 
-function SiteHeader({ root, ...nav }: SectionNavProps & { root: React.RefObject<HTMLDivElement | null> }) {
+function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
+  root: React.RefObject<HTMLDivElement | null>
+  music: MusicControls
+  booting: boolean
+}) {
   const compact = React.useSyncExternalStore(subscribeCompactHeader, () => compactHeader.matches)
-  const { chosen, choose, settings } = useSitePreferences(root)
+  const { chosen, choose, settings } = useSitePreferences(root, music)
   const accent = <AccentPicker chosen={chosen} choose={choose} />
+  const musicButton = (
+    <button type="button" data-site-chip data-sfx="none" aria-label="Background music"
+      aria-pressed={music.playing} title={`${music.playing ? "Pause" : "Play"} CyberSpec Theme`} onClick={music.toggle}>
+      {music.playing ? <Pause aria-hidden size={14} /> : <Music2 aria-hidden size={14} />}
+      {compact && (music.playing ? "Pause" : "Play")}
+    </button>
+  )
   return (
     <header data-site-bar>
       <a href="/" data-site-brand aria-label="Cyberspec, home">
@@ -309,15 +360,16 @@ function SiteHeader({ root, ...nav }: SectionNavProps & { root: React.RefObject<
       </a>
       {!compact && <SectionNav {...nav} />}
       <div data-site-tools>
-        <SiteSearch settings={settings} />
+        <SiteSearch settings={settings} shortcut={booting ? null : "mod+k"} />
         {compact ? (
           <MobileMenu key={location.pathname} {...nav}>
             <div><span>Accent</span>{accent}</div>
             <div><span>Effects</span><FxSwitch /></div>
             <div><span>Sound</span><SoundToggle showLabel /></div>
+            <div><span>Music</span>{musicButton}</div>
           </MobileMenu>
         ) : (
-          <>{accent}<FxSwitch /><SoundToggle /></>
+          <>{accent}<FxSwitch /><SoundToggle />{musicButton}</>
         )}
       </div>
     </header>
@@ -326,18 +378,46 @@ function SiteHeader({ root, ...nav }: SectionNavProps & { root: React.RefObject<
 
 function Site({ route }: { route: string }) {
   const preview = route.startsWith("preview/")
+  const sidebar = isSidebarRoute(route)
   const exampleIndex = examples.findIndex((example) => example.route === route)
   const example = examples[exampleIndex]
-  const section = sections.find((entry) => entry.route === route)
+  const section = sections.find((entry) => entry.route === (sidebar ? "components" : route))
   const pageRoute = preview || section || example ? route : ""
   const root = React.useRef<HTMLDivElement>(null)
   const level = React.useSyncExternalStore(onFxChange, fxLevel)
-  const header = <SiteHeader root={root} currentSection={example ? "examples" : section?.route} isExample={Boolean(example)} />
+  const prefersReducedMotion = React.useSyncExternalStore(onFxChange, () => matchMedia("(prefers-reduced-motion: reduce)").matches)
+  const reduced = level !== "full" || prefersReducedMotion
+  const { showBoot, entering, enter } = useEntrance(!route && !location.hash, reduced)
+  usePageScroll(!reduced && !showBoot)
+  const player = React.useRef<HTMLAudioElement>(null)
+  const [playing, setPlaying] = React.useState(false)
+  function playMusic() {
+    const audio = player.current
+    if (!audio) return
+    if (audio.error) audio.load()
+    void audio.play().catch((error: DOMException) => {
+      if (error.name !== "AbortError" && !audio.error) notify("Music couldn’t start. Try the music control.")
+    })
+  }
+  function toggleMusic() {
+    if (player.current?.paused) playMusic()
+    else player.current?.pause()
+  }
+  const header = <SiteHeader root={root} music={{ playing, toggle: toggleMusic }} booting={showBoot}
+    currentSection={example ? "examples" : section?.route} isSubpage={Boolean(example) || sidebar} />
   return (
-    <div ref={root} data-skin="cyber" data-fx={level} data-crt="" data-site>
+    <div ref={root} data-skin="cyber" data-fx={level} data-crt="" data-site
+      data-entrance={entering ? "revealing" : showBoot ? "boot" : undefined}>
+      <audio ref={player} src={soundtrack} loop preload="none"
+        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+        onError={() => { setPlaying(false); notify("The background track couldn’t load. Try the music control.") }} />
+      {showBoot && <BootScreen reduced={reduced} exiting={entering} onEnter={withMusic => {
+        if (withMusic) playMusic()
+        enter()
+      }} />}
       <a href="#main" data-site-skip>Skip to content</a>
       <SiteFrame header={header}>
-        <main id="main" tabIndex={-1} data-site-page={preview ? "preview" : pageRoute || "landing"}>
+        <main id="main" tabIndex={-1} data-site-page={sidebar ? "component-sidebar" : preview ? "preview" : pageRoute || "landing"}>
           {(example || section?.route === "examples") && (
             <header data-kit="page-head">
               {example && (

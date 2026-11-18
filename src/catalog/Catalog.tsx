@@ -23,11 +23,21 @@ class Boundary extends React.Component<{ children: React.ReactNode }, { error: E
   }
 }
 
+function DemoStage({ name }: { name: string }) {
+  const Demo = demoOf(name)
+  return (
+    <div data-kit="stage" data-frame="tr bl">
+      <div data-kit="surface">
+        <Boundary key={name}>{Demo ? <Demo /> : <p data-kit="hint">No signal.</p>}</Boundary>
+      </div>
+    </div>
+  )
+}
+
 function Panel({ spec, index, heading: Heading = "h3" }: { spec: PanelSpec; index: number; heading?: "h1" | "h3" }) {
-  const Demo = demoOf(spec.name)
   const n = String(index + 1).padStart(2, "0")
   return (
-    <section data-kit="module" data-wide={spec.wide || undefined} data-missing={Demo ? undefined : ""} aria-label={spec.title} id={spec.name}>
+    <section data-kit="module" data-wide={spec.wide || undefined} data-missing={demoOf(spec.name) ? undefined : ""} aria-label={spec.title} id={spec.name}>
       <header data-kit="module-head">
         <span data-kit="module-n" aria-hidden>
           {n}
@@ -35,11 +45,7 @@ function Panel({ spec, index, heading: Heading = "h3" }: { spec: PanelSpec; inde
         <Heading data-kit="module-title">{spec.title}</Heading>
         <span data-kit="module-uses">{spec.uses.length ? spec.uses.join(" · ") : "presentational"}</span>
       </header>
-      <div data-kit="stage" data-frame="tr bl">
-        <div data-kit="surface">
-          <Boundary>{Demo ? <Demo /> : <p data-kit="hint">No signal.</p>}</Boundary>
-        </div>
-      </div>
+      <DemoStage name={spec.name} />
       <span data-micro aria-hidden>
         CS-{n} // {spec.name.toUpperCase()} // REV 0.1
       </span>
@@ -79,4 +85,4 @@ function Preview({ name }: { name: string }) {
   )
 }
 
-export { CatalogGrid, Preview }
+export { CatalogGrid, DemoStage, Preview }

@@ -1,0 +1,51 @@
+@layer cyber.blocks {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-site][data-entrance="revealing"][data-fx="full"] {
+      --entry-ease: cubic-bezier(.16, .8, .22, 1);
+
+      /* Keep the frame mask fixed while its outline and navigation appear. */
+      & .site-outline path[stroke] {
+        animation: landing-entry-fade 450ms ease-out backwards;
+      }
+      & [data-site-bar] {
+        animation: landing-entry-fade 380ms ease-out 130ms backwards;
+      }
+
+      /* The parent positions the globe on scroll; the SVG travels within it. */
+      & .landing-globe {
+        animation: landing-entry-orbit 1180ms var(--entry-ease) backwards;
+      }
+
+      /* Moving the title's container leaves its recurring glitch intact. */
+      & .landing-intro {
+        --entry-rise: 19px;
+        animation: landing-entry-rise 580ms var(--entry-ease) 190ms backwards;
+      }
+      & .landing-kicker {
+        animation: landing-entry-fade 340ms ease-out 220ms backwards;
+      }
+      & .landing-summary,
+      & .landing-actions,
+      & .landing-hero-foot {
+        --entry-rise: 10px;
+        animation: landing-entry-rise 470ms var(--entry-ease) 320ms backwards;
+      }
+      & .landing-actions { animation-delay: 420ms; }
+      & .landing-hero-foot { animation-delay: 520ms; }
+    }
+
+    [data-site][data-entrance="revealing"][data-fx="calm"] :is([data-site-bar], .landing-hero) {
+      animation: landing-entry-fade 180ms ease-out;
+    }
+  }
+
+  @keyframes landing-entry-fade {
+    from { opacity: 0; }
+  }
+  @keyframes landing-entry-rise {
+    from { opacity: 0; transform: translateY(var(--entry-rise)); }
+  }
+  @keyframes landing-entry-orbit {
+    from { opacity: 0; transform: translateX(clamp(36px, 8vw, 128px)); }
+  }
+}

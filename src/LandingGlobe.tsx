@@ -12,7 +12,8 @@ const latitude = 23
 const view = createGlobeProjection([startLongitude, latitude], size, size, radius)
 const city = [-21.94, 64.15] as const
 const waypoint = view.point(city)
-const rotationPeriod = 240_000
+const rotationPeriod = 360_000
+const scrollTurnDegrees = 28
 const radians = Math.PI / 180
 const bands = 12
 const spacing = 1.15
@@ -114,6 +115,9 @@ type Surface = ReturnType<typeof buildSurface>
 let cachedSurface: Surface | undefined
 
 function animateGlobe(svg: SVGSVGElement, surface: Surface) {
+  const hero = svg.closest<HTMLElement>(".landing-hero")!
+  const orbit = svg.closest<HTMLElement>(".landing-orbit")!
+  const earth = svg.parentElement!
   const canvas = svg.querySelector("canvas")!
   const context = canvas.getContext("2d")
   if (!context) return
@@ -127,11 +131,22 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   let longitude = startLongitude
   let frame = 0, lastTime: number | null = null
   let visible = false, drawn = false
+  let heroTop = 0, heroHeight = 1, exitProgress = -1
   let gridColor = "", tagWidth = 0, visibleRight = size
   let landColor: CanvasGradient
 
+  // The same position drives the retreat and the turn of the actual geography.
+  // Idle rotation has its own longitude so reversing a swipe unwinds the scroll turn.
+  function scrub() {
+    const progress = Math.max(0, Math.min(1, (window.scrollY - heroTop) / heroHeight))
+    if (progress === exitProgress) return
+    exitProgress = progress
+    orbit.style.setProperty("--earth-exit", String(progress))
+  }
+
   function paint() {
-    const projection = createGlobeProjection([longitude, latitude], size, size, radius)
+    const scrollTurn = !reduced.matches && skin?.dataset.fx === "full" ? scrollTurnDegrees * exitProgress : 0
+    const projection = createGlobeProjection([longitude - scrollTurn, latitude], size, size, radius)
     ctx.clearRect(0, 0, size, size)
     ctx.strokeStyle = gridColor
     ctx.lineWidth = 0.65
@@ -174,10 +189,14 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   }
 
   function resize() {
+    const rect = hero.getBoundingClientRect()
+    heroTop = rect.top + window.scrollY
+    heroHeight = Math.max(rect.height, 1)
+    scrub()
     if (!visible || document.hidden) return
-    const rect = svg.getBoundingClientRect()
-    if (!rect.width) return
-    const pixels = Math.round(rect.width * Math.min(window.devicePixelRatio || 1, 2))
+    const width = svg.clientWidth
+    if (!width) return
+    const pixels = Math.round(width * Math.min(window.devicePixelRatio || 1, 2))
     if (canvas.width !== pixels) canvas.width = canvas.height = pixels
     ctx.setTransform(pixels / size, 0, 0, pixels / size, 0, 0)
     landColor = ctx.createLinearGradient(0, 0, size, 450)
@@ -186,7 +205,7 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
     })
     gridColor = getComputedStyle(gridElement).stroke
     tagWidth = tag.getBBox().width
-    visibleRight = Math.min(size, (document.documentElement.clientWidth - rect.left - 18) * size / rect.width)
+    visibleRight = Math.min(size, (hero.clientWidth - earth.offsetLeft - 18) * size / width)
     if (drawn) paint()
   }
 
@@ -203,7 +222,7 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   }
 
   function sync() {
-    const moving = visible && !document.hidden && !reduced.matches && skin?.dataset.fx === "full"
+    const moving = visible && !document.hidden && !reduced.matches && skin?.dataset.fx === "full" && skin.dataset.entrance !== "boot"
     resize()
     if (moving && !frame) {
       frame = requestAnimationFrame(tick)
@@ -215,17 +234,21 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   }
   const observedSize = new ResizeObserver(resize)
   observedSize.observe(svg)
+  observedSize.observe(hero)
   const viewport = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync() })
   viewport.observe(svg)
   const theme = new MutationObserver(sync)
-  if (skin) theme.observe(skin, { attributes: true, attributeFilter: ["style", "data-fx"] })
+  if (skin) theme.observe(skin, { attributes: true, attributeFilter: ["style", "data-fx", "data-entrance"] })
   reduced.addEventListener("change", sync)
+  window.addEventListener("scroll", scrub, { passive: true })
   document.addEventListener("visibilitychange", sync)
   return () => {
     cancelAnimationFrame(frame)
     viewport.disconnect()
     observedSize.disconnect()
     theme.disconnect()
+    window.removeEventListener("scroll", scrub)
+    orbit.style.removeProperty("--earth-exit")
     reduced.removeEventListener("change", sync)
     document.removeEventListener("visibilitychange", sync)
     svg.removeAttribute("data-rotating-surface")

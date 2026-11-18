@@ -21,4 +21,4 @@ Use the installed components and their real props instead of recreating their ap
 
 Keep interface sounds opt-in and respect the FX and reduced-motion settings. Check the installed third-party notices before using bundled recordings; the MIT license covers CyberSpec's original code. Run the project's typecheck and production build, verify a rendered component, and summarize the changes and any remaining compatibility issues.`
 
-export { installationPrompt, installCommands, repositoryUrl }
+export { installationPrompt, installCommands, repositoryUrl, siteUrl }

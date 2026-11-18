@@ -14,10 +14,12 @@ import { Analytics } from "@vercel/analytics/react"
 import { installCyber } from "@/registry/cyber/lib/install"
 import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
-import { canonicalizeLocation, fragmentId, navigate, navigated } from "./navigation"
+import { canonicalizeLocation, fragmentId, isSidebarRoute, navigate, navigated } from "./navigation"
+import { cancelPageMomentum, scrollToPageAnchor } from "./usePageScroll"
 
 const subscribe = (notify: () => void) => {
   const onHistory = () => {
+    cancelPageMomentum()
     canonicalizeLocation()
     notify()
   }
@@ -40,26 +42,27 @@ document.addEventListener("click", (event) => {
   const link = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null
   if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return
   if (link.origin !== location.origin || /\.[a-z0-9]+$/i.test(link.pathname)) return
-  const samePage = link.pathname === location.pathname && link.search === location.search
-  // An in-page link (#slider) is the browser's to scroll.
-  if (samePage && link.hash) return
+  // Leave text fragments and other browser-managed destinations to the browser.
+  if (link.pathname === location.pathname && link.search === location.search && link.hash &&
+      !document.getElementById(fragmentId(link.hash))) return
   event.preventDefault()
   navigate(link.href)
 })
 
 function App() {
   const href = useSyncExternalStore(subscribe, currentHref)
-  const { pathname, hash } = new URL(href)
+  const { pathname, search } = new URL(href)
+  const route = pathname.replace(/^\/+|\/+$/g, "")
   useLayoutEffect(() => {
-    if (!hash) return
-    // A cross-route fragment only exists after React commits the destination.
-    const target = document.getElementById(fragmentId(hash))
-    target?.scrollIntoView()
-    if (target?.hasAttribute("tabindex")) target.focus({ preventScroll: true })
-  }, [pathname, hash])
+    // The router handles in-page links. Initial and cross-page deep links
+    // need their destination content to have mounted before positioning.
+    if (!location.hash || isSidebarRoute(route)) return
+    const target = document.getElementById(fragmentId(location.hash))
+    if (target) scrollToPageAnchor(target, false)
+  }, [route, search])
   return (
     <>
-      <Site route={pathname.replace(/^\/+|\/+$/g, "")} />
+      <Site route={route} />
       <Analytics />
       <SpeedInsights />
     </>

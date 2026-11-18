@@ -48,6 +48,12 @@ try {
         } catch {}
       }, fx)
       await page.goto(`${base}${route}`, { waitUntil: "networkidle0", timeout: 60000 })
+      if (route === "/") {
+        // Inspect the landing page after entering quietly, including its native swipe behavior.
+        await page.waitForSelector(".boot-screen[open] .boot-enter")
+        await page.keyboard.press("Escape")
+        await page.waitForSelector(".boot-screen", { hidden: true })
+      }
       await page.evaluate(() => document.fonts.ready)
       await new Promise((resolve) => setTimeout(resolve, 1500))
       return page
