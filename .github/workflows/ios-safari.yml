@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        site: [baseline]
+        site: [baseline, candidate]
         runner: [xcode-27]
     env:
       IOS_FAMILY: ${{ matrix.runner == 'xcode-27' && '27' || '26' }}
@@ -41,6 +41,7 @@ jobs:
           bun install --frozen-lockfile
           bun run build
       - name: Exercise Mobile Safari
+        timeout-minutes: 18
         working-directory: site
         run: bash ../harness/.github/sim-tools/capture.sh
       - name: Upload screenshots, AX trees and measurements
