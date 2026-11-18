@@ -238,7 +238,7 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   const viewport = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync() })
   viewport.observe(svg)
   const theme = new MutationObserver(sync)
-  if (skin) theme.observe(skin, { attributes: true, attributeFilter: ["style", "data-fx", "data-entrance"] })
+  if (skin) theme.observe(skin, { attributes: true, attributeFilter: ["style", "data-theme", "data-fx", "data-entrance"] })
   reduced.addEventListener("change", sync)
   window.addEventListener("scroll", scrub, { passive: true })
   document.addEventListener("visibilitychange", sync)

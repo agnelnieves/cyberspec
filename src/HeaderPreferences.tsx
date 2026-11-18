@@ -11,6 +11,7 @@ const accents = [
   { id: "toxin", name: "Toxin", colors: ["green", "lime"], l: 0.84, c: 0.21, h: 150 },
   { id: "ice", name: "Ice", colors: ["blue", "cyan"], l: 0.82, c: 0.13, h: 215 },
   { id: "ultraviolet", name: "Ultraviolet", colors: ["purple", "violet"], l: 0.68, c: 0.22, h: 305 },
+  { id: "monochrome", name: "Monochrome", colors: ["grayscale", "grey", "gray", "black and white"] },
 ] as const
 type Accent = (typeof accents)[number]
 
@@ -32,7 +33,7 @@ function HeaderPreferences({ chosen, choose, children }: {
     <div className="header-preferences">
       <fieldset className="header-accent" role="radiogroup" aria-labelledby={group}>
         <legend>
-          <span data-kit="label" id={group}>Accent color</span>
+          <span data-kit="label" id={group}>Theme</span>
           <span aria-hidden>{chosen.name}</span>
         </legend>
         <div className="header-swatches">
@@ -40,7 +41,7 @@ function HeaderPreferences({ chosen, choose, children }: {
             <input key={accent.id} type="radio" name={group} value={accent.id}
               aria-label={accent.name} title={accent.name} checked={chosen.id === accent.id}
               onChange={() => choose(accent)} data-site-swatch=""
-              style={{ "--swatch": `oklch(${accent.l} ${accent.c} ${accent.h})` } as CSSProperties} />
+              style={{ "--swatch": accent.id === "monochrome" ? "var(--cy-monochrome-accent)" : `oklch(${accent.l} ${accent.c} ${accent.h})` } as CSSProperties} />
           ))}
         </div>
       </fieldset>

@@ -13,15 +13,17 @@ type Accent = { l: number; c: number; h: number }
 //
 // - `accent` is the theme color as an OKLCH lightness, chroma and hue;
 //   without it the kit is its default red.
+// - `theme="monochrome"` sets the whole palette to grayscale.
 // - `fx` pins the FX level for this root ("full", "calm" or "off"). Leave it
 //   out to follow the person's choice, and the system's reduced-motion
 //   setting before they've made one.
 function Cyber({
   accent,
+  theme,
   fx,
   style,
   ...props
-}: React.ComponentProps<"div"> & { accent?: Accent; fx?: FxLevel }) {
+}: React.ComponentProps<"div"> & { accent?: Accent; theme?: "monochrome"; fx?: FxLevel }) {
   const level = React.useSyncExternalStore(
     onFxChange,
     fxLevel,
@@ -29,8 +31,8 @@ function Cyber({
     // system setting until the page hydrates.
     () => undefined,
   )
-  const theme = accent && ({ "--theme-l": accent.l, "--theme-c": accent.c, "--theme-h": accent.h } as React.CSSProperties)
-  return <div data-skin="cyber" data-fx={fx ?? level} data-fx-pinned={fx ? "" : undefined} style={{ ...theme, ...style }} {...props} />
+  const accentStyle = accent && ({ "--theme-l": accent.l, "--theme-c": accent.c, "--theme-h": accent.h } as React.CSSProperties)
+  return <div data-skin="cyber" data-theme={theme} data-fx={fx ?? level} data-fx-pinned={fx ? "" : undefined} style={{ ...accentStyle, ...style }} {...props} />
 }
 
 export { Cyber }

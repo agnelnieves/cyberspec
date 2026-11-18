@@ -589,6 +589,10 @@
     }
   }
 
+  [data-site][data-theme="monochrome"] [data-kit="examples"] img {
+    filter: grayscale(1);
+  }
+
   /* Previous, all, next: at the foot of each example screen. */
   [data-site-pager] {
     display: grid;

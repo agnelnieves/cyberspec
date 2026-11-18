@@ -20,6 +20,7 @@ import { DialogTrigger } from "@ui-sdk/react/dialog"
 import { MobileMenuDialog } from "./MobileMenuDialog"
 import { Popover } from "@/registry/cyber/ui/popover"
 import { Button } from "@/registry/cyber/ui/button"
+import { Cyber } from "@/registry/cyber/ui/cyber"
 import { Examples, examples } from "./Examples"
 import { SiteSearch, type SearchSetting } from "./SiteSearch"
 import { AgentPrompt } from "@/registry/cyber/blocks/daemon/agent-prompt"
@@ -190,20 +191,25 @@ function Page({ route }: { route: string }) {
 
 type MusicControls = { playing: boolean; toggle: () => void }
 
-function useSitePreferences(root: React.RefObject<HTMLDivElement | null>, music: MusicControls) {
-  const [chosen, setChosen] = React.useState<Accent>(accents[0])
+const accentKey = "cyberspec:accent"
+
+function useSitePreferences(music: MusicControls) {
+  const [chosen, setChosen] = React.useState<Accent>(() => {
+    try {
+      const id = localStorage.getItem(accentKey)
+      return accents.find(accent => accent.id === id) ?? accents[0]
+    } catch {
+      return accents[0]
+    }
+  })
   function choose(accent: Accent) {
     setChosen(accent)
-    const el = root.current
-    if (!el) return
-    el.style.setProperty("--theme-l", String(accent.l))
-    el.style.setProperty("--theme-c", String(accent.c))
-    el.style.setProperty("--theme-h", String(accent.h))
+    try { localStorage.setItem(accentKey, accent.id) } catch {}
   }
   const settings: SearchSetting[] = [
     ...accents.map((accent) => ({
       value: `accent-${accent.id}`,
-      label: `Set accent to ${accent.name}`,
+      label: accent.id === "monochrome" ? "Set theme to Monochrome" : `Set accent to ${accent.name}`,
       keywords: ["change color", "change theme", ...[accent.name, ...accent.colors].flatMap((color) => [
         color, `theme ${color}`, `accent ${color}`, `change color to ${color}`,
       ])],
@@ -302,13 +308,13 @@ function MobileMenu({ children, ...nav }: SectionNavProps & { children: React.Re
   )
 }
 
-function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
-  root: React.RefObject<HTMLDivElement | null>
+function SiteHeader({ preferences, music, booting, ...nav }: SectionNavProps & {
+  preferences: ReturnType<typeof useSitePreferences>
   music: MusicControls
   booting: boolean
 }) {
   const compact = React.useSyncExternalStore(compactHeader.subscribe, compactHeader.matches)
-  const { chosen, choose, settings } = useSitePreferences(root, music)
+  const { chosen, choose, settings } = preferences
   const musicButton = (
     <Button tone="ghost" size="sm" data-site-music="" data-sfx="none"
       aria-label={compact ? `${music.playing ? "Pause" : "Play"} background music` : "Background music"}
@@ -383,10 +389,15 @@ function Site({ route }: { route: string }) {
     if (player.current?.paused) playMusic()
     else player.current?.pause()
   }
-  const header = <SiteHeader root={root} music={{ playing, toggle: toggleMusic }} booting={showBoot}
+  const music = { playing, toggle: toggleMusic }
+  const preferences = useSitePreferences(music)
+  const chosen = preferences.chosen
+  const header = <SiteHeader preferences={preferences} music={music} booting={showBoot}
     currentSection={example ? "examples" : section?.route} isSubpage={Boolean(example) || sidebar} />
   return (
-    <div ref={root} data-skin="cyber" data-fx={level} data-crt="" data-site
+    <Cyber ref={root} data-crt="" data-site
+      theme={chosen.id === "monochrome" ? chosen.id : undefined}
+      accent={chosen.id === "monochrome" ? undefined : chosen}
       data-entrance={entering ? "revealing" : showBoot ? "boot" : undefined}>
       <audio ref={player} src={soundtrack} loop preload="none"
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
@@ -428,7 +439,7 @@ function Site({ route }: { route: string }) {
       </SiteFrame>
       <AgentPrompt />
       <Toasts />
-    </div>
+    </Cyber>
   )
 }
 

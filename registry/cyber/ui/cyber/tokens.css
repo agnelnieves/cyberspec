@@ -29,6 +29,7 @@
      Idle to hover to active to flash is the kit's whole state language: the
      line goes 70% to 100%, the fill 0 to 10 to 40 to 70. */
   [data-skin="cyber"] {
+    --cy-monochrome-accent: #c6c6c6;
     --cy-void: #07070c;
     --cy-panel: #0e0e17;
     --cy-panel-2: #151523;
@@ -112,6 +113,25 @@
     /* 1 while decorative effects run, 0 otherwise: multiply an opacity or a
        distance by it to switch a static flourish (scanlines, a glow) off too. */
     --cy-fx: 1;
+  }
+
+  [data-skin="cyber"]:where([data-theme="monochrome"]),
+  :where([data-skin="cyber"][data-theme="monochrome"]) [data-skin="cyber"] {
+    --cy-void: #090909;
+    --cy-panel: #121212;
+    --cy-panel-2: #1c1c1c;
+    --cy-panel-a: rgb(18 18 18 / 0.82);
+    --cy-accent: var(--cy-monochrome-accent);
+    --cy-ink-hi: #f2f2f2;
+    --cy-signal: #fff;
+    --cy-flag: #e3e3e3;
+    --cy-ok: #b5b5b5;
+    --cy-danger: #ddd;
+    --cy-rare: #a3a3a3;
+    --cy-epic: #d0d0d0;
+    --cy-on-solid: #0b0b0b;
+    --cy-crt-shadow-rgb: 3 3 3;
+    --cy-crt-highlight-rgb: 240 240 240;
   }
 
   [data-skin="cyber"][data-fx="calm"] {

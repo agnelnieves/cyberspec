@@ -87,6 +87,8 @@ export function App() {
 }
 ```
 
+- **Monochrome** uses silver text on charcoal surfaces, with white focus rings.
+  Select it in the site's theme picker or set `<Cyber theme="monochrome">`.
 - **Accent:** `accent` is an OKLCH lightness, chroma and hue. Every role in
   the kit (text, edges, the 10 / 40 / 70% fills) is worked out from it.
   Without it the kit is red.

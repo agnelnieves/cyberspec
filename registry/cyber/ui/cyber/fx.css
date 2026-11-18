@@ -205,12 +205,12 @@
     pointer-events: none;
     user-select: none;
     background:
-      radial-gradient(ellipse at 50% 48%, transparent 54%, rgb(2 3 8 / 0.035) 78%, rgb(2 3 8 / 0.1) 100%),
+      radial-gradient(ellipse at 50% 48%, transparent 54%, rgb(var(--cy-crt-shadow-rgb, 2 3 8) / 0.035) 78%, rgb(var(--cy-crt-shadow-rgb, 2 3 8) / 0.1) 100%),
       repeating-linear-gradient(
         to bottom,
         rgb(0 0 0 / 0.08) 0 1px,
         transparent 1px 3px,
-        rgb(216 244 255 / 0.012) 3px 4px
+        rgb(var(--cy-crt-highlight-rgb, 216 244 255) / 0.012) 3px 4px
       );
     opacity: var(--cy-fx);
   }

@@ -139,7 +139,7 @@ items.push(
     ],
     {
       css: { [fontImport]: {} },
-      docs: 'Wrap your app (or any part of it) in <Cyber> from @/components/ui/cyber; everything inside is styled by the skin. Set accent={{ l: 0.82, c: 0.13, h: 215 }} for another accent color (OKLCH), and fx="calm" or "off" to pin the effects level. Add data-crt="" once on the outer app root for a static screen raster and subtle corner vignette at full FX. Rajdhani and JetBrains Mono are imported at the top of your CSS file.',
+      docs: 'Wrap your app (or any part of it) in <Cyber> from @/components/ui/cyber; everything inside is styled by the skin. Use theme="monochrome" for a grayscale palette. Set accent={{ l: 0.82, c: 0.13, h: 215 }} for another accent color (OKLCH), and fx="calm" or "off" to pin the effects level. Add data-crt="" once on the outer app root for a static screen raster and subtle corner vignette at full FX. Rajdhani and JetBrains Mono are imported at the top of your CSS file.',
       categories: ["theme"],
     },
   ),
@@ -254,6 +254,7 @@ export function App() {
 ## Rules when building with it
 
 - Wrap the app, or the part that should look like this, in \`<Cyber>\`. Styles are scoped to \`[data-skin="cyber"]\` and sit in cascade layers (\`cyber.*\`), so unlayered app CSS wins.
+- \`<Cyber theme="monochrome">\` uses a grayscale palette for surfaces, text, and status indicators.
 - \`<Cyber accent={{ l, c, h }}>\` sets the accent (OKLCH). \`fx="full" | "calm" | "off"\` pins the effects level; left out, it follows the person's choice and \`prefers-reduced-motion\`.
 - Shape comes from \`data-frame\` (\`"tr bl"\`, \`"notch br"\`, \`"spine br"\`), configured with \`--frame-cut\`, \`--frame-line\`, \`--frame-fill\`. Don't set \`border-color\`, \`clip-path\` or \`background-image\` on a framed element, and don't round anything.
 - Colors are tokens (\`--cy-accent\`, \`--cy-ink\`, \`--cy-signal\`, \`--cy-flag\`, \`--cy-line-ctl\`, \`--cy-fill-active\` ...). Red is the resting color, so errors are yellow (\`--cy-flag\`) with a glyph and words.
