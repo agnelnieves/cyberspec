@@ -8,12 +8,15 @@ permissions:
   contents: read
 jobs:
   safari:
-    runs-on: xcode-27
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         site: [baseline, candidate]
+        runner: [xcode-27, macos-26]
+    env:
+      IOS_FAMILY: ${{ matrix.runner == 'xcode-27' && '27' || '26' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,7 +47,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: safari-${{ matrix.site }}
+          name: safari-ios${{ env.IOS_FAMILY }}-${{ matrix.site }}
           path: ${{ runner.temp }}/safari-evidence
           if-no-files-found: warn
           retention-days: 5
