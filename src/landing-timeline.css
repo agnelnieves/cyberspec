@@ -28,7 +28,7 @@
     display: grid;
     align-content: center;
     min-width: 0;
-    padding: clamp(16px, 2.4vw, 32px);
+    padding: var(--demo-inset);
     border-inline-start: 1px solid var(--hairline);
     background: var(--plate);
   }
@@ -185,7 +185,6 @@
   }
 
   @media (max-width: 440px) {
-    .transmission-demo { padding: 10px; }
     .transmission-console { padding: 11px; }
     .transmission-editor { --track-heading: 44px; }
     .transmission-lane li { padding-inline: 3px; white-space: normal; }

@@ -1,0 +1,85 @@
+@layer cyber.blocks {
+  .header-preferences {
+    display: grid;
+    gap: 16px;
+  }
+  .header-preferences > [data-kit="field"] {
+    display: grid;
+    gap: 7px;
+  }
+  .header-preferences > [data-kit="switch-row"] {
+    min-height: 44px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cy-line-deco);
+  }
+  .header-preferences > div:has([data-site-music]) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .header-accent {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .header-accent legend {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 7px;
+    padding: 0;
+  }
+  .header-accent legend span:last-child {
+    color: var(--cy-ink-mute);
+    font: 500 var(--cy-text-xs) / 1 var(--cy-mono);
+  }
+  .header-swatches {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .header-preferences .header-swatches input {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 30px;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--swatch);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+    opacity: .65;
+    cursor: pointer;
+
+    &:is(:checked, :hover, :focus-visible) { opacity: 1; }
+    &:checked::after {
+      content: "";
+      width: 6px;
+      height: 12px;
+      border: solid var(--cy-void);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--cy-void);
+      outline-offset: -4px;
+    }
+  }
+  @media (pointer: coarse) {
+    .header-preferences .header-swatches input,
+    .header-preferences [data-kit="segmented-control-item"] { min-height: 44px; }
+  }
+  @media (forced-colors: active) {
+    .header-preferences .header-swatches input {
+      appearance: auto;
+      clip-path: none;
+    }
+  }
+}

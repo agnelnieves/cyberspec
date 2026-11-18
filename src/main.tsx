@@ -51,7 +51,7 @@ document.addEventListener("click", (event) => {
 
 function App() {
   const href = useSyncExternalStore(subscribe, currentHref)
-  const { pathname, search } = new URL(href)
+  const { pathname } = new URL(href)
   const route = pathname.replace(/^\/+|\/+$/g, "")
   useLayoutEffect(() => {
     // The router handles in-page links. Initial and cross-page deep links
@@ -59,7 +59,7 @@ function App() {
     if (!location.hash || isSidebarRoute(route)) return
     const target = document.getElementById(fragmentId(location.hash))
     if (target) scrollToPageAnchor(target, false)
-  }, [route, search])
+  }, [route])
   return (
     <>
       <Site route={route} />

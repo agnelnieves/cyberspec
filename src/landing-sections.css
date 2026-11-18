@@ -4,6 +4,7 @@
     --plate: color-mix(in srgb, var(--cy-void) 93%, white);
     --hairline: color-mix(in srgb, var(--cy-ink-hi) 19%, var(--sheet));
     --inset: clamp(20px, 3.3vw, 48px);
+    --demo-inset: clamp(16px, 2.4vw, 32px);
     --columns: minmax(0, 0.75fr) minmax(0, 1.65fr);
 
     display: grid;
@@ -102,28 +103,23 @@
   }
 
   .landing-sections .landing-agent-example {
-    grid-template-rows: auto 1fr;
-    gap: 0;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: var(--demo-inset);
+    padding: var(--demo-inset);
     align-self: stretch;
     border-inline-start: 1px solid var(--hairline);
-    background: var(--cy-void);
+    background: var(--plate);
   }
 
   .landing-sections .landing-agent-example figcaption {
     gap: 9px;
-    padding: clamp(18px, 2.4vw, 32px);
+    padding: 0;
     border: 0;
-    background: var(--plate);
-  }
-
-  .landing-sections .landing-agent-example [data-kit="code-block"] {
-    --frame-cut: 0px;
-    --frame-line: transparent;
-    border-block-start: 1px solid var(--hairline);
   }
 
   .landing-sections [data-kit="code-block"] > [data-micro] {
-    margin: 6px 12px 10px;
+    margin: 6px 0 0;
     color: var(--cy-ink-mute);
     opacity: 1;
     font-size: var(--cy-text-xs);
@@ -182,6 +178,8 @@
   }
 
   @media (max-width: 440px) {
+    .landing-sections { --demo-inset: 10px; }
+
     .landing-sections .showcase-bench {
       grid-template-columns: minmax(0, 1fr);
     }

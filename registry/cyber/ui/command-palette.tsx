@@ -191,8 +191,8 @@ function CommandPalette({
                 &gt;
               </span>
               <CommandInput aria-label={title} placeholder={placeholder} spellCheck={false} data-focus-quiet="" />
-              <DialogClose data-kit="command-palette-key" aria-label="Close palette">
-                Esc
+              <DialogClose data-kit="command-palette-key">
+                Esc<span data-sr-only> — Close palette</span>
               </DialogClose>
             </div>
             <CommandEmpty data-kit="command-palette-empty">

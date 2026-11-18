@@ -1,10 +1,9 @@
-import { useEffect, useLayoutEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { fragmentId, sidebarRoute } from "../navigation"
+import { componentDocUrl, fragmentId, sidebarRoute } from "../navigation"
 import { scrollToPageAnchor } from "../usePageScroll"
 import { ComponentArticle } from "./ComponentArticle"
-import { ComponentIndex } from "./ComponentIndex"
-import { panels } from "./panels"
+import { panels, type PanelSpec } from "./panels"
 import "./sidebar-catalog.css"
 
 function ArticleLinks() {
@@ -45,25 +44,37 @@ function ArticleLinks() {
   )
 }
 
-function ComponentPager({ index }: { index: number }) {
-  const previous = panels[index - 1]
-  const next = panels[index + 1]
+function ComponentPager({ index, sidebarOpen, compact = false }: { index: number; sidebarOpen: boolean; compact?: boolean }) {
+  const steps = [
+    { rel: "prev", label: "Previous", destination: panels[index - 1], Icon: ArrowLeft },
+    { rel: "next", label: "Next", destination: panels[index + 1], Icon: ArrowRight },
+  ]
+  const iconButton = compact ? { "data-kit": "button", "data-icon": "", "data-frame": "br", "data-press-flash": "" } : {}
   return (
-    <nav className="component-pager" aria-label="Browse adjacent components">
-      {previous && <a href={`/${sidebarRoute}/${previous.name}`} rel="prev">
-        <ArrowLeft aria-hidden /><span><small>Previous</small>{previous.title}</span>
-      </a>}
-      {next && <a href={`/${sidebarRoute}/${next.name}`} rel="next">
-        <span><small>Next</small>{next.title}</span><ArrowRight aria-hidden />
-      </a>}
+    <nav className={compact ? "component-heading-pager" : "component-pager"}
+      aria-label={compact ? "Component navigation" : "Browse adjacent components"}>
+      {steps.map(({ rel, label, destination, Icon }) => {
+        if (!destination) return compact && (
+          <button key={rel} type="button" disabled aria-label={`No ${label.toLowerCase()} component`} {...iconButton}>
+            <Icon aria-hidden />
+          </button>
+        )
+        const name = `${label} component, ${destination.title}`
+        return (
+          <a key={rel} href={componentDocUrl(destination.name, sidebarOpen)} rel={rel}
+            aria-label={compact ? name : undefined} title={compact ? name : undefined} {...iconButton}>
+            {rel === "prev" && <Icon aria-hidden />}
+            {!compact && <span><small>{label}</small>{destination.title}</span>}
+            {rel === "next" && <Icon aria-hidden />}
+          </a>
+        )
+      })}
     </nav>
   )
 }
 
-export default function SidebarCatalog({ name }: { name: string }) {
-  const index = name ? panels.findIndex(panel => panel.name === name) : 0
-  const spec = panels[index]
-
+export default function SidebarCatalog({ spec, sidebarOpen }: { spec?: PanelSpec; sidebarOpen: boolean }) {
+  const previous = useRef(spec)
   useLayoutEffect(() => {
     const originalTitle = document.title
     document.title = `${spec?.title ?? "Component not found"} · CyberSpec Components`
@@ -71,7 +82,10 @@ export default function SidebarCatalog({ name }: { name: string }) {
     if (location.hash) {
       const target = document.getElementById(fragmentId(location.hash))
       if (target) scrollToPageAnchor(target, false)
+    } else if (previous.current !== spec && !document.getElementById("component-index")?.contains(document.activeElement)) {
+      document.getElementById("component-title")?.focus({ preventScroll: true })
     }
+    previous.current = spec
     return () => { document.title = originalTitle }
   }, [spec])
 
@@ -80,12 +94,13 @@ export default function SidebarCatalog({ name }: { name: string }) {
     <a href={`/${sidebarRoute}`} data-kit="link">Browse components</a>
   </header>
 
+  const index = panels.indexOf(spec)
   return (
     <div className="sidebar-catalog">
-      <ComponentIndex spec={spec} />
       <div className="sidebar-reading">
-        <ComponentArticle key={spec.name} spec={spec} />
-        <ComponentPager index={index} />
+        <ComponentArticle key={spec.name} spec={spec}
+          pager={<ComponentPager index={index} sidebarOpen={sidebarOpen} compact />} />
+        <ComponentPager index={index} sidebarOpen={sidebarOpen} />
       </div>
       <ArticleLinks key={spec.name} />
     </div>

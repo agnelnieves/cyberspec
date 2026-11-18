@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { components } from "@/registry/cyber/meta.json"
 import { CodeBlock } from "@/registry/cyber/ui/code-block"
 import { Tabs } from "@/registry/cyber/ui/tabs"
@@ -30,12 +31,15 @@ function ExampleSource({ name, title }: { name: string; title: string }) {
   )
 }
 
-export function ComponentArticle({ spec }: { spec: PanelSpec }) {
+export function ComponentArticle({ spec, pager }: { spec: PanelSpec; pager: ReactNode }) {
   return (
     <article className="component-article" aria-labelledby="component-title">
       <header className="component-article-header">
         <p className="component-category">{spec.group}</p>
-        <h1 id="component-title" tabIndex={-1}>{spec.title}</h1>
+        <div className="component-title-row">
+          <h1 id="component-title" tabIndex={-1}>{spec.title}</h1>
+          {pager}
+        </div>
         <p className="component-description">{metadata[spec.name]?.[1]}</p>
       </header>
       <section id="example" aria-labelledby="component-example-title">

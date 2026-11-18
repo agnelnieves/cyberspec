@@ -24,7 +24,6 @@
   }
   .component-index-overview svg { width: 15px; height: 15px; color: var(--cy-ink); }
   .component-index-overview:is(:hover, [aria-current="page"]) { color: var(--cy-signal); }
-  .component-index-picker { display: none; }
 
   .component-index-skip {
     position: absolute;
@@ -85,60 +84,19 @@
     }
   }
 
-  @media (max-width: 820px) {
-    .component-index {
-      position: static;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto;
-      align-items: center;
-      gap: 8px 12px;
-      height: auto;
-      padding: 0 0 12px;
-      border-block-end: 1px solid var(--cy-line-deco);
-    }
-    .component-index > [data-kit="field"] { grid-column: 1 / -1; }
-    .component-index-overview { justify-self: start; min-height: 44px; }
-    .component-index-skip, .component-index-list { display: none; }
-    .component-index[data-filtering] {
-      grid-template-rows: auto auto minmax(0, 1fr);
-      max-height: calc(var(--index-available-height) - var(--site-bottom-cut));
-    }
-    .component-index[data-filtering] .component-index-list {
-      --area-height: auto;
-      display: grid;
-      grid-template-rows: minmax(0, 1fr);
-      grid-column: 1 / -1;
-      align-self: stretch;
-      max-height: min(36dvh, 15rem);
-    }
-    .component-index-list [data-kit="scroll-area-viewport"] { min-height: 0; }
-    .component-index-list a { display: flex; align-items: center; min-height: 44px; }
-    .component-index[data-filtering] .component-index-picker { display: none; }
-    .component-index-picker {
-      position: relative;
-      display: block;
-      min-width: 0;
-    }
-    .component-index-picker select {
-      appearance: none;
-      width: 100%;
-      min-height: 44px;
-      padding: 8px 32px 8px 12px;
-      border: 1px solid var(--cy-line-ctl);
-      border-radius: 0;
-      color: var(--cy-ink-hi);
-      background: var(--cy-panel);
-      font: 600 16px / 1.2 var(--cy-font);
-    }
-    .component-index-picker svg {
-      position: absolute;
-      top: 50%;
-      inset-inline-end: 10px;
-      width: 14px;
-      height: 14px;
-      translate: 0 -50%;
-      color: var(--cy-ink);
-      pointer-events: none;
-    }
+  .mobile-menu-dialog .component-index {
+    position: static;
+    flex: 1;
+    align-self: stretch;
+    min-height: 0;
+    height: auto;
+    padding: var(--menu-gutter);
+    gap: 10px;
+  }
+  .mobile-menu-dialog .component-index-list { --area-height: 100%; }
+  .mobile-menu-dialog .component-index-list a, .mobile-menu-dialog .component-index-overview {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
   }
 }

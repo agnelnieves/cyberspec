@@ -1,0 +1,20 @@
+@layer cyber.blocks {
+  .mobile-menu-dialog[data-kit="dialog"] {
+    --menu-gutter: clamp(16px, 4vw, 26px);
+    --drawer-gutter: var(--menu-gutter);
+    inset: var(--overlay-viewport-top, 0px) 0 auto;
+    width: 100%;
+    height: var(--overlay-viewport-height, 100dvh);
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    gap: 0;
+    overflow: hidden;
+    background: var(--cy-panel);
+    color: var(--cy-ink-hi);
+    pointer-events: auto;
+  }
+  .mobile-menu-dialog > [data-kit="drawer-bar"] { min-height: 60px; }
+  .mobile-menu-dialog [data-kit="drawer-close"] { min-width: 44px; min-height: 44px; }
+}

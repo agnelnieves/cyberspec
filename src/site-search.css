@@ -1,0 +1,18 @@
+@layer cyber.blocks {
+  @media (max-width: 975px) {
+    [data-site-search] [data-kit="command-palette"] {
+      --visible-height: var(--overlay-viewport-height, 100dvh);
+      --top: max(12px, env(safe-area-inset-top), calc(var(--visible-height) / 8));
+      inset-block-start: calc(var(--overlay-viewport-top, 0px) + var(--top));
+      height: max(160px, calc(var(--visible-height) * .75));
+      max-height: calc(var(--visible-height) - var(--top) - max(12px, env(safe-area-inset-bottom)));
+    }
+
+    [data-site-search] :is([data-kit="command-palette-surface"], [data-kit="command-palette-command"]) {
+      flex: 1;
+    }
+
+    [data-site-search] [data-kit="command-palette-list"] { max-height: none; }
+    [data-site-search] [data-kit="command-palette-foot"] { margin-block-start: auto; }
+  }
+}

@@ -43,7 +43,7 @@ probe = b"""
     if (!main) return;
     const front = document.querySelector('.site-housing');
     const inner = document.querySelector('[data-site-scroll]');
-    const frame = document.querySelector('.site-outline.narrow');
+    const frame = document.querySelector('.site-outline.narrow') || document.querySelector('.site-outline');
     const clip = document.querySelector('#sim-frame-clip') && inner && frame;
     if (clip && !inner.dataset.motion) attachClip(inner, frame.parentElement);
     const viewport = window.visualViewport;

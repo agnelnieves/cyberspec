@@ -1,10 +1,10 @@
 import * as React from "react"
-import { ArrowLeft, ArrowRight, ArrowUpRight, LayoutGrid, Menu, Music2, Palette, PanelLeftOpen, Pause, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpRight, LayoutGrid, Menu, Music2, Palette, PanelLeftClose, PanelLeftOpen, Pause, SlidersHorizontal, Sparkles, Volume2, VolumeX } from "lucide-react"
 import { CatalogGrid, Preview } from "./catalog/Catalog"
-import { ComponentIndex } from "./catalog/ComponentIndex"
+import { ComponentIndex, MobileComponentIndex } from "./catalog/ComponentIndex"
 import { panels } from "./catalog/panels"
-import { fxLevel, fxLevels, onFxChange, setFxLevel, type FxLevel } from "@/registry/cyber/lib/fx"
-import { onSoundChange, setSoundEnabled, sfx, soundEnabled } from "@/registry/cyber/lib/sound"
+import { fxLevel, fxLevels, onFxChange, setFxLevel } from "@/registry/cyber/lib/fx"
+import { accents, HeaderPreferences, setInterfaceSounds, type Accent } from "./HeaderPreferences"
 import { installCommands, repositoryUrl } from "./install"
 import { Brand } from "./Brand"
 import { BootScreen } from "./BootScreen"
@@ -16,7 +16,9 @@ import { CopyPrompt } from "./CopyPrompt"
 import Landing from "./Landing"
 import { SiteFrame } from "./SiteFrame"
 import { LandingCTA } from "./LandingCTA"
-import { Drawer } from "@/registry/cyber/ui/drawer"
+import { DialogTrigger } from "@ui-sdk/react/dialog"
+import { MobileMenuDialog } from "./MobileMenuDialog"
+import { Popover } from "@/registry/cyber/ui/popover"
 import { Button } from "@/registry/cyber/ui/button"
 import { Examples, examples } from "./Examples"
 import { SiteSearch, type SearchSetting } from "./SiteSearch"
@@ -50,16 +52,6 @@ function RepositoryLink({ iconOnly = false }: { iconOnly?: boolean }) {
     </a>
   )
 }
-
-// The accent, as OKLCH lightness, chroma and hue.
-const accents = [
-  { id: "crimson", name: "Crimson", colors: ["red", "scarlet"], l: 0.656, c: 0.23, h: 24 },
-  { id: "voltage", name: "Voltage", colors: ["yellow", "gold"], l: 0.86, c: 0.17, h: 95 },
-  { id: "toxin", name: "Toxin", colors: ["green", "lime"], l: 0.84, c: 0.21, h: 150 },
-  { id: "ice", name: "Ice", colors: ["blue", "cyan"], l: 0.82, c: 0.13, h: 215 },
-  { id: "ultraviolet", name: "Ultraviolet", colors: ["purple", "violet"], l: 0.68, c: 0.22, h: 305 },
-] as const
-type Accent = (typeof accents)[number]
 
 function Screen({ name }: { name: string }) {
   const load = blockOf(name)
@@ -117,110 +109,83 @@ function Masthead() {
   )
 }
 
-function Page({ route }: { route: string }) {
+// Toggling the index changes the layout around the demos. Keep their React
+// trees in place while CSS adjusts the available width.
+const CatalogContent = React.memo(function CatalogContent() {
+  return (
+    <>
+      <Masthead />
+      <CatalogGrid />
+      <LandingCTA />
+    </>
+  )
+})
+
+function mediaStore(query: string) {
+  const media = matchMedia(query)
+  return {
+    matches: () => media.matches,
+    subscribe(notify: () => void) {
+      media.addEventListener("change", notify)
+      return () => media.removeEventListener("change", notify)
+    },
+  }
+}
+const compactIndex = mediaStore("(max-width: 820px)")
+const compactHeader = mediaStore("(max-width: 975px)")
+
+function CatalogPage({ route }: { route: string }) {
+  const detail = isSidebarRoute(route)
+  const name = route.slice(sidebarRoute.length + 1)
+  const spec = detail ? (name ? panels.find(panel => panel.name === name) : panels[0]) : undefined
   const sidebarOpen = isCatalogSidebarOpen(route)
+  const mobile = React.useSyncExternalStore(compactIndex.subscribe, compactIndex.matches)
   const wasOpen = React.useRef(sidebarOpen)
   React.useLayoutEffect(() => {
-    if (route === "components" && wasOpen.current !== sidebarOpen && !location.hash) {
-      const index = document.getElementById("component-index")
-      // Desktop users can type immediately. On touch, keep the picker visible
-      // until the user explicitly opens the keyboard.
-      const indexFocus = matchMedia("(pointer: fine)").matches ? index?.querySelector("input") : index
-      const target = sidebarOpen ? indexFocus : document.getElementById("catalog-expand")
-      target?.focus({ preventScroll: true })
-    }
+    if (!mobile && wasOpen.current && !sidebarOpen && !location.hash)
+      document.getElementById("catalog-toggle")?.focus({ preventScroll: true })
     wasOpen.current = sidebarOpen
-  }, [route, sidebarOpen])
+  }, [sidebarOpen, mobile])
 
-  if (isSidebarRoute(route)) return (
-    <React.Suspense fallback={<p role="status">Loading components…</p>}>
-      <SidebarCatalog name={route.slice(sidebarRoute.length + 1)} />
-    </React.Suspense>
-  )
-  if (route.startsWith("preview/")) return <Preview name={route.slice("preview/".length)} />
-  if (!route) return <Landing />
-  if (route === "examples") return <Examples />
-  if (route !== "components") return <Screen name={route} />
+  function toggleSidebar() {
+    const url = new URL(location.href)
+    const nextOpen = !sidebarOpen
+    // Store only the override: docs open by default and the grid starts closed.
+    if (nextOpen === detail) url.searchParams.delete("sidebar")
+    else url.searchParams.set("sidebar", nextOpen ? "open" : "closed")
+    navigate(url.href, { scroll: false })
+  }
   return (
-    <div className="catalog-overview" id="catalog-overview" data-sidebar-open={sidebarOpen || undefined}>
-      {sidebarOpen && <ComponentIndex />}
-      <div className="catalog-grid-content">
-        {!sidebarOpen && (
-          <Button id="catalog-expand" size="sm" className="catalog-index-expand" aria-expanded={false}
-            aria-controls="catalog-overview" onClick={() => navigate("/components?sidebar=open")}>
-            <PanelLeftOpen aria-hidden /> Expand sidebar
+    <div className="catalog-overview" data-sidebar-open={(!mobile && sidebarOpen) || undefined}>
+      <div className="catalog-index-controls">
+        {mobile ? <MobileComponentIndex spec={spec} /> : (<>
+          <Button id="catalog-toggle" size="sm" className="catalog-index-toggle" aria-expanded={sidebarOpen}
+            aria-controls="catalog-sidebar-panel" onClick={toggleSidebar}>
+            {sidebarOpen ? <PanelLeftClose aria-hidden /> : <PanelLeftOpen aria-hidden />}
+            {sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           </Button>
-        )}
-        <Masthead />
-        <CatalogGrid />
-        <LandingCTA />
+          <div className="catalog-sidebar-panel" id="catalog-sidebar-panel" inert={!sidebarOpen}>
+            <ComponentIndex spec={spec} />
+          </div>
+        </>)}
+      </div>
+      <div className="catalog-grid-content">
+        {detail ? (
+          <React.Suspense fallback={<p role="status">Loading component…</p>}>
+            <SidebarCatalog spec={spec} sidebarOpen={sidebarOpen} />
+          </React.Suspense>
+        ) : <CatalogContent />}
       </div>
     </div>
   )
 }
 
-function FxSwitch() {
-  const level = React.useSyncExternalStore(onFxChange, fxLevel)
-  return (
-    <div role="radiogroup" aria-label="Effects" data-site-fx>
-      {fxLevels.map((option: FxLevel) => (
-        <button
-          key={option}
-          type="button"
-          role="radio"
-          aria-checked={level === option}
-          data-site-chip
-          onClick={() => setFxLevel(option)}
-        >
-          {option}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-function setInterfaceSounds(on: boolean) {
-  if (soundEnabled() === on) return
-  setSoundEnabled(on)
-  if (on) sfx("on")
-}
-
-function SoundToggle({ showLabel = false }: { showLabel?: boolean }) {
-  const on = React.useSyncExternalStore(onSoundChange, soundEnabled)
-  return (
-    <button
-      type="button"
-      data-site-chip
-      data-sfx="none"
-      aria-pressed={on}
-      aria-label="Interface sounds"
-      title={on ? "Sounds on" : "Sounds off"}
-      onClick={() => setInterfaceSounds(!on)}
-    >
-      {on ? <Volume2 aria-hidden size={14} /> : <VolumeX aria-hidden size={14} />}
-      {showLabel && (on ? "On" : "Off")}
-    </button>
-  )
-}
-
-function AccentPicker({ chosen, choose }: { chosen: Accent; choose: (accent: Accent) => void }) {
-  return (
-    <div role="radiogroup" aria-label="Accent color" data-site-accents>
-      {accents.map((accent) => (
-        <button
-          key={accent.id}
-          type="button"
-          role="radio"
-          aria-checked={chosen.id === accent.id}
-          aria-label={accent.name}
-          title={accent.name}
-          data-site-swatch
-          style={{ "--swatch": `oklch(${accent.l} ${accent.c} ${accent.h})` } as React.CSSProperties}
-          onClick={() => choose(accent)}
-        />
-      ))}
-    </div>
-  )
+function Page({ route }: { route: string }) {
+  if (route === "components" || isSidebarRoute(route)) return <CatalogPage route={route} />
+  if (route.startsWith("preview/")) return <Preview name={route.slice("preview/".length)} />
+  if (!route) return <Landing />
+  if (route === "examples") return <Examples />
+  return <Screen name={route} />
 }
 
 type MusicControls = { playing: boolean; toggle: () => void }
@@ -296,9 +261,12 @@ function ExamplePager({ index }: { index: number }) {
 type SectionNavProps = { currentSection?: string; isSubpage: boolean }
 
 function SectionNav({ currentSection, isSubpage, onNavigate }: SectionNavProps & { onNavigate?: () => void }) {
-  const inDrawer = Boolean(onNavigate)
+  const inMenu = Boolean(onNavigate)
   return (
-    <nav aria-label="Sections" data-site-nav={inDrawer ? "drawer" : "bar"}>
+    <nav aria-label="Sections" data-site-nav={inMenu ? "menu" : "bar"}>
+      {inMenu && <a href="/" onClick={onNavigate} aria-current={location.pathname === "/" ? "page" : undefined}>
+        Home <ArrowUpRight aria-hidden />
+      </a>}
       {sections.map((entry) => (
         <a key={entry.route} href={`/${entry.route}`} onClick={onNavigate}
           aria-current={entry.route === currentSection ? (isSubpage ? "true" : "page") : undefined}>
@@ -309,10 +277,10 @@ function SectionNav({ currentSection, isSubpage, onNavigate }: SectionNavProps &
               <span data-sr-only>, {examples.length} screens</span>
             </>
           )}
-          {inDrawer && <ArrowUpRight aria-hidden />}
+          {inMenu && <ArrowUpRight aria-hidden />}
         </a>
       ))}
-      <RepositoryLink iconOnly={!inDrawer} />
+      <RepositoryLink iconOnly={!inMenu} />
     </nav>
   )
 }
@@ -321,19 +289,17 @@ function MobileMenu({ children, ...nav }: SectionNavProps & { children: React.Re
   const [open, setOpen] = React.useState(false)
   return (
     <div className="site-mobile-menu">
-      <Drawer title="Menu" side="bottom" open={open} onOpenChange={setOpen}
-        trigger={<><Menu aria-hidden /> Menu</>}>
-        <SectionNav {...nav} onNavigate={() => setOpen(false)} />
-        <div className="site-menu-settings">{children}</div>
-      </Drawer>
+      <MobileMenuDialog title="Menu" open={open} onOpenChange={setOpen}
+        trigger={<DialogTrigger data-kit="button" data-frame="br" data-tone="secondary" data-press-flash="">
+          <Menu aria-hidden /> Menu
+        </DialogTrigger>}>
+        <div className="site-menu-body">
+          <SectionNav {...nav} onNavigate={() => setOpen(false)} />
+          {children}
+        </div>
+      </MobileMenuDialog>
     </div>
   )
-}
-
-const compactHeader = matchMedia("(max-width: 975px)")
-function subscribeCompactHeader(notify: () => void) {
-  compactHeader.addEventListener("change", notify)
-  return () => compactHeader.removeEventListener("change", notify)
 }
 
 function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
@@ -341,15 +307,15 @@ function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
   music: MusicControls
   booting: boolean
 }) {
-  const compact = React.useSyncExternalStore(subscribeCompactHeader, () => compactHeader.matches)
+  const compact = React.useSyncExternalStore(compactHeader.subscribe, compactHeader.matches)
   const { chosen, choose, settings } = useSitePreferences(root, music)
-  const accent = <AccentPicker chosen={chosen} choose={choose} />
   const musicButton = (
-    <button type="button" data-site-chip data-sfx="none" aria-label="Background music"
+    <Button tone="ghost" size="sm" data-site-music="" data-sfx="none"
+      aria-label={compact ? `${music.playing ? "Pause" : "Play"} background music` : "Background music"}
       aria-pressed={music.playing} title={`${music.playing ? "Pause" : "Play"} CyberSpec Theme`} onClick={music.toggle}>
-      {music.playing ? <Pause aria-hidden size={14} /> : <Music2 aria-hidden size={14} />}
-      {compact && (music.playing ? "Pause" : "Play")}
-    </button>
+      {music.playing ? <Pause aria-hidden /> : <Music2 aria-hidden />}
+      {compact ? (music.playing ? "Pause" : "Play") : "Music"}
+    </Button>
   )
   return (
     <header data-site-bar>
@@ -361,14 +327,21 @@ function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
       <div data-site-tools>
         <SiteSearch settings={settings} shortcut={booting ? null : "mod+k"} />
         {compact ? (
-          <MobileMenu key={location.pathname} {...nav}>
-            <div><span>Accent</span>{accent}</div>
-            <div><span>Effects</span><FxSwitch /></div>
-            <div><span>Sound</span><SoundToggle showLabel /></div>
-            <div><span>Music</span>{musicButton}</div>
+          <MobileMenu {...nav}>
+            <HeaderPreferences chosen={chosen} choose={choose}>
+              <div><span data-kit="label">Music</span>{musicButton}</div>
+            </HeaderPreferences>
           </MobileMenu>
         ) : (
-          <>{accent}<FxSwitch /><SoundToggle />{musicButton}</>
+          <div className="site-header-utilities">
+            <div className="site-settings-trigger">
+              <Popover title="Interface settings" trigger={<><SlidersHorizontal aria-hidden /> Settings</>}
+                triggerTone="ghost" align="end" code="">
+                <HeaderPreferences chosen={chosen} choose={choose} />
+              </Popover>
+            </div>
+            {musicButton}
+          </div>
         )}
       </div>
     </header>

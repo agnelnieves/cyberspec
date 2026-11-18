@@ -17,11 +17,10 @@ export default function Landing() {
           <p className="landing-summary">Cut-corner controls, charts, and maps for the web. Pick the components you need and make them your own.</p>
           <div className="landing-actions">
             <a href="/components" data-kit="button" data-frame="br" className="landing-browse">Browse components <ArrowRight aria-hidden /></a>
-            <a href="/examples" data-kit="button" data-frame="br">View examples <ArrowUpRight aria-hidden /></a>
+            <a href="#try-controls" data-kit="button" data-frame="br">Try the controls <ArrowDown aria-hidden /></a>
           </div>
         </div>
         <div className="landing-hero-foot">
-          <a href="#try-controls"><ArrowDown aria-hidden /> Try the controls</a>
           <a href="/preview/map" aria-label="Map preview. The globe shows a waypoint in Reykjavík.">
             Map preview <ArrowUpRight aria-hidden />
           </a>

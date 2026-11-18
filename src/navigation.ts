@@ -7,7 +7,11 @@ function isSidebarRoute(route: string) {
   return route === sidebarRoute || route.startsWith(`${sidebarRoute}/`)
 }
 function isCatalogSidebarOpen(route: string) {
-  return isSidebarRoute(route) || (route === "components" && new URLSearchParams(location.search).get("sidebar") === "open")
+  const state = new URLSearchParams(location.search).get("sidebar")
+  return isSidebarRoute(route) ? state !== "closed" : route === "components" && state === "open"
+}
+function componentDocUrl(name: string, sidebarOpen = true) {
+  return `/${sidebarRoute}/${name}${sidebarOpen ? "" : "?sidebar=closed"}`
 }
 const catalogAnchors = new Set(["components", ...panels.flatMap((panel) => [panel.name, `group-${panel.group}`])])
 
@@ -36,19 +40,20 @@ function canonicalizeLocation() {
   if (url.href !== location.href) history.replaceState(history.state, "", url)
 }
 
-function navigate(href: string) {
+function navigate(href: string, { scroll = true } = {}) {
   const url = canonicalUrl(href)
-  const sameDocument = url.pathname === location.pathname && url.search === location.search
+  const samePage = url.pathname === location.pathname
   cancelPageMomentum()
   if (url.href !== location.href) {
     history.pushState(null, "", url)
     dispatchEvent(new Event(navigated))
   }
+  if (!scroll) return
   if (!url.hash) window.scrollTo(0, 0)
-  else if (sameDocument) {
+  else if (samePage) {
     const target = document.getElementById(fragmentId(url.hash))
     if (target) scrollToPageAnchor(target, true)
   }
 }
 
-export { canonicalizeLocation, fragmentId, isCatalogSidebarOpen, isSidebarRoute, navigate, navigated, sidebarRoute }
+export { canonicalizeLocation, componentDocUrl, fragmentId, isCatalogSidebarOpen, isSidebarRoute, navigate, navigated, sidebarRoute }

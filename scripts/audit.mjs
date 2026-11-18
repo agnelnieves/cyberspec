@@ -100,6 +100,20 @@ try {
     console.log(`  agent  ${seen.total} components visible; unnamed: ${seen.unnamed.length ? [...new Set(seen.unnamed)].join(", ") + ` (${seen.unnamed.length})` : "none"}`)
     if (seen.repeated.length) console.log(`         repeated names: ${seen.repeated.slice(0, 10).join("; ")}`)
     failures += seen.unnamed.length
+
+    if (route === "/components") {
+      await page.click("#catalog-toggle")
+      const filter = await page.waitForSelector("#component-index input", { visible: true })
+      await filter.type("button")
+      await page.click('#component-index a[href="/components/sidebar/button"]')
+      await page.waitForSelector("#component-title")
+      const keptIndex = await filter.evaluate(input =>
+        input.isConnected && input.value === "button" &&
+        document.getElementById("catalog-toggle")?.getAttribute("aria-expanded") === "true"
+      )
+      if (!keptIndex) failures++
+      console.log(keptIndex ? "  catalog  sidebar and filter retained on component selection" : "  catalog  sidebar was replaced or collapsed on component selection")
+    }
     await page.close()
 
     // Layout at phone width.
@@ -107,6 +121,18 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
     console.log(overflow > 1 ? `  layout  page scrolls sideways by ${overflow}px at 360px` : "  layout  fits 360px")
     if (overflow > 1) failures++
+    if (route === "/components") {
+      for (const trigger of ["#catalog-toggle", ".site-mobile-menu button", "[data-site-search] button"]) {
+        await page.click(trigger)
+        const dialog = await page.waitForSelector('[role="dialog"][data-open]', { visible: true })
+        const fraction = await dialog.evaluate(el => el.getBoundingClientRect().height / window.visualViewport.height)
+        const expected = trigger.includes("search") ? 0.75 : 1
+        if (Math.abs(fraction - expected) > 0.02) failures++
+        console.log(`  mobile  ${trigger} opened at ${Math.round(fraction * 100)}% of the viewport (expected ${expected * 100}%)`)
+        await page.keyboard.press("Escape")
+        await page.waitForSelector('[role="dialog"][data-open]', { hidden: true })
+      }
+    }
     if (route === "/") {
       const finger = await page.touchscreen.touchStart(180, 580)
       await finger.move(180, 500)

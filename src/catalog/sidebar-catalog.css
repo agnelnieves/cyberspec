@@ -4,7 +4,10 @@
 
   @media (min-width: 1200px) {
     .sidebar-catalog {
-      grid-template-columns: var(--catalog-index-width) minmax(0, 1fr) clamp(130px, 10vw, 160px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(130px, 10vw, 160px);
+      align-items: start;
+      gap: var(--site-content-gutter);
     }
     .article-links {
       display: grid;
@@ -62,6 +65,8 @@
   }
   .component-pager svg { flex: none; width: 16px; color: var(--cy-accent); }
   .component-pager a:hover { color: var(--cy-signal); }
-  .sidebar-reading :is(#example, #installation) { scroll-margin-block-start: calc(var(--site-header-clear) + 16px); }
+  .sidebar-reading :is(#example, #installation) {
+    scroll-margin-block-start: var(--catalog-anchor-inset, calc(var(--site-header-clear) + 16px));
+  }
 
 }

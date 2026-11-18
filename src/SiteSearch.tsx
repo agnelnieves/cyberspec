@@ -1,8 +1,11 @@
+import { useRef, useState } from "react"
 import { Blocks, CalendarDays, ListMusic, Monitor, PanelLeft, Search } from "lucide-react"
 import { CommandPalette, type PaletteCommand, type PaletteGroup } from "@/registry/cyber/ui/command-palette"
 import { panels } from "./catalog/panels"
 import { examples } from "./Examples"
-import { isCatalogSidebarOpen, navigate, sidebarRoute } from "./navigation"
+import { componentDocUrl, isCatalogSidebarOpen, isSidebarRoute, navigate, sidebarRoute } from "./navigation"
+import { useOverlayViewport } from "./useOverlayViewport"
+import "./site-search.css"
 
 type SearchSetting = PaletteCommand & { apply: () => void }
 
@@ -39,6 +42,9 @@ const componentPages: PaletteGroup = {
 }
 
 function SiteSearch({ settings, shortcut }: { settings: SearchSetting[]; shortcut: string | null }) {
+  const [open, setOpen] = useState(false)
+  const wrapper = useRef<HTMLDivElement>(null)
+  useOverlayViewport(open, wrapper)
   const commands: PaletteGroup = {
     label: "Commands",
     commands: settings.map((setting) => ({
@@ -47,11 +53,13 @@ function SiteSearch({ settings, shortcut }: { settings: SearchSetting[]; shortcu
     })),
   }
   return (
-    <div data-site-search>
+    <div ref={wrapper} data-site-search>
       <CommandPalette
+        onOpenChange={setOpen}
         shortcut={shortcut}
         trigger={<span data-site-search-label>Search</span>}
         triggerIcon={<Search aria-hidden />}
+        triggerTone="ghost"
         title="Search Cyberspec"
         placeholder="Search components, examples, or commands"
         empty="No matching components, examples, or commands."
@@ -59,8 +67,9 @@ function SiteSearch({ settings, shortcut }: { settings: SearchSetting[]; shortcu
         rankResults
         commands={[pages, commands, examplePages, componentPages]}
         onAction={(value) => {
-          if (value.startsWith("/preview/") && isCatalogSidebarOpen(location.pathname.replace(/^\/+|\/+$/g, "")))
-            navigate(`/${sidebarRoute}/${value.slice("/preview/".length)}`)
+          const route = location.pathname.replace(/^\/+|\/+$/g, "")
+          if (value.startsWith("/preview/") && (route === "components" || isSidebarRoute(route)))
+            navigate(componentDocUrl(value.slice("/preview/".length), isCatalogSidebarOpen(route)))
           else if (value.startsWith("/")) navigate(value)
           else settings.find((setting) => setting.value === value)?.apply()
         }}

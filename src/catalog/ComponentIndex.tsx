@@ -1,8 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react"
-import { ChevronDown, Grid2X2, Search } from "lucide-react"
+import { useLayoutEffect, useRef, useState, type MouseEvent } from "react"
+import { Grid2X2, List, Search } from "lucide-react"
+import { DialogTrigger } from "@ui-sdk/react/dialog"
 import { TextField } from "@/registry/cyber/ui/text-field"
 import { ScrollArea } from "@/registry/cyber/ui/scroll-area"
-import { navigate, sidebarRoute } from "../navigation"
+import { componentDocUrl, navigate } from "../navigation"
+import { MobileMenuDialog } from "../MobileMenuDialog"
 import { panels, type PanelSpec } from "./panels"
 import "./component-index.css"
 
@@ -11,12 +13,11 @@ const groups = [...new Set(panels.map(panel => panel.group))].map(name => ({
   items: panels.filter(panel => panel.group === name),
 }))
 
-const componentUrl = (name: string) => `/${sidebarRoute}/${name}`
-
-export function ComponentIndex({ spec }: { spec?: PanelSpec }) {
+export function ComponentIndex({ spec, onSelect }: { spec?: PanelSpec; onSelect?: (event: MouseEvent<HTMLAnchorElement>) => void }) {
   const [filter, setFilter] = useState("")
   const list = useRef<HTMLDivElement>(null)
   const query = filter.trim().toLowerCase()
+  const keepSidebarOpen = new URLSearchParams(location.search).get("sidebar") !== "closed"
   const visible = groups.map(group => ({
     ...group,
     items: group.items.filter(panel =>
@@ -26,11 +27,12 @@ export function ComponentIndex({ spec }: { spec?: PanelSpec }) {
 
   useLayoutEffect(() => {
     const rail = list.current?.querySelector<HTMLElement>('[data-kit="scroll-area-viewport"]')
-    if (!rail) return
-    if (query) {
-      rail.scrollTop = 0
-      return
-    }
+    if (rail && query) rail.scrollTop = 0
+  }, [query])
+
+  useLayoutEffect(() => {
+    const rail = list.current?.querySelector<HTMLElement>('[data-kit="scroll-area-viewport"]')
+    if (!rail || !spec) return
     const showCurrent = () => {
       const link = rail.querySelector<HTMLAnchorElement>('[aria-current="page"]')
       if (!link || !rail.clientHeight) return
@@ -48,25 +50,13 @@ export function ComponentIndex({ spec }: { spec?: PanelSpec }) {
   }, [spec, query])
 
   return (
-    <nav id="component-index" tabIndex={-1} className="component-index" aria-label="Component index" data-filtering={query ? "" : undefined}>
-      <a className="component-index-skip" href={spec ? "#example" : "#components"}>{spec ? "Skip to example" : "Skip to grid"}</a>
+    <nav id="component-index" tabIndex={-1} className="component-index" aria-label="Component index">
+      {!onSelect && <a className="component-index-skip" href={spec ? "#example" : "#components"}>{spec ? "Skip to example" : "Skip to grid"}</a>}
       <TextField label="Filter components" type="search" icon={<Search />} placeholder="Name or category"
         clearable autoComplete="off" value={filter} onValueChange={setFilter} />
-      <a className="component-index-overview" href="/components" aria-current={spec ? undefined : "page"}>
+      <a className="component-index-overview" href="/components" onClick={onSelect} aria-current={spec ? undefined : "page"}>
         <Grid2X2 aria-hidden /> Catalog grid
       </a>
-      <label className="component-index-picker">
-        <span data-sr-only>Go to component</span>
-        <select value={spec?.name ?? ""} onChange={event => navigate(componentUrl(event.currentTarget.value))}>
-          {!spec && <option value="" disabled>Choose component</option>}
-          {groups.map(group => (
-            <optgroup key={group.name} label={group.name}>
-              {group.items.map(panel => <option key={panel.name} value={panel.name}>{panel.title}</option>)}
-            </optgroup>
-          ))}
-        </select>
-        <ChevronDown aria-hidden />
-      </label>
       <ScrollArea ref={list} label="Component links" className="component-index-list">
         {visible.map(group => (
           <div key={group.name}>
@@ -74,7 +64,7 @@ export function ComponentIndex({ spec }: { spec?: PanelSpec }) {
             <ul>
               {group.items.map(panel => (
                 <li key={panel.name}>
-                  <a href={componentUrl(panel.name)} aria-current={panel.name === spec?.name ? "page" : undefined}>
+                  <a href={componentDocUrl(panel.name, keepSidebarOpen)} onClick={onSelect} aria-current={panel.name === spec?.name ? "page" : undefined}>
                     {panel.title}
                   </a>
                 </li>
@@ -85,5 +75,32 @@ export function ComponentIndex({ spec }: { spec?: PanelSpec }) {
         {visible.length === 0 && <p role="status">No matching components.</p>}
       </ScrollArea>
     </nav>
+  )
+}
+
+export function MobileComponentIndex({ spec }: { spec?: PanelSpec }) {
+  const [open, setOpen] = useState(false)
+  const selected = useRef(false)
+  function select(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
+    event.preventDefault()
+    setOpen(false)
+    if (event.currentTarget.getAttribute("aria-current") !== "page") {
+      selected.current = true
+      navigate(event.currentTarget.href)
+    }
+  }
+  return (
+    <MobileMenuDialog title="Components" open={open} onOpenChange={value => {
+      if (value) selected.current = false
+      setOpen(value)
+    }} keepMounted
+      finalFocus={() => (selected.current && document.getElementById("component-title")) || document.getElementById("catalog-toggle")}
+      trigger={<DialogTrigger id="catalog-toggle" className="catalog-index-toggle" data-kit="button" data-size="sm"
+        data-frame="notch br" data-tone="secondary" data-press-flash="">
+        <List aria-hidden /> Browse components
+      </DialogTrigger>}>
+      <ComponentIndex spec={spec} onSelect={select} />
+    </MobileMenuDialog>
   )
 }
