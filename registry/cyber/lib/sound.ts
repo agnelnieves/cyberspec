@@ -14,9 +14,9 @@ type Voice =
   | "decrement" // a successful minus/down action
   | "modal-open" // a dialog, alert dialog or drawer appearing
   | "modal-close" // the same recording reversed as it closes
-  | "press" // a button going down
+  | "press" // a button press or a change of tab or segment
   | "confirm" // a primary action
-  | "select" // an option, a tab, a row chosen
+  | "select" // an option or a row chosen
   | "tick" // the shared recorded tick: pagination and carousel navigation
   | "on" // a switch or a checkbox turning on
   | "off" // ...and off
@@ -308,6 +308,8 @@ const typing =
 const pressable = 'button, [role="button"], a[href], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"], [role="tab"], [role="radio"], [role="checkbox"], [role="switch"], [role="treeitem"], [role="gridcell"]'
 const hoverable = `${pressable}, [role="slider"], [role="separator"][aria-valuenow], input:not([type="hidden"]), textarea, select, summary`
 const keyboardCollection = '[role="menu"], [role="menubar"], [role="listbox"], [role="combobox"], [role="tablist"], [role="radiogroup"], [role="tree"], [role="grid"], [role="toolbar"], [data-slot="toggle-group"]'
+const tabChoice = '[role="tab"], [data-slot="segmented-control-item"]'
+const activeTabChoice = '[role="tab"][aria-selected="true"], [data-slot="segmented-control-item"][aria-checked="true"]'
 const navigationKeys = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"])
 
 // Most collections move real focus. Comboboxes keep focus in the input and
@@ -321,6 +323,7 @@ function keyboardSelection(tree: Element | null, carousel: Element | null) {
   const select = focused.closest('[data-slot="select-trigger"]')
   return {
     item,
+    activeChoice: item.matches(tabChoice) ? item.closest(keyboardCollection)?.querySelector(activeTabChoice) : null,
     state: JSON.stringify([
       item.id,
       item.getAttribute("data-value"),
@@ -348,7 +351,7 @@ function voiceFor(el: Element): Voice | null {
     // Read before the click lands: on now means it's about to turn off.
     return on ? "off" : "on"
   }
-  if (role === "option" || role === "tab" || role === "radio" || role === "menuitem" || role === "menuitemradio" || role === "gridcell" || role === "treeitem") return "select"
+  if (role === "option" || role === "radio" || role === "menuitem" || role === "menuitemradio" || role === "gridcell" || role === "treeitem") return "select"
   if (el.matches('[data-tone="primary"]')) return "confirm"
   // The transition owns this feedback. A long generic button recording
   // underneath it would keep sounding after the modal has finished moving.
@@ -375,6 +378,15 @@ function installSound() {
       const el = (event.target as Element | null)?.closest?.(`${pressable}, [data-sfx]`)
       if (!el || !el.closest('[data-skin="cyber"]')) return
       if (el.matches(disabled)) return sfx("deny")
+      if (el.matches(tabChoice) && !el.closest("[data-sfx]")) {
+        // A click can reselect the active view or be rejected by the consumer.
+        // Give the component time to commit before sounding its new choice.
+        if (el.matches(activeTabChoice)) return
+        requestAnimationFrame(() => {
+          if (el.isConnected && el.matches(activeTabChoice)) sfx("press")
+        })
+        return
+      }
       const voice = voiceFor(el)
       if (voice) sfx(voice)
     },
@@ -408,7 +420,8 @@ function installSound() {
     pendingNavigation = null
     if (!pending || pending.sequence !== playbackSequence) return
     const after = keyboardSelection(pending.tree, pending.carousel)
-    if (after && (after.item !== pending.before.item || after.state !== pending.before.state)) sfx("tick")
+    if (after?.activeChoice && after.activeChoice !== pending.before.activeChoice) sfx("press")
+    else if (after && (after.item !== pending.before.item || after.state !== pending.before.state)) sfx("tick")
   }
 
   document.addEventListener(
@@ -420,6 +433,8 @@ function installSound() {
       const target = event.target as Element | null
       const treeShortcut = event.altKey && (event.key === "ArrowLeft" || event.key === "ArrowRight") && target?.closest('[role="tree"]')
       if (!enabled || event.isComposing || event.metaKey || event.ctrlKey || (event.altKey && !treeShortcut)) return
+      // Native tab and segment buttons deliver Enter/Space through click.
+      if ((event.key === "Enter" || event.key === " ") && target instanceof HTMLButtonElement && target.matches(tabChoice)) return
       // Menu choices handle Enter/Space directly without a click. Wait
       // for the resulting state so canceled changes stay silent as well.
       const check = target?.closest?.('[role="menuitemcheckbox"], [role="menuitemradio"]')

@@ -309,7 +309,6 @@ try {
     }
     pass("typing and deleting in text fields and textareas use the shared tick")
     for (const [route, selector] of [
-      ["tabs", '[data-kit="tabs-tab"]:nth-child(2)'],
       ["pagination", '[aria-label="Next page"]'],
       ["carousel", '[aria-label="Next slide"]'],
     ]) {
@@ -317,7 +316,7 @@ try {
       await click(selector)
       await onlySample(signatures.hover, `${route} navigation tick`)
     }
-    pass("tab selection, pagination and carousel navigation share the recorded tick")
+    pass("pagination and carousel navigation share the recorded tick")
     for (const route of ["tree", "calendar"]) {
       await open(`/preview/${route}`)
       const tagged = await page.evaluate((route) => {
@@ -363,7 +362,7 @@ try {
         carouselPage: item?.matches('[data-slot="carousel-viewport"]') ? item.closest('[data-slot="carousel"]')?.querySelector('[data-kit="carousel-page"]')?.textContent : null,
       }
     })
-    const navigationKey = async (key, label, { changed = true, sameItem = false, startsWith, role, selected, checked, expanded, valueLabel } = {}) => {
+    const navigationKey = async (key, label, { changed = true, sameItem = false, sound = "hover", startsWith, role, selected, checked, expanded, valueLabel } = {}) => {
       await pause(35)
       const before = await navigationTarget()
       await clear()
@@ -376,7 +375,7 @@ try {
           assert.equal(after.id, before.id, `${label}: focus stays on the same item`)
           assert.notDeepEqual(after, before, `${label}: the item's displayed state actually changed`)
         } else assert.notEqual(after.id, before.id, `${label}: the focused/highlighted item actually changed`)
-        await onlySample(signatures.hover, label)
+        await onlySample(signatures[sound], label)
       } else {
         assert.equal(after.id, before.id, `${label}: the focused/highlighted item stays put`)
         assert.deepEqual(after, before, `${label}: navigation state is unchanged`)
@@ -432,17 +431,34 @@ try {
     await navigationKey("ArrowLeft", "Combobox caret movement", { changed: false })
     pass("Combobox active-descendant changes tick once while caret-only movement stays silent")
 
+    for (const [route, target, state, key, next] of [
+      ["tabs", '[data-kit="tabs-tab"]:nth-child(2)', "aria-selected", "ArrowRight", "Backpack"],
+      ["side-tabs", '[role="tab"][aria-label="Vehicles"]', "aria-selected", "ArrowDown", "Places"],
+      ["segmented-control", '[data-kit="segmented-control-item"]', "aria-checked", "ArrowRight", "Grid"],
+    ]) {
+      await open(`/preview/${route}`)
+      await hover(target)
+      await onlySample(signatures.hover, `${route} hover`)
+      await click(target)
+      assert.equal(await page.$eval(target, (item, state) => item.getAttribute(state), state), "true", `${route} pointer selection changed`)
+      await onlySample(signatures.press, `${route} pointer selection`)
+      await click(target)
+      assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, `${route} reselecting the current choice is silent`)
+      const expectedState = state === "aria-selected" ? { selected: true } : { checked: true }
+      await navigationKey(key, `${route} keyboard selection`, { sound: "press", startsWith: next, ...expectedState })
+    }
+    pass("tabs, side tabs and segmented controls play the confirmation tone once per pointer or keyboard selection change")
+
     await open("/preview/tabs")
     await page.focus('[role="tablist"][aria-label="Loadout"] [role="tab"][aria-selected="true"]')
-    await navigationKey("ArrowRight", "Tabs next", { startsWith: "Crafting", selected: true })
-    await navigationKey("End", "Tabs last", { startsWith: "Backpack", selected: true })
+    await navigationKey("End", "Tabs last", { startsWith: "Backpack", selected: true, sound: "press" })
     await navigationKey("End", "Tabs unchanged End", { changed: false })
-    await navigationKey("Home", "Tabs first", { startsWith: "Inventory", selected: true })
+    await navigationKey("Home", "Tabs first", { startsWith: "Inventory", selected: true, sound: "press" })
     await page.focus('[role="tablist"][aria-label="Gear type"] [role="tab"][aria-selected="true"]')
     await navigationKey("End", "Tabs discover disabled Daemons", { startsWith: "Daemons", selected: false })
     assert.equal(await page.$eval('[role="tablist"][aria-label="Gear type"] [aria-selected="true"]', (node) => node.textContent.trim()), "Arms", "Disabled tab navigation preserves the selected panel")
     await navigationKey("End", "Disabled tab unchanged End", { changed: false })
-    pass("tab focus moves tick once; disabled tabs remain unselected and unchanged targets stay silent")
+    pass("Home and End confirm tab changes, focusing a disabled tab ticks, and unchanged targets stay silent")
 
     await open("/preview/toggle-group")
     await page.focus('[data-slot="toggle-group"] [aria-pressed="true"]')
@@ -496,9 +512,10 @@ try {
       const { createRoot } = domModule.default || domModule
       const { Cyber } = await import(loaded("/registry/cyber/ui/cyber.tsx"))
       const { Calendar } = await import(loaded("/registry/cyber/ui/calendar.tsx"))
+      const { Tabs } = await import(loaded("/registry/cyber/ui/tabs.tsx"))
       document.getElementById("root").style.display = "none"
       const fixture = document.createElement("div")
-      fixture.dataset.soundFixture = "keyboard-calendar"
+      fixture.dataset.soundFixture = "keyboard"
       document.body.append(fixture)
       window.navigationGuard = { refuse: false, canceled: 0 }
       createRoot(fixture).render(React.createElement(Cyber, { fx: "off", style: { padding: 40, width: 400 } },
@@ -507,10 +524,17 @@ try {
           onFocusedChange: (_date, details) => {
             if (window.navigationGuard.refuse) { details.cancel(); window.navigationGuard.canceled++ }
           },
+        }),
+        React.createElement(Tabs, {
+          label: "Manual views", activation: "manual", defaultValue: "one",
+          tabs: ["one", "two"].map((value) => ({ value, label: value, content: value })),
+          onValueChange: (_value, details) => {
+            if (window.navigationGuard.refuse) details.cancel()
+          },
         })))
     })
-    await page.waitForSelector('[data-sound-fixture="keyboard-calendar"] [role="gridcell"][tabindex="0"]')
-    await page.focus('[data-sound-fixture="keyboard-calendar"] [role="gridcell"][tabindex="0"]')
+    await page.waitForSelector('[data-sound-fixture="keyboard"] [role="gridcell"][tabindex="0"]')
+    await page.focus('[data-sound-fixture="keyboard"] [role="gridcell"][tabindex="0"]')
     await navigationKey("ArrowRight", "Calendar next day", { role: "gridcell" })
     assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), "12", "Calendar reached maximum date")
     await navigationKey("ArrowRight", "Calendar maximum boundary", { changed: false })
@@ -522,6 +546,17 @@ try {
     await navigationKey("ArrowLeft", "Calendar accepted after cancellation", { role: "gridcell" })
     await navigationKey("ArrowLeft", "Calendar minimum boundary", { changed: false })
     pass("calendar navigation ticks only after an accepted focus change; canceled moves and bounds stay silent")
+
+    const manualList = '[role="tablist"][aria-label="Manual views"]'
+    await page.focus(`${manualList} [aria-selected="true"]`)
+    await navigationKey("ArrowRight", "Manual tab focus", { startsWith: "two", selected: false })
+    await page.evaluate(() => { window.navigationGuard.refuse = true })
+    await navigationKey("Enter", "Manual tab canceled activation", { changed: false, selected: false })
+    await click(`${manualList} [aria-selected="false"]`)
+    assert.equal((await events()).filter((event) => event.kind !== "stop").length, 0, "Canceled tab click is silent")
+    await page.evaluate(() => { window.navigationGuard.refuse = false })
+    await navigationKey("Space", "Manual tab activation", { sameItem: true, sound: "press", startsWith: "two", selected: true })
+    pass("manual tab focus ticks, canceled activation stays silent and Space confirms the selection")
 
     for (const { route, selector, actions, value } of [
       { route: "slider", selector: '[data-kit="slider-thumb"] input[type="range"]', value: "value", actions: [["ArrowRight", "hover"], ["End", "hover"], ["End", null]] },

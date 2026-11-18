@@ -12,7 +12,7 @@ and separate licensing requirements before reusing or redistributing them.
 | Interaction | Recording | Where to try it |
 | --- | --- | --- |
 | Shared mouse hover | Exactly one tick from `ticking.mp3` | Any enabled button or other pressable, including menu rows, submenu triggers, repeating and Stepper keys |
-| Selection, navigation and text entry | The same single recorded tick | Menu items, options, tabs, radio choices, tree rows, calendar dates, carousel/pagination, typing and deletion |
+| Selection, navigation and text entry | The same single recorded tick | Menu items, options, radio choices, tree rows, calendar dates, carousel/pagination, typing and deletion |
 | Small popup opening / closing | The same single recorded tick | Menus, submenus, select lists, popovers, tooltips and informational toasts |
 | Agent-driven changes | The same single recorded tick | `/daemon`; also the explicit `glitch` voice, which has no automatic trigger |
 | Continuous adjustment | Eight consecutive ticks from `ticking.mp3` | Drag in `/preview/resizable` and `/preview/slider`; focus Frame and scroll in `/preview/stepper` |
@@ -22,7 +22,7 @@ and separate licensing requirements before reusing or redistributing them.
 | Off / unchecked / released | The last sound in the same Variations 02 recording | The same controls; also password visibility in `/preview/password-input` |
 | Modal opening | The cue starting near 7.4 seconds in `ES_User Interface, Motion, Hitech GUI, Scifi, Interact, Digital, Glitch 01 - Epidemic Sound.mp3`, compressed to the movement's duration | `/preview/dialog`, `/preview/alert-dialog`, `/preview/drawer`, `/preview/command-palette` |
 | Modal closing | The same cue compressed to the shorter exit duration and reversed | Close buttons, Escape and supported backdrop dismissal on those surfaces |
-| Button press and confirmation | The cue near second 2 in `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Ordinary and primary buttons in `/preview/button`; ButtonGroup reset/readout keys |
+| Button presses and tab changes | The second cue in `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Buttons, ButtonGroup reset/readout keys, and selection changes in `/preview/tabs`, `/preview/side-tabs` and `/preview/segmented-control` |
 
 The directional samples are not used on sliders. The original recordings in
 Downloads remain unchanged. The WAV contains two earlier bursts, followed by
@@ -38,9 +38,9 @@ In the Variations 02 recording, on uses `0.004–1.12` and off uses `2.910–3.9
 Both retain their decay tails. The middle sound is discarded entirely.
 The modal source slice is `7.390–8.900` in the Motion recording. Pitch-preserving
 `atempo` stages produce short variants; each closing variant is then reversed
-exactly in the audio engine. Playback stays at the original pitch. The button press
-slice is `1.808–2.590` in the UI Confirm Tone recording: the cue near second
-2 starts a little earlier, so its attack is retained.
+exactly in the audio engine. Playback stays at the original pitch. Button presses
+and tab changes share the `1.808–2.590` slice of the UI Confirm Tone recording.
+The second cue starts at about 1.814 seconds, just after the cut.
 The extraction retains pitch, converts to mono PCM16 at 48 kHz,
 normalizes headroom and adds 0.5 ms edge fades. Regenerate with `ffmpeg`
 installed:
@@ -69,11 +69,15 @@ returning `false` from `onPress` rejects the change and stops a held repeat.
 `data-sfx="none"` suppresses automatic click sounds without suppressing hover.
 Use `data-sfx-hover="none"` when hover itself should be silent.
 
-Keyboard navigation uses the same tick when focus or the highlighted option
-actually moves in menus, selects, comboboxes, tabs, radio and toggle groups,
+Changing the active tab or segment by pointer or keyboard plays the
+confirmation recording once. Moving focus alone keeps the navigation tick.
+Choosing the active item again is silent.
+
+Keyboard navigation uses the tick when focus or the highlighted option
+actually moves in menus, selects, comboboxes, radio and toggle groups,
 trees, calendars, toolbars and carousels. Arrow keys, Home/End, PageUp/Down
-and supported typeahead follow the component's behavior. Tree expansion and closed-select
-typeahead also tick when their state changes. Unchanged boundaries, canceled
+and supported typeahead follow the component's behavior. Tree expansion and
+closed-select typeahead also tick when their state changes. Unchanged boundaries, canceled
 navigation and ordinary text-caret movement stay silent. Existing control or
 popup feedback takes precedence so one key does not produce a second tick.
 

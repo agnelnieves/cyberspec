@@ -15,7 +15,7 @@ the project and are embedded as PCM data:
 | `moving-slider-to-left.wav` | Increment and decrement |
 | `ES_User Interface, Beep, Button Interaction, Confirm, Small, Bright, Futuristic, Scifi, Variations 02 - Epidemic Sound.mp3` | On and off |
 | `ES_User Interface, Motion, Hitech GUI, Scifi, Interact, Digital, Glitch 01 - Epidemic Sound.mp3` | Modal and drawer transitions |
-| `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Button presses |
+| `ES_User Interface, Alert, Futuristic Technology, UI Confirm Tone, Bright 02 - Epidemic Sound.mp3` | Button presses, tab changes and segmented control changes |
 
 The three Epidemic Sound recordings are from the
 [Epidemic Sound catalog](https://www.epidemicsound.com/sound-effects/).
