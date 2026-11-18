@@ -13,10 +13,12 @@ import {
   CommandShortcut,
   CommandStatus,
   type CommandActionDetails,
+  type CommandData,
 } from "@ui-sdk/react/command"
 import {
   Dialog,
   DialogBackdrop,
+  DialogClose,
   DialogContent,
   DialogShortcut,
   DialogTitle,
@@ -58,24 +60,29 @@ const isGroup = (entry: PaletteCommand | PaletteGroup): entry is PaletteGroup =>
 //   `controller`.
 function CommandPalette({
   trigger = "Commands",
+  triggerIcon = <Terminal aria-hidden />,
   triggerTone = "secondary",
   title = "Command palette",
   placeholder = "Run a command",
   empty = "No such command.",
   shortcut = "mod+k",
   commands,
+  rankResults = false,
   onAction,
   code = "CS-07 // SHELL",
   controller,
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
   trigger?: React.ReactNode
+  triggerIcon?: React.ReactNode
   triggerTone?: ButtonTone
   title?: string
   placeholder?: string
   empty?: string
   shortcut?: string | null
   commands: (PaletteCommand | PaletteGroup)[]
+  /** Keep the opening groups, then rank matches across every group as the user types. */
+  rankResults?: boolean
   onAction?: (value: string, details: CommandActionDetails) => unknown
   code?: string
 }) {
@@ -84,7 +91,23 @@ function CommandPalette({
   const [own] = React.useState(() => createDialogController())
   const dialog = controller ?? own
 
-  const row = (command: PaletteCommand) => (
+  const list = React.useMemo(() => {
+    const byValue = new Map<string, { command: PaletteCommand; group?: string }>()
+    const item = (command: PaletteCommand, group?: string) => {
+      byValue.set(command.value, { command, group })
+      const { value, label, keywords, disabled, shortcut } = command
+      return { value, label, keywords, disabled, shortcut }
+    }
+    const grouped = commands.map((entry) =>
+      isGroup(entry)
+        ? { type: "group" as const, label: entry.label, items: entry.commands.map((command) => item(command, entry.label)) }
+        : item(entry),
+    )
+    const flat = grouped.flatMap((entry) => "items" in entry ? entry.items : [entry])
+    return { grouped, flat, byValue }
+  }, [commands])
+
+  const row = (command: PaletteCommand, group?: string) => (
     <CommandItem
       key={command.value}
       value={command.value}
@@ -109,9 +132,27 @@ function CommandPalette({
           )
         }
       </CommandItemText>
+      {group && <span data-kit="popup-shortcut">{group}</span>}
       {command.shortcut && <CommandShortcut data-kit="popup-shortcut" />}
     </CommandItem>
   )
+
+  const renderEntry = (entry: CommandData[number], index: number, showGroup: boolean): React.ReactNode => {
+    if (typeof entry !== "string" && "type" in entry) {
+      if (entry.type === "separator") return <CommandSeparator key={index} data-kit="popup-separator" />
+      return (
+        <React.Fragment key={entry.label}>
+          {index > 0 && <CommandSeparator data-kit="popup-separator" />}
+          <CommandGroup data-kit="command-palette-group">
+            <CommandGroupLabel data-kit="popup-label">{entry.label}</CommandGroupLabel>
+            {entry.items.map((child, i) => renderEntry(child, i, false))}
+          </CommandGroup>
+        </React.Fragment>
+      )
+    }
+    const found = list.byValue.get(typeof entry === "string" ? entry : entry.value)
+    return found && row(found.command, showGroup ? found.group : undefined)
+  }
 
   return (
     <Dialog controller={dialog} {...props}>
@@ -122,7 +163,7 @@ function CommandPalette({
         data-tone={triggerTone}
         shortcut={shortcut ?? undefined}
       >
-        <Terminal aria-hidden />
+        {triggerIcon}
         {trigger}
         {shortcut && <DialogShortcut data-kit="command-palette-kbd" />}
       </DialogTrigger>
@@ -135,40 +176,30 @@ function CommandPalette({
           <DialogTitle data-sr-only>{title}</DialogTitle>
           <Command
             data-kit="command-palette-command"
+            items={rankResults ? list.flat : undefined}
+            emptyItems={rankResults ? list.grouped : undefined}
             onAction={(value, details) => {
               const result = onAction?.(value, details)
               if (result instanceof Promise) return result.then(() => void dialog.close())
               dialog.close()
             }}
           >
-            {/* Focus never leaves the input while the palette is open, so the
-                prompt line shows it, rather than a ring around the text. */}
+            {/* Arrow keys keep focus in the input. The prompt line shows
+                which field is receiving keystrokes. */}
             <div data-kit="command-palette-prompt">
               <span data-kit="command-palette-glyph" aria-hidden>
                 &gt;
               </span>
               <CommandInput aria-label={title} placeholder={placeholder} spellCheck={false} data-focus-quiet="" />
-              <kbd data-kit="command-palette-key" aria-hidden>
+              <DialogClose data-kit="command-palette-key" aria-label="Close palette">
                 Esc
-              </kbd>
+              </DialogClose>
             </div>
             <CommandEmpty data-kit="command-palette-empty">
               <div data-kit="popup-empty">{empty}</div>
             </CommandEmpty>
             <CommandList data-kit="command-palette-list">
-              {commands.map((entry, index) =>
-                isGroup(entry) ? (
-                  <React.Fragment key={entry.label}>
-                    {index > 0 && <CommandSeparator data-kit="popup-separator" />}
-                    <CommandGroup data-kit="command-palette-group">
-                      <CommandGroupLabel data-kit="popup-label">{entry.label}</CommandGroupLabel>
-                      {entry.commands.map(row)}
-                    </CommandGroup>
-                  </React.Fragment>
-                ) : (
-                  row(entry)
-                ),
-              )}
+              {({ items }) => (rankResults ? items : list.grouped).map((entry, i) => renderEntry(entry, i, rankResults))}
             </CommandList>
             <div data-kit="command-palette-foot">
               <CommandStatus data-kit="command-palette-status">

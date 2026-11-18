@@ -594,7 +594,7 @@ try {
       window.endModalTiming = () => { running = false; return probe }
       const frame = () => {
         if (!running) return
-        const node = document.querySelector(`[data-slot="${route}-content"]`)
+        const node = document.querySelector(`#${route} [data-slot="${route}-content"]`)
         const at = performance.now()
         if (node) {
           const rect = node.getBoundingClientRect()
@@ -622,7 +622,7 @@ try {
         await open(`/preview/${route}`)
         await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
         for (const phase of ["open", "close"]) {
-          const selector = `[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`
+          const selector = `#${route} [data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`
           await hover(selector)
           await clear()
           await startProbe(route)
@@ -675,7 +675,7 @@ try {
         await open(`/preview/${route}`)
         await page.evaluate((quiet) => { document.querySelector('[data-skin="cyber"]').dataset.fx = quiet === "off" ? "off" : "full" }, quiet)
         for (const phase of ["open", "close"]) {
-          await click(`[data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`)
+          await click(`#${route} [data-slot="${route}-${phase === "open" ? "trigger" : "close"}"]`)
           await pause(200)
           const heard = await modalSounds()
           assert.equal(heard.length, 1, `${route} ${quiet} ${phase}: one short feedback sound`)
@@ -690,11 +690,11 @@ try {
 
     await open("/preview/dialog")
     await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
-    await click('[data-slot="dialog-trigger"]')
+    await click('#dialog [data-slot="dialog-trigger"]')
     await pause(35)
-    await page.evaluate(() => document.querySelector('[data-slot="dialog-close"]').click())
+    await page.evaluate(() => document.querySelector('#dialog [data-slot="dialog-close"]').click())
     await pause(60)
-    await page.evaluate(() => document.querySelector('[data-slot="dialog-trigger"]').click())
+    await page.evaluate(() => document.querySelector('#dialog [data-slot="dialog-trigger"]').click())
     await pause(350)
     const reversal = await modalSounds()
     assert.equal(reversal.length, 3, "Rapid opening, closing and reopening each produce one cue")
@@ -703,7 +703,7 @@ try {
     pass("rapid reversals replace the previous modal cue promptly")
     await page.keyboard.press("Escape")
     await pause(250)
-    await click('[data-slot="dialog-trigger"]')
+    await click('#dialog [data-slot="dialog-trigger"]')
     await page.evaluate(() => window.sound.setSoundEnabled(false))
     const muted = await modalSounds()
     assert(muted[0].stopsAt < muted[0].startsAt + 100, "Muting stops the active modal cue")
@@ -773,14 +773,14 @@ try {
     pass("held repeats stop at bounds; disabled directions do not report success")
 
     await open("/preview/button")
-    await click('[data-kit="button"][data-tone="secondary"]')
+    await click('#button [data-kit="button"][data-tone="secondary"]')
     await onlySample(signatures.press, "ordinary button press")
-    await page.focus('[data-kit="button"][data-tone="secondary"]')
+    await page.focus('#button [data-kit="button"][data-tone="secondary"]')
     await clear()
     await page.keyboard.press("Enter")
     await pause(40)
     await onlySample(signatures.press, "ordinary keyboard press")
-    await click('[data-kit="button"][data-tone="primary"]')
+    await click('#button [data-kit="button"][data-tone="primary"]')
     await onlySample(signatures.press, "primary confirm shares the button recording")
     pass("ordinary and primary buttons share sampled press")
 
@@ -788,9 +788,9 @@ try {
       await open(`/preview/${route}`)
       // Exercise real exit attributes as well as node removal, with motion on.
       await page.evaluate(() => { document.querySelector('[data-skin="cyber"]').dataset.fx = "full" })
-      const trigger = `[data-slot="${route}-trigger"]`
-      const content = `[data-slot="${route}-content"]`
-      const close = `[data-slot="${route}-close"]`
+      const trigger = `#${route} [data-slot="${route}-trigger"]`
+      const content = `#${route} [data-slot="${route}-content"]`
+      const close = `#${route} [data-slot="${route}-close"]`
       assert.equal(await page.$(content), null, `${route}: first opening mounts new content`)
       await click(trigger)
       await page.waitForSelector(`${content}[data-open]`, { visible: true })

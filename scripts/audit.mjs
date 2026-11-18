@@ -15,7 +15,7 @@ import puppeteer from "puppeteer-core"
 const root = new URL("..", import.meta.url).pathname
 const axe = readFileSync(`${root}node_modules/axe-core/axe.min.js`, "utf8")
 const asked = process.argv.slice(2).filter((arg) => arg.startsWith("/"))
-const routes = asked.length ? asked : ["/", "/examples", "/loadout", "/augments", "/jobs", "/comms", "/archive", "/grid", "/daemon"]
+const routes = asked.length ? asked : ["/", "/components", "/examples", "/loadout", "/augments", "/jobs", "/comms", "/archive", "/grid", "/daemon"]
 
 async function findServer() {
   if (process.env.CYBERSPEC_URL) return process.env.CYBERSPEC_URL.replace(/\/$/, "")
@@ -102,6 +102,36 @@ try {
     console.log(overflow > 1 ? `  layout  page scrolls sideways by ${overflow}px at 360px` : "  layout  fits 360px")
     if (overflow > 1) failures++
     await page.close()
+
+    // The landing frame previously passed the phone overflow check while
+    // leaking a footer rule and a background seam on ultrawide screens.
+    if (route === "/") {
+      page = await open("off", 2560)
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+      const screenshot = await page.screenshot({ encoding: "base64" })
+      const framed = await page.evaluate(async (pixels) => {
+        const footer = document.querySelector("[data-site-footer]").getBoundingClientRect()
+        const frame = document.querySelector(".site-housing").getBoundingClientRect()
+        const bitmap = new Image()
+        bitmap.src = "data:image/png;base64," + pixels
+        await bitmap.decode()
+        const canvas = document.createElement("canvas")
+        canvas.width = bitmap.width
+        canvas.height = bitmap.height
+        const ctx = canvas.getContext("2d")
+        ctx.drawImage(bitmap, 0, 0)
+        const seam = (edge, y) => {
+          const pair = ctx.getImageData(Math.round(edge) - 1, y, 2, 1).data
+          return [0, 1, 2].some((channel) => Math.abs(pair[channel] - pair[channel + 4]) > 4)
+        }
+        return frame.width < innerWidth && frame.top === 0 && frame.bottom === innerHeight
+          && footer.left > frame.left && footer.right < frame.right
+          && [4, Math.floor(innerHeight / 2), innerHeight - 4].every((y) => !seam(frame.left, y) && !seam(frame.right, y))
+      }, screenshot)
+      console.log(framed ? "  frame  footer and gutters contained at 2560px" : "  frame  gutter seam or exposed footer at 2560px")
+      if (!framed) failures++
+      await page.close()
+    }
   }
 } finally {
   await browser.close()

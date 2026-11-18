@@ -1,5 +1,12 @@
 @layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
 
+@layer cyber.base {
+  [data-site][data-skin="cyber"] [data-micro] {
+    color: var(--cy-ink-mute);
+    opacity: 1;
+  }
+}
+
 /* The site around the kit: the bar, the masthead and the catalog's panels.
    It's in the cyber.blocks layer, alongside the screens, so the kit's focus
    and reduced-motion rules still sit above it. */
@@ -12,11 +19,7 @@
     overflow-x: clip;
     display: flex;
     flex-direction: column;
-    /* The void, lit from above. The shared CRT overlay supplies the raster. */
-    background:
-      radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--cy-accent) 30%, transparent), transparent 70%),
-      var(--cy-void);
-    background-attachment: fixed;
+    background: var(--cy-void);
   }
 
   [data-site-skip] {
@@ -124,6 +127,19 @@
     gap: 12px;
   }
 
+  [data-site-search] [data-slot="dialog-trigger"] {
+    --frame-notch: 0px;
+    height: max(32px, var(--cy-h-sm));
+    min-width: 0;
+    padding-inline: 10px;
+    gap: 7px;
+    font-size: var(--cy-text-sm);
+  }
+
+  [data-site-search] [data-kit="command-palette-kbd"] {
+    margin-inline: 3px 0;
+  }
+
   [data-site-repo] {
     display: inline-flex;
     align-items: center;
@@ -198,7 +214,8 @@
 
   /* ── Page ──────────────────────────────────────────────────────────── */
 
-  [data-site] > main {
+  [data-site] > main,
+  [data-site-scroll] > main:not([data-site-page="landing"]) {
     flex: 1;
     width: 100%;
     max-width: 1480px;
@@ -536,6 +553,10 @@
     color: var(--cy-ink-mute);
     font-size: var(--cy-text-sm);
 
+    & > [data-micro] {
+      font-size: var(--cy-text-xs);
+    }
+
     & [data-site-repo] {
       grid-column: 2;
       grid-row: 1 / span 2;
@@ -560,6 +581,18 @@
   }
 
   @media (max-width: 560px) {
+    [data-site-nav] {
+      order: 0;
+      flex: 1;
+    }
+    [data-site-tools] {
+      flex-basis: 100%;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    [data-site-search] [data-kit="command-palette-kbd"] {
+      display: none;
+    }
     [data-site-brand] {
       width: 44px;
     }
@@ -576,6 +609,23 @@
         grid-area: auto;
         justify-self: start;
       }
+    }
+  }
+
+  @media (max-width: 400px) {
+    [data-site-search] [data-slot="dialog-trigger"] {
+      width: var(--cy-h);
+      padding-inline: 0;
+    }
+    [data-site-search-label] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    [data-site-fx] [data-site-chip] {
+      padding-inline: 4px;
     }
   }
 }

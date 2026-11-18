@@ -53,6 +53,7 @@
   }
 
   [data-skin="cyber"] [data-kit="drawer-surface"] {
+    --drawer-gutter: 14px;
     --frame-cut: var(--cy-cut-lg);
     --frame-line: var(--cy-line-hot);
     --frame-fill: var(--cy-panel);
@@ -69,11 +70,9 @@
 
     [data-side="right"] > & {
       border-inline-start-width: var(--cy-line);
-      padding-inline-start: 14px;
     }
     [data-side="left"] > & {
       border-inline-end-width: var(--cy-line);
-      padding-inline-end: 14px;
     }
     [data-side="bottom"] > & {
       border-block-start-width: var(--cy-line);
@@ -122,17 +121,14 @@
     }
   }
 
-  /* The title bar: lit, with the close key at its end. */
+  /* The rule spans the sheet. The title shares the body's left inset. */
   [data-skin="cyber"] [data-kit="drawer-bar"] {
     flex: none;
     display: flex;
     align-items: center;
     gap: 10px;
-    min-height: var(--cy-h);
-    margin: 14px 14px 0 0;
-    padding-inline-start: 12px;
-    background: var(--cy-fill-active);
-    box-shadow: inset 3px 0 0 var(--cy-line-hot);
+    padding: var(--cy-gap) var(--drawer-gutter);
+    border-block-end: var(--cy-line) solid var(--cy-line-hot);
   }
 
   [data-skin="cyber"] [data-kit="drawer-title"] {
@@ -144,7 +140,7 @@
     line-height: 1.2;
     letter-spacing: var(--cy-track);
     text-transform: uppercase;
-    color: var(--cy-ink-hi);
+    color: var(--cy-ink);
   }
 
   [data-skin="cyber"] [data-kit="drawer-close"] {
@@ -158,6 +154,7 @@
     place-items: center;
     align-self: stretch;
     width: var(--cy-h);
+    min-height: var(--cy-h);
     padding: 0;
     color: var(--cy-ink-hi);
     cursor: pointer;
@@ -180,7 +177,7 @@
 
   [data-skin="cyber"] [data-kit="drawer-description"] {
     flex: none;
-    margin: 12px 14px 0 0;
+    margin: 12px var(--drawer-gutter) 0;
     color: var(--cy-ink-mute);
     font-size: var(--cy-text-sm);
     text-wrap: pretty;
@@ -194,7 +191,7 @@
     align-content: start;
     gap: 10px;
     margin-block-start: 12px;
-    padding: 2px 14px 14px 0;
+    padding: 2px var(--drawer-gutter) 14px;
     overflow-y: auto;
     overscroll-behavior: contain;
     color: var(--cy-ink-hi);
@@ -229,7 +226,7 @@
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    margin-inline-end: 14px;
+    margin-inline: var(--drawer-gutter);
     padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
     border-block-start: 1px solid var(--cy-line-deco);
   }

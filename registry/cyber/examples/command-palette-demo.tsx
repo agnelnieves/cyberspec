@@ -18,6 +18,7 @@ export default function CommandPaletteDemo() {
     <>
       <CommandPalette
         trigger="Deck shell"
+        shortcut="mod+shift+k"
         title="Deck commands"
         placeholder="Run a deck command"
         empty="No such command on this deck."

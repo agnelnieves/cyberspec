@@ -26,7 +26,7 @@ await page.evaluateOnNewDocument(() => {
 let expected
 try {
   for (const mode of ["native", "missing", "denied", "blocked"]) {
-    await page.goto(base, { waitUntil: "networkidle0" })
+    await page.goto(`${base}/components`, { waitUntil: "networkidle0" })
     await page.evaluate((mode) => {
       window.realClipboard = navigator.clipboard
       if (mode !== "native") Object.defineProperty(navigator, "clipboard", {
@@ -69,7 +69,7 @@ try {
     console.log(`ok - ${mode} clipboard copies canonical install instructions via keyboard`)
   }
 
-  await page.goto(base, { waitUntil: "networkidle0" })
+  await page.goto(`${base}/components`, { waitUntil: "networkidle0" })
   const copyCode = '[data-masthead-install] [data-kit="code-block-copy"] button'
   await page.click(copyCode)
   await page.waitForFunction(() => document.querySelector('[data-masthead-install] [data-kit="code-block"]')?.getAttribute("data-state") === "copied")
@@ -78,7 +78,7 @@ try {
   assert(commands.includes("bunx --bun shadcn@latest add @cyberspec-ui/cyber @cyberspec-ui/button"))
   console.log("ok - install commands copy to the actual clipboard")
 
-  await page.goto(base, { waitUntil: "networkidle0" })
+  await page.goto(`${base}/components`, { waitUntil: "networkidle0" })
   await page.evaluate(() => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
       writeText: () => new Promise((resolve) => { window.finishCopy = resolve }),
@@ -93,7 +93,7 @@ try {
   assert(!await page.evaluate(() => document.body.textContent.includes("Prompt copied")), "Late clipboard completion does not announce success after leaving the page")
   console.log("ok - clipboard completion after unmount stays quiet")
 
-  await page.goto(base, { waitUntil: "networkidle0" })
+  await page.goto(`${base}/components`, { waitUntil: "networkidle0" })
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 })
   await page.screenshot({ path: "/private/tmp/cyberspec-install-mobile.png" })
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, "Mobile installation panel has no horizontal overflow")

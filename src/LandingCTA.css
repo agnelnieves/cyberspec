@@ -1,0 +1,99 @@
+@layer ui-sdk, cyber.tokens, cyber.base, cyber.ui, cyber.blocks, cyber.fx, cyber.a11y;
+
+@layer cyber.blocks {
+  [data-site] [data-landing-cta] {
+    --frame-cut: clamp(18px, 3vw, 40px);
+    --frame-fill: var(--cy-panel);
+    --frame-line: var(--cy-line-ctl);
+    --frame-image: radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--cy-accent) 13%, transparent), transparent 64%);
+
+    width: 100%;
+
+    & [data-cta-poster] {
+      display: flex;
+      align-items: center;
+      gap: clamp(16px, 3.6vw, 60px);
+      padding: clamp(28px, 5.2vw, 76px) clamp(22px, 4.5vw, 64px);
+    }
+    & h2 {
+      margin: 0;
+      color: var(--cy-ink-hi);
+      font: 500 clamp(46px, 6.8vw, 100px) / 0.94 var(--cy-font);
+      letter-spacing: -0.034em;
+    }
+    & h2 strong {
+      font-weight: 700;
+    }
+    & [data-cta-arrow] {
+      flex: 1 0 60px;
+      height: 1em;
+      font-size: clamp(46px, 7.5vw, 110px);
+      background: var(--cy-accent);
+      clip-path: polygon(0 42%, calc(100% - .32em) 42%, calc(100% - .62em) 12%, calc(100% - .50em) 0, 100% 50%, calc(100% - .50em) 100%, calc(100% - .62em) 88%, calc(100% - .32em) 58%, 0 58%);
+    }
+    & [data-cta-actions] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-block-start: 1px solid var(--cy-line-ctl);
+    }
+    & [data-cta-actions] > [data-kit="button"] {
+      --frame-image: none;
+      --frame-cut: 0px;
+      --frame-notch: 0px;
+      --frame-focus: var(--cy-signal);
+
+      width: 100%;
+      height: clamp(52px, 5vw, 70px);
+      border: 0;
+      font-weight: 600;
+      font-size: clamp(15px, 1.55vw, 21px);
+    }
+    & [data-cta-actions] > [data-kit="button"] + [data-kit="button"] {
+      border-inline-start: 1px solid var(--cy-line-ctl);
+    }
+    & [data-install-fallback] {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: clamp(18px, 3vw, 36px);
+      border-block-start: 1px solid var(--cy-line-deco);
+    }
+    @media (max-width: 640px) {
+      & h2 strong {
+        display: block;
+      }
+    }
+    @media (max-width: 420px) {
+      & [data-cta-poster] {
+        gap: 12px;
+        padding-inline: 18px;
+      }
+      & h2 {
+        font-size: clamp(39px, 11.5vw, 46px);
+      }
+      & [data-cta-arrow] {
+        flex-basis: 42px;
+        font-size: 40px;
+      }
+      & [data-cta-actions] {
+        grid-template-columns: 1fr;
+      }
+      & [data-cta-actions] > [data-kit="button"] + [data-kit="button"] {
+        border-inline-start: 0;
+        border-block-start: 1px solid var(--cy-line-ctl);
+      }
+    }
+  }
+
+  [data-kit="catalog"] {
+    scroll-margin-block-start: calc(var(--bar-h) + 16px);
+    @media (max-width: 860px) {
+      scroll-margin-block-start: 120px;
+    }
+  }
+  [data-kit="catalog"] + [data-landing-cta] {
+    margin-block-start: clamp(60px, 8vw, 112px);
+  }
+  [data-masthead-install] [data-install-fallback] {
+    flex: 1 0 100%;
+  }
+}
