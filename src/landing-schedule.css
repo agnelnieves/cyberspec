@@ -14,16 +14,6 @@
     font: 500 clamp(29px, 3vw, 46px) / 1.07 var(--cy-mono);
     letter-spacing: -0.065em;
   }
-  .schedule-intro h2::before {
-    content: "";
-    display: block;
-    width: 10px;
-    height: 10px;
-    margin-block-end: clamp(17px, 2vw, 28px);
-    border: 1px solid var(--cy-signal);
-    background: var(--cy-signal);
-    box-shadow: inset 0 0 0 2px var(--sheet);
-  }
   .schedule-intro p {
     margin: 18px 0 0;
     color: var(--cy-ink-hi);

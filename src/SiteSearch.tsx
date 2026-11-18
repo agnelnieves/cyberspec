@@ -12,8 +12,8 @@ const pages: PaletteGroup = {
     { value: "/components", label: "All components", keywords: ["catalog", "library"], icon: <Blocks aria-hidden /> },
     { value: "/examples", label: "All examples", keywords: ["screens", "blocks"], icon: <Monitor aria-hidden /> },
     { value: "/", label: "Home", keywords: ["landing page", "overview", "homepage"], icon: <Monitor aria-hidden /> },
-    { value: "/#relay-schedule", label: "Relay schedule", keywords: ["calendar", "broadcasts", "feed"], icon: <CalendarDays aria-hidden /> },
-    { value: "/#transmission-timeline", label: "Transmission timeline", keywords: ["tracks", "playback", "scrubber"], icon: <ListMusic aria-hidden /> },
+    { value: "/#relay-schedule", label: "Radio schedule", keywords: ["relay schedule", "calendar", "broadcasts", "daily lineup", "feed"], icon: <CalendarDays aria-hidden /> },
+    { value: "/#transmission-timeline", label: "Playback timeline", keywords: ["transmission timeline", "radio", "tracks", "scrubber"], icon: <ListMusic aria-hidden /> },
   ],
 }
 

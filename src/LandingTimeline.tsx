@@ -8,8 +8,8 @@ const ticksPerSecond = 10
 const lastTick = duration * ticksPerSecond
 const marks = [0, 3, 6, 9, 12]
 const tracks = [
-  { name: "Voice", icon: Mic, cues: [{ name: "Call sign", start: 1, end: 5 }, { name: "Reply", start: 7, end: 11 }] },
-  { name: "Signal", icon: Radio, cues: [{ name: "Transmit", start: 0, end: 5.5 }, { name: "Receive", start: 6, end: 12 }] },
+  { name: "Voice", icon: Mic, cues: [{ name: "Hello", start: 1, end: 5 }, { name: "Reply", start: 7, end: 11 }] },
+  { name: "Signal", icon: Radio, cues: [{ name: "Send", start: 0, end: 5.5 }, { name: "Listen", start: 6, end: 12 }] },
 ]
 
 const clock = (tick: number) => `00:${String(Math.floor(tick / ticksPerSecond)).padStart(2, "0")}.${tick % ticksPerSecond}`
@@ -43,8 +43,8 @@ function LandingTimeline() {
   return (
     <section id="transmission-timeline" className="landing-timeline" aria-labelledby="transmission-title" data-sfx="none" data-sfx-hover="none">
       <header className="transmission-intro">
-        <h2 id="transmission-title">Transmission timeline.</h2>
-        <p>Play this silent radio check or drag the playhead to see when each cue starts.</p>
+        <h2 id="transmission-title">Playback timeline.</h2>
+        <p>Press Play to follow a short radio conversation, or drag the marker to any point. This demo is silent.</p>
       </header>
       <div className="transmission-demo">
         <div className="transmission-console" data-frame="tr bl">
@@ -77,7 +77,7 @@ function LandingTimeline() {
               <div className="transmission-head" aria-hidden="true" />
               <input
                 type="range"
-                aria-label="Transmission playhead"
+                aria-label="Playback position"
                 aria-valuetext={`${tick / ticksPerSecond} of ${duration} seconds`}
                 min={0}
                 max={lastTick}

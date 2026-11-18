@@ -25,7 +25,7 @@ function LandingAgent() {
     <section id="agents" className="landing-agent" aria-labelledby="landing-agent-title">
       <div className="landing-agent-copy">
         <h2 id="landing-agent-title">Describe your <span>next screen.</span></h2>
-        <p>Give your coding agent the setup prompt and a task. It can follow CyberSpec’s examples to combine installed controls, like a drawer that manages focus and a feed you can navigate with the arrow keys.</p>
+        <p>Copy the setup prompt into your coding agent, then describe the screen you want. The prompt shows it how to use CyberSpec’s components.</p>
         <CopyPrompt size="lg" label="Copy prompt to set up CyberSpec with your coding agent" />
       </div>
       <figure className="landing-agent-example">

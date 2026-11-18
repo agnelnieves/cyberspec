@@ -7,18 +7,18 @@ import "./landing-schedule.css"
 
 const broadcasts: Partial<Record<number, Pick<FeedItem, "time" | "actor" | "text">[]>> = {
   1: [
-    { time: "07:45", actor: "Carrier check", text: "Send a test tone to the coastal receivers." },
-    { time: "08:00", actor: "Weather bulletin", text: "Broadcast the North Atlantic wind and swell forecast." },
-    { time: "08:20", actor: "Sign-off", text: "Read the station call sign and return to standby." },
+    { time: "07:45", actor: "Sound check", text: "A short tone opens the morning broadcast." },
+    { time: "08:00", actor: "Weather forecast", text: "Wind and waves across the North Atlantic." },
+    { time: "08:20", actor: "Sign-off", text: "The hosts say goodbye until Wednesday." },
   ],
   3: [
-    { time: "11:50", actor: "Link test", text: "Check the audio circuit between Reykjavík and Tórshavn." },
-    { time: "12:00", actor: "Harbor report", text: "Read the tide tables and harbor notices." },
-    { time: "12:15", actor: "Time signal", text: "Close the broadcast with a UTC time check." },
+    { time: "11:50", actor: "Sound check", text: "The Reykjavík hosts call their guests in Tórshavn." },
+    { time: "12:00", actor: "Harbor news", text: "Today’s tides and news from the docks." },
+    { time: "12:15", actor: "Time check", text: "The hosts give the time before they sign off." },
   ],
   5: [
-    { time: "17:00", actor: "Weekly roundup", text: "Relay the week’s reports from island stations." },
-    { time: "17:30", actor: "Listener reports", text: "Read reception notes from across the Atlantic." },
+    { time: "17:00", actor: "Weekly roundup", text: "Island stations share their stories from the week." },
+    { time: "17:30", actor: "Listener letters", text: "Messages from listeners on both sides of the Atlantic." },
   ],
 }
 
@@ -41,14 +41,14 @@ export function LandingSchedule() {
   return (
     <section id="relay-schedule" className="landing-schedule" aria-labelledby="relay-title">
       <header className="schedule-intro">
-        <h2 id="relay-title">Relay schedule.</h2>
-        <p>Choose a date to see the Reykjavík relay’s sample broadcasts. It transmits every Monday, Wednesday and Friday.</p>
+        <h2 id="relay-title">Radio schedule.</h2>
+        <p>Pick a date to see what’s on the radio. This sample station in Reykjavík broadcasts on Mondays, Wednesdays, and Fridays.</p>
       </header>
       <div className="schedule-panels">
         <div className="schedule-calendar">
           <h3 className="showcase-component"><a href="/preview/calendar">Calendar <ArrowUpRight aria-hidden size={17} /></a></h3>
           <Calendar
-            aria-label="Reykjavík relay broadcast calendar"
+            aria-label="Reykjavík radio calendar"
             value={date}
             onValueChange={(value) => { if (typeof value === "string") setDate(value) }}
             timeZone="UTC"
@@ -58,15 +58,15 @@ export function LandingSchedule() {
           />
         </div>
         <div className="schedule-timeline">
-          <h3 className="showcase-component"><a href="/preview/feed">Timeline feed <ArrowUpRight aria-hidden size={17} /></a></h3>
+          <h3 className="showcase-component"><a href="/preview/feed">Daily lineup <ArrowUpRight aria-hidden size={17} /></a></h3>
           <div className="schedule-date" role="status" aria-atomic="true">
             <h4><time dateTime={date}>{dateLabel}</time></h4>
             <p>{items.length ? `${items.length} events · UTC` : "No broadcasts scheduled"}</p>
           </div>
           {items.length > 0 ? (
-            <Feed label={`Reykjavík relay schedule for ${dateLabel}, UTC`} items={items} />
+            <Feed label={`Radio schedule for ${dateLabel}, UTC`} items={items} />
           ) : (
-            <p className="schedule-empty">The relay’s next broadcast is {displayDate(nextBroadcast(date))}.</p>
+            <p className="schedule-empty">Next broadcast on {displayDate(nextBroadcast(date))}.</p>
           )}
         </div>
       </div>
