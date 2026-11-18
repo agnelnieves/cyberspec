@@ -1,7 +1,9 @@
 @layer cyber.blocks {
+  [data-site] { --site-edge: clamp(12px, 1.85vw, 34px); }
+  .site-frame-edge { display: none; }
+
   .site-sheet {
     --site-limit: 2000px;
-    --site-edge: clamp(12px, 1.85vw, 34px);
     --site-inset: clamp(26px, 6.2vw, 112px);
     --site-header-clear: 100px;
     --site-keyline: color-mix(in srgb, var(--cy-accent) 72%, var(--cy-panel));
@@ -328,18 +330,22 @@
       inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    /* Solid viewport edges give Safari a background behind its translucent bars. */
-    .site-housing::before, .site-housing::after {
-      content: "";
+    /* Safari samples the fixed element at each edge to fill its browser chrome.
+       Keep these opaque surfaces above the CRT overlay and outside the frame's
+       stacking context, while letting swipes through to the document. */
+    .site-frame-edge {
+      display: block;
       position: fixed;
       inset-inline: 0;
+      z-index: 91;
       background: var(--cy-void);
+      pointer-events: none;
     }
-    .site-housing::before {
+    .site-frame-edge.top {
       top: 0;
       height: calc(var(--site-edge) + env(safe-area-inset-top));
     }
-    .site-housing::after {
+    .site-frame-edge.bottom {
       bottom: 0;
       height: calc(var(--site-edge) + env(safe-area-inset-bottom));
     }
