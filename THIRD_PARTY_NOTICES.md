@@ -53,6 +53,8 @@ SVG basemap. Natural Earth provides the data in the
   [JetBrains Mono](https://www.jetbrains.com/lp/mono/): SIL Open Font
   License 1.1. The registry adds Google Fonts imports; the demo site also
   uses the corresponding Fontsource packages.
+- The homepage serves Kode Mono from the Fontsource variable package.
+  [Copyright and SIL Open Font License 1.1](public/licenses/kode-mono.txt)
 - [React](https://react.dev): MIT. Supplied by the consuming application.
 
 The structure and iOS haptics technique follow

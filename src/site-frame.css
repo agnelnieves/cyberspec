@@ -87,6 +87,7 @@
   .site-sheet main { flex: 1; outline: none; }
 
   .site-sheet main[data-site-page="landing"] {
+    --cy-mono: "Kode Mono Variable", ui-monospace, monospace;
     padding-block-end: clamp(24px, 4vw, 60px);
   }
 
@@ -172,10 +173,10 @@
 
   .landing-intro h1 {
     margin: 0;
-    font: 600 clamp(66px, 8.6vw, 154px) / 0.84 var(--cy-font);
+    font: 550 clamp(56px, 7.1vw, 128px) / 0.98 var(--cy-mono);
     color: var(--cy-ink-hi);
     text-transform: uppercase;
-    letter-spacing: -0.046em;
+    letter-spacing: -0.065em;
   }
 
   .landing-intro h1 span {
@@ -249,7 +250,7 @@
   .site-sheet .landing-sections {
     margin-inline: clamp(16px, 3vw, 48px);
   }
-  .site-sheet main :is(.landing-showcase, .landing-agent, [data-kit="module"], [data-kit="catalog"], [data-kit="catalog-heading"]) {
+  .site-sheet main :is(.landing-sections > section[id], [data-kit="module"], [data-kit="catalog"], [data-kit="catalog-heading"]) {
     scroll-margin-block-start: calc(var(--site-header-clear) + 12px);
   }
   .site-sheet main :is(a, button, input, textarea, [tabindex]) {
@@ -326,7 +327,7 @@
       inset: 0;
       background: linear-gradient(transparent 36%, color-mix(in srgb, var(--cy-void) 83%, transparent) 66%, var(--cy-void) 94%);
     }
-    .landing-intro h1 { font-size: clamp(52px, 10.8vw, 82px); }
+    .landing-intro h1 { font-size: clamp(38px, 10.8vw, 72px); }
     .landing-summary { font-size: 18px; }
     .landing-hero-foot { margin-block-start: 23px; }
     .landing-actions [data-kit="button"] { min-height: 40px; }
