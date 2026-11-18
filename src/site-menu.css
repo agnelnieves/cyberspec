@@ -44,7 +44,7 @@
     background: linear-gradient(var(--cy-line-deco), var(--cy-line-deco)) left center / 1px 18px no-repeat;
   }
 
-  [data-site-search] [data-slot="dialog-trigger"],
+  :is([data-site-search], .site-mobile-menu) > [data-slot="dialog-trigger"],
   .site-settings-trigger > button,
   .site-header-utilities > [data-site-music] {
     --frame-notch: 0px;
@@ -56,7 +56,7 @@
     color: var(--cy-ink-mute);
   }
 
-  [data-site-search] [data-slot="dialog-trigger"]:is(:hover, [aria-expanded="true"]),
+  :is([data-site-search], .site-mobile-menu) > [data-slot="dialog-trigger"]:is(:hover, [aria-expanded="true"]),
   .site-settings-trigger > button:is(:hover, [aria-expanded="true"]),
   [data-site-music]:hover {
     color: var(--cy-ink-hi);

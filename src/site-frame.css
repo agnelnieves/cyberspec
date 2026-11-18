@@ -321,7 +321,7 @@
     }
     .site-housing [data-site-tools] {
       flex: 1;
-      justify-content: space-between;
+      justify-content: flex-end;
       margin: 0;
     }
     .site-housing :is(.site-mobile-menu, [data-site-search]) > [data-slot="dialog-trigger"] {
@@ -329,7 +329,7 @@
       min-width: 44px;
       min-height: 44px;
     }
-    .site-housing [data-site-search] [data-slot="dialog-trigger"] {
+    .site-housing .site-mobile-menu > [data-slot="dialog-trigger"] {
       --_tl: var(--cy-cut-lg);
     }
     .site-housing [data-site-search] [data-kit="command-palette-kbd"] { display: none; }

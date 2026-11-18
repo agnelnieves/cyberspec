@@ -290,7 +290,7 @@ function MobileMenu({ children, ...nav }: SectionNavProps & { children: React.Re
   return (
     <div className="site-mobile-menu">
       <MobileMenuDialog title="Menu" open={open} onOpenChange={setOpen}
-        trigger={<DialogTrigger data-kit="button" data-frame="br" data-tone="secondary" data-press-flash="">
+        trigger={<DialogTrigger data-kit="button" data-frame="br" data-tone="ghost" data-press-flash="">
           <Menu aria-hidden /> Menu
         </DialogTrigger>}>
         <div className="site-menu-body">
@@ -319,6 +319,13 @@ function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
   )
   return (
     <header data-site-bar>
+      {compact && (
+        <MobileMenu {...nav}>
+          <HeaderPreferences chosen={chosen} choose={choose}>
+            <div><span data-kit="label">Music</span>{musicButton}</div>
+          </HeaderPreferences>
+        </MobileMenu>
+      )}
       <a href="/" data-site-brand aria-label="Cyberspec, home">
         <span data-site-brand-full><Brand /></span>
         <span data-site-brand-compact><Brand markOnly /></span>
@@ -326,13 +333,7 @@ function SiteHeader({ root, music, booting, ...nav }: SectionNavProps & {
       {!compact && <SectionNav {...nav} />}
       <div data-site-tools>
         <SiteSearch settings={settings} shortcut={booting ? null : "mod+k"} />
-        {compact ? (
-          <MobileMenu {...nav}>
-            <HeaderPreferences chosen={chosen} choose={choose}>
-              <div><span data-kit="label">Music</span>{musicButton}</div>
-            </HeaderPreferences>
-          </MobileMenu>
-        ) : (
+        {!compact && (
           <div className="site-header-utilities">
             <div className="site-settings-trigger">
               <Popover title="Interface settings" trigger={<><SlidersHorizontal aria-hidden /> Settings</>}
