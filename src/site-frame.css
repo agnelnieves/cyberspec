@@ -1,6 +1,17 @@
+/* Lenis updates only the frame clip. Keep its per-frame offset off the
+   catalog descendants. An unset value uses the native timeline below. */
+@property --frame-scroll-y {
+  syntax: "*";
+  inherits: false;
+}
+
 @layer cyber.blocks {
   [data-site] { --site-edge: clamp(12px, 1.85vw, 34px); }
   .site-frame-edge { display: none; }
+
+  :root:has([data-site]) {
+    scroll-padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
+  }
 
   .site-sheet {
     --site-limit: 2000px;
@@ -18,13 +29,14 @@
     width: 100%;
     max-width: var(--site-limit);
     margin-inline: auto;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
     background: var(--cy-void);
   }
 
   /* Only the frame is fixed. Swipes anywhere on the page scroll the document. */
   .site-housing {
     position: fixed;
-    inset: 0;
+    inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     z-index: 12;
     max-width: var(--site-limit);
     margin-inline: auto;
@@ -87,6 +99,25 @@
     min-height: 100dvh;
     margin-inline: var(--site-edge);
     overflow-x: clip;
+  }
+
+  /* Safari paints the document beyond the viewport behind its floating bars.
+     Clip the page to the opening. As the page crosses the frame's top edge,
+     move the clip down the page by the same distance as the native scroll. */
+  @media screen {
+    @supports (animation-timeline: view(block)) and (animation-range: exit-crossing) and (clip-path: xywh(0 0 100% 100%)) {
+      .site-sheet [data-site-scroll] {
+        --frame-opening-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 2 * var(--site-edge));
+        animation: site-frame-clip linear both;
+        animation-timeline: view(block env(safe-area-inset-top) 0px);
+        animation-range: exit-crossing;
+      }
+    }
+  }
+
+  @keyframes site-frame-clip {
+    from { clip-path: xywh(0 calc(var(--site-edge) + var(--frame-scroll-y, 0%)) 100% var(--frame-opening-height)); }
+    to { clip-path: xywh(0 calc(var(--site-edge) + var(--frame-scroll-y, 100%)) 100% var(--frame-opening-height)); }
   }
 
   .site-sheet main { flex: 1; outline: none; }
@@ -336,18 +367,6 @@
   }
 
   @media (max-width: 760px), (hover: none) and (pointer: coarse) {
-    :root:has([data-site]) {
-      scroll-padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
-    }
-
-    .site-sheet {
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
-    }
-
-    .site-housing {
-      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-
     /* Safari samples the fixed element at each edge to fill its browser chrome.
        Keep these opaque surfaces above the CRT overlay and outside the frame's
        stacking context, while letting swipes through to the document. */

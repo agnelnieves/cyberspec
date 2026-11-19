@@ -51,7 +51,7 @@ function SiteFrame({ header, children }: { header: ReactNode; children: ReactNod
             <FrameOutline />
           </div>
         </div>
-        <div data-site-scroll="">{children}</div>
+        <div data-site-scroll="" data-motion="essential">{children}</div>
       </div>
       <div className="site-frame-edge top" aria-hidden="true" />
       <div className="site-frame-edge bottom" aria-hidden="true" />

@@ -5,7 +5,7 @@
 // - motion: with effects off, nothing may still be animating
 // - agents: every ui-sdk component the agent bridge can see needs a name,
 //   and names shouldn't repeat within a page
-// - layout: no horizontal overflow at 360px, and a swipe scrolls the landing page
+// - layout: phone overflow, native swipes and clipping inside the site frame
 //
 //   node scripts/audit.mjs            # all pages
 //   node scripts/audit.mjs /jobs /    # some
@@ -27,6 +27,52 @@ async function findServer() {
       } catch {}
     }
   throw new Error("no cyberspec dev server found; set CYBERSPEC_URL")
+}
+
+async function auditCatalogFrame(page) {
+  const client = await page.createCDPSession()
+  let failures = 0
+  for (const [width, height, hasTouch, insets] of [
+    [382, 580, true, { top: 32, right: 0, bottom: 18, left: 0 }],
+    [951, 585, true, { top: 10, right: 38, bottom: 22, left: 4 }],
+    [951, 620, true, { top: 0, right: 38, bottom: 8, left: 4 }],
+    [1024, 768, false, { top: 24, right: 0, bottom: 20, left: 0 }],
+  ]) {
+    await page.setViewport({ width, height, deviceScaleFactor: 1, isMobile: true, hasTouch, isLandscape: width > height })
+    await client.send("Emulation.setSafeAreaInsetsOverride", { insets })
+    await page.waitForSelector(".site-outline")
+    const errors = await page.evaluate(async (safe) => {
+      const content = document.querySelector("[data-site-scroll]")
+      const root = document.scrollingElement
+      const errors = []
+      for (const fraction of [0, 0.5, 0.98]) {
+        const target = Math.round((root.scrollHeight - root.clientHeight) * fraction)
+        window.scrollTo({ top: target, behavior: "instant" })
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+        const frame = document.querySelector(".site-housing").getBoundingClientRect()
+        const outline = document.querySelector(".site-outline").getBoundingClientRect()
+        const x = Math.round(outline.left + outline.width * 0.3)
+        // Inspect the content beneath the fixed bezel. An overlay can hide a
+        // leak in a screenshot of the viewport while Safari displays it outside.
+        const hitsContent = y => document.elementsFromPoint(x, y).some(el => content.contains(el))
+        if ([frame.top - safe.top, innerHeight - frame.bottom - safe.bottom,
+          frame.left - safe.left, innerWidth - frame.right - safe.right].some(delta => Math.abs(delta) > 1)) {
+          errors.push("frame does not follow safe-area insets")
+        }
+        if (root.scrollHeight <= root.clientHeight || Math.abs(scrollY - target) > 2 || content.scrollTop !== 0)
+          errors.push(`document did not scroll to ${target}px`)
+        if (hitsContent(outline.top - 3) || hitsContent(outline.bottom + 3))
+          errors.push(`content escapes the outline at scrollY ${scrollY}`)
+        if (!hitsContent(outline.top + 3) || !hitsContent(outline.bottom - 3))
+          errors.push(`gap inside the outline at scrollY ${scrollY}`)
+      }
+      return [...new Set(errors)]
+    }, insets)
+    console.log(`  frame  ${width}×${height} ${hasTouch ? "touch" : "pointer"}: ${errors.join(", ") || "content stays inside the outline"}`)
+    failures += errors.length
+  }
+  await client.detach()
+  return failures
 }
 const chrome =
   process.env.CHROME_PATH ||
@@ -132,6 +178,7 @@ try {
         await page.keyboard.press("Escape")
         await page.waitForSelector('[role="dialog"][data-open]', { hidden: true })
       }
+      failures += await auditCatalogFrame(page)
     }
     if (route === "/") {
       const finger = await page.touchscreen.touchStart(180, 580)

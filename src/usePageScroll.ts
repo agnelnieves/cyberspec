@@ -16,6 +16,14 @@ export function usePageScroll(enabled: boolean) {
     })
     pageScroll = scroll
 
+    // Lenis moves the document in requestAnimationFrame, after CSS scroll
+    // timelines are sampled. Move the frame clip in that same paint.
+    const content = document.querySelector<HTMLElement>("[data-site-scroll]")
+    scroll.on("scroll", () => {
+      if (scroll.isScrolling === "smooth") content?.style.setProperty("--frame-scroll-y", `${scroll.actualScroll}px`)
+      else content?.style.removeProperty("--frame-scroll-y")
+    })
+
     // UI SDK locks the document while a modal is open. Stop interpolation
     // at that same position and give its scrollable content native input.
     const root = document.documentElement
@@ -29,6 +37,7 @@ export function usePageScroll(enabled: boolean) {
     return () => {
       lock.disconnect()
       scroll.destroy()
+      content?.style.removeProperty("--frame-scroll-y")
       pageScroll = undefined
     }
   }, [enabled])
