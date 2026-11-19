@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react"
+import { Button } from "@/registry/cyber/ui/button"
 import { LandingGlobe } from "./LandingGlobe"
 import { LandingSections } from "./LandingSections"
 
@@ -17,7 +18,7 @@ export default function Landing() {
           <p className="landing-summary">Cut-corner controls, charts, and maps for the web. Pick the components you need and make them your own.</p>
           <div className="landing-actions">
             <a href="/components" data-kit="button" data-frame="br" className="landing-browse">Browse components <ArrowRight aria-hidden /></a>
-            <a href="#try-controls" data-kit="button" data-frame="br">Try the controls <ArrowDown aria-hidden /></a>
+            <Button cipher data-frame="br" render={<a href="#try-controls" />}>Try the controls <ArrowDown aria-hidden /></Button>
           </div>
         </div>
         <div className="landing-hero-foot">

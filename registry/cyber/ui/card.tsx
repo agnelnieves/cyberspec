@@ -1,5 +1,6 @@
 import * as React from "react"
 import { ArrowUpRight, Check, ChevronRight } from "lucide-react"
+import { playCipherText } from "@/registry/cyber/lib/cipher"
 import "@/registry/cyber/ui/cyber/card.css"
 
 // A small content card: a still in a cut frame, a title, a line of meta, a
@@ -16,6 +17,7 @@ import "@/registry/cyber/ui/cyber/card.css"
 // - `pressed`: with `onClick`, makes the card a toggle and holds it lit,
 //   with a check where its arrow was.
 // - `disabled`: with `onClick`, hatches the card and stops the press.
+// - `cipher`: on an interactive card, decode the title as the pointer enters.
 // - `level`: the title's heading level, 3 by default.
 function Card({
   title,
@@ -26,6 +28,7 @@ function Card({
   onClick,
   pressed,
   disabled,
+  cipher = false,
   level = 3,
   children,
   ...props
@@ -38,11 +41,40 @@ function Card({
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
   pressed?: boolean
   disabled?: boolean
+  cipher?: boolean
   level?: 2 | 3 | 4 | 5 | 6
 }) {
   const id = React.useId()
   const Heading = `h${level}` as "h3"
   const interactive = href != null || onClick != null
+  const headingRef = React.useRef<HTMLHeadingElement>(null)
+  const cipherEnabled = cipher && interactive && !disabled
+  React.useEffect(() => {
+    const heading = headingRef.current
+    const card = heading?.closest("article")
+    if (!cipherEnabled || !heading || !card) return
+
+    let cancel: (() => void) | undefined
+    const stop = () => {
+      cancel?.()
+      cancel = undefined
+    }
+    const listeners = new AbortController()
+    const options = { signal: listeners.signal }
+    card.addEventListener("pointerenter", event => {
+      if (event.pointerType === "touch" || !matchMedia("(hover: hover)").matches) return
+      stop()
+      cancel = playCipherText(heading)
+    }, options)
+    card.addEventListener("pointerleave", stop, options)
+    card.addEventListener("pointercancel", stop, options)
+    card.addEventListener("pointerdown", stop, options)
+    return () => {
+      listeners.abort()
+      stop()
+    }
+  }, [cipherEnabled, level, title])
+
   return (
     <article
       data-kit="card"
@@ -66,7 +98,7 @@ function Card({
       )}
       <div data-kit="card-body">
         <div data-kit="card-head">
-          <Heading id={id} data-kit="card-title">
+          <Heading ref={headingRef} id={id} data-kit="card-title">
             {title}
           </Heading>
           {interactive && (

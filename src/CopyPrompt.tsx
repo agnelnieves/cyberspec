@@ -42,7 +42,7 @@ function CopyPrompt({ tone = "primary", size = "md", label }: { tone?: ButtonTon
   }
   return (
     <>
-      <Button tone={tone} size={size} aria-label={state === "copied" ? undefined : label} onClick={copy} data-copy-prompt="" data-sfx="none">
+      <Button cipher tone={tone} size={size} aria-label={state === "copied" ? undefined : label} onClick={copy} data-copy-prompt="" data-sfx="none">
         {state === "copied" ? <Check aria-hidden /> : <Copy aria-hidden />}
         {state === "copied" ? "Prompt copied" : "Copy Prompt"}
       </Button>

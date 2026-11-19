@@ -105,15 +105,16 @@
       opacity: 0;
     }
 
-    [data-kit="card"][data-interactive]:has(:focus-visible) > &::before {
-      opacity: var(--cy-fx);
-      animation: var(--cy-fx-scan) 560ms linear both;
-    }
-
-    @media (hover: hover) {
-      [data-kit="card"][data-interactive]:hover:not([data-disabled]) > &::before {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-kit="card"][data-interactive]:has(:focus-visible) > &::before {
         opacity: var(--cy-fx);
         animation: var(--cy-fx-scan) 560ms linear both;
+      }
+      @media (hover: hover) {
+        [data-kit="card"][data-interactive]:hover:not([data-disabled]) > &::before {
+          opacity: var(--cy-fx);
+          animation: var(--cy-fx-scan) 560ms linear both;
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import * as React from "react"
+import { playCipherText } from "@/registry/cyber/lib/cipher"
 import { ItemSlot, type ItemRarity } from "@/registry/cyber/ui/item-slot"
 
 // Small silhouettes, drawn for this kit on a 48 unit square.
@@ -38,19 +39,26 @@ const gear: { label: string; rarity: ItemRarity; art: React.ReactNode; mods?: bo
 export default function ItemSlotDemo() {
   const [selected, setSelected] = React.useState<string | null>(gear[0].label)
   const current = gear.find((item) => item.label === selected)
+  const caption = React.useRef<HTMLSpanElement>(null)
+  const lastSelection = React.useRef(selected)
+  React.useLayoutEffect(() => {
+    const changed = selected !== lastSelection.current
+    lastSelection.current = selected
+    if (selected && changed && caption.current) return playCipherText(caption.current)
+  }, [selected])
 
   return (
     <div style={{ display: "grid", gap: 12, justifyItems: "center", width: "100%" }}>
       <div role="group" aria-label="Loadout" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8 }}>
         {gear.map(({ art: artwork, ...item }) => (
-          <ItemSlot key={item.label} {...item} selected={selected === item.label} onClick={() => setSelected(selected === item.label ? null : item.label)}>
+          <ItemSlot key={item.label} {...item} cipher selected={selected === item.label} onClick={() => setSelected(selected === item.label ? null : item.label)}>
             {artwork}
           </ItemSlot>
         ))}
         <ItemSlot label="Sidearm" />
       </div>
       <p aria-live="polite" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "baseline", gap: "2px 10px", minHeight: 20 }}>
-        <span data-kit="label">{current ? current.label : "Nothing selected"}</span>
+        <span ref={caption} data-kit="label">{current ? current.label : "Nothing selected"}</span>
         {current && <span data-kit="value">{current.rarity.toUpperCase()}</span>}
       </p>
     </div>

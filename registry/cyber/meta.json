@@ -26,7 +26,7 @@
     ],
     "button": [
       "Button",
-      "A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed."
+      "A cut-corner button with a raised tab, five tones, and a press flash. Enable the cipher prop to scramble the label and briefly tear the frame on hover."
     ],
     "button-group": [
       "Button group",
@@ -38,7 +38,7 @@
     ],
     "card": [
       "Card",
-      "A content card with a scanlined media slot, plain or interactive."
+      "A content card with a scanlined media slot. Set cipher on an interactive card to decode its title on hover."
     ],
     "carousel": [
       "Carousel",
@@ -86,7 +86,7 @@
     ],
     "drawer": [
       "Drawer",
-      "A sheet that slides in from the edge of the page, and can be dragged."
+      "A sheet that glitches in and out at the edge of the page. Drag it toward that edge to dismiss it."
     ],
     "feed": [
       "Feed",
@@ -118,7 +118,7 @@
     ],
     "item-slot": [
       "Item slot",
-      "A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state."
+      "A gear tile with a rarity spine, mod sockets, a count and an empty state. Set cipher to briefly split its edge on selection."
     ],
     "key-hint": [
       "Key hint",
@@ -242,7 +242,7 @@
     ],
     "tabs": [
       "Tabs",
-      "Tabs over panels with a sliding indicator, or as cut keys."
+      "Tabs over panels with a sliding indicator, or as cut keys. Set cipher on key tabs to briefly split the selected key’s edge."
     ],
     "terminal": [
       "Terminal",
@@ -266,7 +266,7 @@
     ],
     "toggle": [
       "Toggle",
-      "A latching key that stays lit while pressed."
+      "A latching key that stays lit while pressed. Set cipher to decode its label when switched on."
     ],
     "toggle-group": [
       "Toggle group",

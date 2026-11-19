@@ -9,7 +9,7 @@ export default function ToggleDemo() {
       </Toggle>
       <Toggle icon={<Flashlight aria-hidden />} aria-label="Torch" />
       <Toggle icon={<Radar aria-hidden />} aria-label="Proximity ping" defaultPressed />
-      <Toggle size="sm">Autopilot</Toggle>
+      <Toggle size="sm" cipher>Autopilot</Toggle>
       <Toggle disabled defaultPressed>
         Uplink
       </Toggle>

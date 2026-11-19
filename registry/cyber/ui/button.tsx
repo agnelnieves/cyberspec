@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Button as SdkButton } from "@ui-sdk/react/button"
+import { playButtonCipher } from "@/registry/cyber/lib/cipher"
 import "@/registry/cyber/ui/cyber/button.css"
 
 type Tone = "primary" | "secondary" | "ghost" | "signal" | "flag"
@@ -11,6 +12,7 @@ type Size = "sm" | "md" | "lg"
 //   until hovered; "signal" is the cyan of values and agents; "flag" is the
 //   solid yellow of the one choice that matters.
 // - `icon`: a button holding only an icon is square. Give it an aria-label.
+// - `cipher`: scramble the label and briefly shear the frame on pointer entry at full FX.
 //
 // Returning a Promise from onClick keeps it pending, with a bar running
 // along its foot, until the Promise settles.
@@ -18,8 +20,10 @@ function Button({
   tone = "secondary",
   size = "md",
   icon,
+  cipher = false,
+  onPointerEnter,
   ...props
-}: React.ComponentProps<typeof SdkButton> & { tone?: Tone; size?: Size; icon?: boolean }) {
+}: React.ComponentProps<typeof SdkButton> & { tone?: Tone; size?: Size; icon?: boolean; cipher?: boolean }) {
   return (
     <SdkButton
       data-kit="button"
@@ -28,6 +32,11 @@ function Button({
       data-tone={tone}
       data-size={size}
       data-icon={icon ? "" : undefined}
+      data-cipher={cipher ? "" : undefined}
+      onPointerEnter={cipher ? event => {
+        onPointerEnter?.(event)
+        if (!event.defaultPrevented && event.pointerType !== "touch") playButtonCipher(event.currentTarget)
+      } : onPointerEnter}
       {...props}
     />
   )

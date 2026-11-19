@@ -18,10 +18,44 @@ const watchNarrow = (notify: () => void) => {
   return () => query.removeEventListener("change", notify)
 }
 
-// A sheet that slides in over the page: from the trailing edge on a wide
-// screen, from the bottom on a narrow one. It can be dragged back toward its
-// edge to close, and caught mid-way; ui-sdk moves it with a spring, so the
-// skin leaves its position alone and only dresses it.
+// The SDK uses the same spring for popup transitions and manual snapping.
+// Only replace its travel when the popup opens or closes.
+function bindDrawerMotion(sheet: HTMLElement | null) {
+  if (!sheet) return
+  function dock() {
+    if (!sheet?.isConnected) return
+    for (const travel of sheet.getAnimations()) {
+      const effect = travel.effect
+      if (!(effect instanceof KeyframeEffect)) continue
+      const start = effect.getKeyframes()[0]?.translate
+      if (typeof start !== "string") continue
+      if (sheet.hasAttribute("data-open")) {
+        // Finishing lets the driver commit the requested snap point and progress.
+        travel.finish()
+      } else {
+        const surface = sheet.firstElementChild
+        const exit = surface?.getAnimations().find(animation => animation instanceof CSSAnimation)
+        if (!exit?.effect) {
+          travel.finish()
+          continue
+        }
+        // A swipe or a partial snap can leave the sheet away from its edge.
+        // Hold that position until its surface has torn away.
+        effect.setKeyframes([{ translate: start }, { translate: start }])
+        effect.updateTiming({ duration: Number(exit.effect.getComputedTiming().endTime) })
+      }
+    }
+  }
+  const observer = new MutationObserver(dock)
+  observer.observe(sheet, { attributes: true, attributeFilter: ["data-open"] })
+  const frame = requestAnimationFrame(dock)
+  return () => {
+    observer.disconnect()
+    cancelAnimationFrame(frame)
+  }
+}
+
+// A sheet that tears in at its docked edge and follows the pointer when dragged.
 //
 // - `trigger` is the label of the key that opens it; leave it out and
 //   control it with `open` and `onOpenChange`, or a `controller`.
@@ -65,7 +99,7 @@ function Drawer({
         </DrawerTrigger>
       )}
       <DrawerBackdrop data-kit="drawer-backdrop" />
-      <DrawerContent data-kit="drawer">
+      <DrawerContent data-kit="drawer" ref={bindDrawerMotion}>
         {(state) => (
           <div data-kit="drawer-surface" data-frame={cuts[state.side]}>
             <span data-kit="drawer-grip" aria-hidden />

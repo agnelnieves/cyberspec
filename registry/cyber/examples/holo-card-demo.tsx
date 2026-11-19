@@ -46,7 +46,7 @@ export default function HoloCardDemo() {
             <HoloLayer depth={2}>
               <Badge tone="flag">Tracked</Badge>
             </HoloLayer>
-            <Button size="sm">Open file</Button>
+            <Button size="sm" cipher>Open file</Button>
           </>
         }
       >

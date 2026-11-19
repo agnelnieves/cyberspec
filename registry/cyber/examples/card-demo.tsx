@@ -75,6 +75,7 @@ export default function CardDemo() {
   return (
     <>
       <Card
+        cipher
         title="Glasswater relay"
         meta="Vanta Systems // 1.2 km"
         media={<Skyline />}

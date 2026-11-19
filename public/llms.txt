@@ -70,9 +70,9 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Badge](https://www.cyberspec.dev/r/badge.json): A small cut label in seven tones, with count and status variants.
 - [Breadcrumb](https://www.cyberspec.dev/r/breadcrumb.json): A trail of pages, the current one in the signal color.
 - [Button group](https://www.cyberspec.dev/r/button-group.json): Keys joined in one strip, horizontal or vertical, with hold-to-repeat.
-- [Button](https://www.cyberspec.dev/r/button.json): A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed.
+- [Button](https://www.cyberspec.dev/r/button.json): A cut-corner button with a raised tab, five tones, and a press flash. Enable the cipher prop to scramble the label and briefly tear the frame on hover.
 - [Calendar](https://www.cyberspec.dev/r/calendar.json): A month grid with today marked and the chosen day lit.
-- [Card](https://www.cyberspec.dev/r/card.json): A content card with a scanlined media slot, plain or interactive.
+- [Card](https://www.cyberspec.dev/r/card.json): A content card with a scanlined media slot. Set cipher on an interactive card to decode its title on hover.
 - [Carousel](https://www.cyberspec.dev/r/carousel.json): A viewer: slides in a cut frame, with keys, segment indicators and a position readout.
 - [Checkbox](https://www.cyberspec.dev/r/checkbox.json): A cut box that fills and marks when checked, with an indeterminate state.
 - [Choice list](https://www.cyberspec.dev/r/choice-list.json): Replies to choose from: rows in the signal color, the chosen one a solid yellow bar.
@@ -84,7 +84,7 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Data table](https://www.cyberspec.dev/r/data-table.json): Rows with selection, sortable columns, status badges and a menu per row.
 - [Date picker](https://www.cyberspec.dev/r/date-picker.json): A date field with a calendar that opens beside it.
 - [Dialog](https://www.cyberspec.dev/r/dialog.json): A modal panel on a spined frame that tears in over a dimmed page, with its answers on keys below.
-- [Drawer](https://www.cyberspec.dev/r/drawer.json): A sheet that slides in from the edge of the page, and can be dragged.
+- [Drawer](https://www.cyberspec.dev/r/drawer.json): A sheet that glitches in and out at the edge of the page. Drag it toward that edge to dismiss it.
 - [Feed](https://www.cyberspec.dev/r/feed.json): Dated events in order on a vertical rule: who did what, and when.
 - [Fieldset](https://www.cyberspec.dev/r/fieldset.json): A spined frame grouping several fields under a legend.
 - [Glitch text](https://www.cyberspec.dev/r/glitch-text.json): Text that decodes itself into place and tears for a moment, with a stable copy for screen readers.
@@ -92,7 +92,7 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Holo card](https://www.cyberspec.dev/r/holo-card.json): A surface that tilts toward the pointer in 3D, with a sheen and layers at different depths.
 - [Hover card](https://www.cyberspec.dev/r/hover-card.json): A name that previews a small dossier on hover or focus.
 - [Item list](https://www.cyberspec.dev/r/item-list.json): An always-visible list of rows in columns, the selected row a solid signal bar.
-- [Item slot](https://www.cyberspec.dev/r/item-slot.json): A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.
+- [Item slot](https://www.cyberspec.dev/r/item-slot.json): A gear tile with a rarity spine, mod sockets, a count and an empty state. Set cipher to briefly split its edge on selection.
 - [Key hint](https://www.cyberspec.dev/r/key-hint.json): An input hint: a key glyph and what it does, optionally pressable.
 - [Loader](https://www.cyberspec.dev/r/loader.json): A boot screen in miniature: a mark, a thin progress bar, a percentage and a cycling status line.
 - [Map](https://www.cyberspec.dev/r/map.json): A flat map or rotatable globe with selectable markers, routes, and a bundled world basemap.
@@ -123,14 +123,14 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Slider](https://www.cyberspec.dev/r/slider.json): A ticked track with a cut thumb and a value readout, single or range.
 - [Number stepper](https://www.cyberspec.dev/r/stepper.json): A value on a readout between minus and plus keys, with MIN and MAX tags.
 - [Switch](https://www.cyberspec.dev/r/switch.json): A block that slides across a cut track and lights, with its state printed beside it.
-- [Tabs](https://www.cyberspec.dev/r/tabs.json): Tabs over panels with a sliding indicator, or as cut keys.
+- [Tabs](https://www.cyberspec.dev/r/tabs.json): Tabs over panels with a sliding indicator, or as cut keys. Set cipher on key tabs to briefly split the selected key’s edge.
 - [Terminal](https://www.cyberspec.dev/r/terminal.json): A console log with tagged lines, a prompt with history, and a follow-the-end scroll.
 - [Text field](https://www.cyberspec.dev/r/text-field.json): A labelled text input in a cut frame, with a hint, an error and an optional icon.
 - [Textarea](https://www.cyberspec.dev/r/textarea.json): A labelled multi-line input with a character count.
 - [Toast](https://www.cyberspec.dev/r/toast.json): Keys that raise a notification in each tone.
 - [Toaster](https://www.cyberspec.dev/r/toaster.json): The page's notification region and a notify() helper.
 - [Toggle group](https://www.cyberspec.dev/r/toggle-group.json): Toggles that share one value, one or several at a time.
-- [Toggle](https://www.cyberspec.dev/r/toggle.json): A latching key that stays lit while pressed.
+- [Toggle](https://www.cyberspec.dev/r/toggle.json): A latching key that stays lit while pressed. Set cipher to decode its label when switched on.
 - [Toolbar](https://www.cyberspec.dev/r/toolbar.json): Keys, toggles and separators in one bar, moved through with arrow keys.
 - [Tooltip](https://www.cyberspec.dev/r/tooltip.json): A small cut label that appears on hover or focus.
 - [Tree](https://www.cyberspec.dev/r/tree.json): A hierarchy with connector lines and branches that open.

@@ -29,6 +29,7 @@ export default function TabsDemo() {
       <Tabs
         label="Gear type"
         variant="key"
+        cipher
         defaultValue="arms"
         tabs={[
           {

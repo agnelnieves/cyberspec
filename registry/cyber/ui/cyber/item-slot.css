@@ -41,6 +41,10 @@
       --slot-rarity: var(--cy-flag);
     }
 
+    &[data-rarity] > [data-cipher-frame] > [data-frame]:not([data-cipher-edge]) {
+      border-inline-start: 5px solid var(--slot-rarity);
+    }
+
     @media (hover: hover) {
       &:hover:not(:disabled, [data-disabled]) {
         --frame-line: var(--cy-line-hot);

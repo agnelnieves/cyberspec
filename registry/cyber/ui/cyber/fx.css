@@ -247,6 +247,115 @@
   }
 }
 
+@layer cyber.fx {
+  /* Keep real text in layout and in the accessibility tree. SVG icons
+     continue to use currentColor while only the glyph ink is hidden. */
+  [data-skin="cyber"] [data-cipher-anchor] {
+    position: relative;
+  }
+  [data-skin="cyber"] [data-decoding] {
+    -webkit-text-fill-color: transparent;
+  }
+  [data-skin="cyber"] [data-decoding] > [data-cipher-text] {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-text-fill-color: currentColor;
+
+    & > [data-cipher-noise] {
+      position: absolute;
+      translate: -50% -50%;
+      width: max-content;
+      white-space: pre;
+    }
+  }
+  [data-skin="cyber"] [data-decoding] :is([data-cipher-ignore], [aria-hidden="true"]) {
+    -webkit-text-fill-color: currentColor;
+  }
+  [data-skin="cyber"] [data-cipher-frame] {
+    display: none;
+    pointer-events: none;
+  }
+
+  /* On the five middle ticks, cut the actual hover frame into bands.
+     Each band inherits this key's tone, cuts, notch and dimensions. The
+     original children and hit target stay in place while the bands shear. */
+  @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+    [data-skin="cyber"] [data-frame][data-cipher-tear]:not([data-kit="button"]:is(:active, :focus-visible)) {
+      --cipher-shift: clamp(1px, 2%, 3px);
+      --cipher-lift: 0px;
+
+      /* Expose the overhanging fragments. Keep the native border width
+         and the ongoing hover color transition for the return to rest. */
+      isolation: isolate;
+      &:has(> [data-cipher-frame="full"]) {
+        clip-path: none;
+        background-clip: text;
+        border-image: linear-gradient(transparent, transparent) 1;
+      }
+
+      &[data-cipher-tear="3"] { --cipher-shift: clamp(-6px, -6%, -2px); }
+      &[data-cipher-tear="4"] {
+        --cipher-shift: clamp(3px, 9%, 9px);
+        --cipher-lift: -1px;
+      }
+      &[data-cipher-tear="5"] { --cipher-shift: clamp(-5px, -5%, -2px); }
+
+      & > [data-cipher-frame] {
+        display: block;
+        position: absolute;
+        inset: calc(-1 * var(--cy-line));
+        z-index: -1;
+
+        & > [data-frame] {
+          position: absolute;
+          inset: 0;
+          /* The frame owns clip-path; a mask slices its paint after clipping. */
+          mask-image: linear-gradient(to bottom,
+            transparent var(--band-top), #000 var(--band-top) var(--band-bottom), transparent var(--band-bottom));
+          translate: calc(var(--band-shift) * var(--cipher-shift)) var(--band-lift, 0px);
+        }
+
+        /* Selection echoes just the edge inside the control's original clip.
+           The face, focus ring, artwork and state indicators keep their paint. */
+        &[data-cipher-frame="edge"] > [data-frame] {
+          --frame-fill: transparent;
+          --frame-image: none;
+        }
+
+        & > :nth-child(1) {
+          --band-top: 0%;
+          --band-bottom: 22%;
+          --band-shift: 0.5;
+          --band-lift: var(--cipher-lift);
+        }
+        & > :nth-child(2) {
+          --band-top: 22%;
+          --band-bottom: 57%;
+          --band-shift: -0.6;
+        }
+        & > :nth-child(3) {
+          --band-top: 57%;
+          --band-bottom: 74%;
+          --band-shift: 1;
+        }
+        & > :nth-child(4) {
+          --band-top: 74%;
+          --band-bottom: 100%;
+          --band-shift: -0.8;
+        }
+        /* The original outline stays in place as the strips cross it. */
+        & > [data-cipher-edge] {
+          --frame-fill: transparent;
+          --frame-image: none;
+          mask-image: none;
+          translate: none;
+        }
+      }
+    }
+  }
+}
+
 @layer cyber.a11y {
   @media (prefers-contrast: more), (forced-colors: active), print {
     [data-skin="cyber"][data-crt]::after {

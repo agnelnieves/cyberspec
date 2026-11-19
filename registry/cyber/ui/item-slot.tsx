@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Button as SdkButton } from "@ui-sdk/react/button"
 import { Plus } from "lucide-react"
+import { playCipherEdge } from "@/registry/cyber/lib/cipher"
 import "@/registry/cyber/ui/cyber/item-slot.css"
 
 type Rarity = "common" | "rare" | "epic" | "legend"
@@ -20,6 +21,7 @@ const rarityWord: Record<Rarity, string> = { common: "common", rare: "rare", epi
 //   stripe across the cut corner.
 // - `selected` presses it: the fill lights and brackets close on three
 //   corners.
+// - `cipher` briefly splits the frame and rarity spine when the slot becomes selected.
 // - `children` are the artwork, drawn in `currentColor`. With none, the
 //   slot is empty and shows a "+".
 function ItemSlot({
@@ -30,6 +32,7 @@ function ItemSlot({
   isNew,
   equipped,
   selected = false,
+  cipher = false,
   size = "md",
   children,
   ...props
@@ -41,9 +44,20 @@ function ItemSlot({
   isNew?: boolean
   equipped?: boolean
   selected?: boolean
+  cipher?: boolean
   size?: "md" | "lg"
   children?: React.ReactNode
 }) {
+  const brackets = React.useRef<HTMLSpanElement>(null)
+  const wasSelected = React.useRef(selected)
+  React.useLayoutEffect(() => {
+    const justSelected = selected && !wasSelected.current
+    wasSelected.current = selected
+    if (!cipher || !justSelected) return
+    const tile = brackets.current?.closest<HTMLElement>('[data-kit="item-slot"]')
+    if (tile) return playCipherEdge(tile)
+  }, [cipher, selected])
+
   const empty = children == null || children === false
   const sockets = mods?.slice(0, 4)
   const spoken = empty
@@ -64,6 +78,7 @@ function ItemSlot({
       data-kit="item-slot"
       data-frame="br"
       data-press-flash=""
+      data-cipher={cipher ? "" : undefined}
       data-rarity={empty ? undefined : rarity}
       data-empty={empty ? "" : undefined}
       data-size={size}
@@ -99,7 +114,7 @@ function ItemSlot({
           {equipped && <span data-kit="item-slot-equipped" aria-hidden />}
         </>
       )}
-      <span data-kit="item-slot-brackets" aria-hidden />
+      <span data-kit="item-slot-brackets" ref={brackets} aria-hidden />
     </SdkButton>
   )
 }

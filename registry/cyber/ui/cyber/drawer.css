@@ -9,10 +9,8 @@
     background: color-mix(in srgb, var(--cy-void) 72%, transparent);
   }
 
-  /* The sheet. ui-sdk places it against its edge and moves it with
-     `translate`; the skin sizes it and leaves the rest alone. It isn't a
-     frame itself, because a frame is clipped and this needs to paint past
-     its own edge (see ::after). */
+  /* The SDK positions the sheet and tracks drags with translate. The frame
+     sits inside so the sheet can paint past its edge during overscroll. */
   [data-skin="cyber"] [data-kit="drawer"] {
     display: flex;
     outline: none;
@@ -67,6 +65,16 @@
     flex-direction: column;
     /* Only the edge that faces the page is drawn. */
     border-width: 0;
+
+    /* Share Dialog's entrance and exit at the sheet's current snap point. */
+    @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+      [data-kit="drawer"][data-open] > & {
+        animation: 280ms var(--cy-ease-snap) backwards var(--cy-fx-in);
+      }
+      [data-kit="drawer"][data-ending-style] > & {
+        animation: 150ms var(--cy-ease-snap) both var(--cy-fx-out);
+      }
+    }
 
     [data-side="right"] > & {
       border-inline-start-width: var(--cy-line);

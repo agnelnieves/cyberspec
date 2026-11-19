@@ -53,6 +53,11 @@
           "target": "@lib/agent-signal.ts"
         },
         {
+          "path": "registry/cyber/lib/cipher.ts",
+          "type": "registry:lib",
+          "target": "@lib/cipher.ts"
+        },
+        {
           "path": "registry/cyber/lib/clipboard.ts",
           "type": "registry:lib",
           "target": "@lib/clipboard.ts"
@@ -285,7 +290,7 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A key on a display: a cut frame with a raised tab, in five tones, that flashes as it's pressed.",
+      "description": "A cut-corner button with a raised tab, five tones, and a press flash. Enable the cipher prop to scramble the label and briefly tear the frame on hover.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5"
       ],
@@ -335,7 +340,7 @@
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
-      "description": "A content card with a scanlined media slot, plain or interactive.",
+      "description": "A content card with a scanlined media slot. Set cipher on an interactive card to decode its title on hover.",
       "dependencies": [
         "lucide-react@1.73.0"
       ],
@@ -639,7 +644,7 @@
       "name": "drawer",
       "type": "registry:ui",
       "title": "Drawer",
-      "description": "A sheet that slides in from the edge of the page, and can be dragged.",
+      "description": "A sheet that glitches in and out at the edge of the page. Drag it toward that edge to dismiss it.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
         "lucide-react@1.73.0"
@@ -829,7 +834,7 @@
       "name": "item-slot",
       "type": "registry:ui",
       "title": "Item slot",
-      "description": "A gear slot: a cut tile with a rarity spine, mod sockets, a count and an empty state.",
+      "description": "A gear tile with a rarity spine, mod sockets, a count and an empty state. Set cipher to briefly split its edge on selection.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5",
         "lucide-react@1.73.0"
@@ -1590,7 +1595,7 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "description": "Tabs over panels with a sliding indicator, or as cut keys.",
+      "description": "Tabs over panels with a sliding indicator, or as cut keys. Set cipher on key tabs to briefly split the selected key’s edge.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5"
       ],
@@ -1764,7 +1769,7 @@
       "name": "toggle",
       "type": "registry:ui",
       "title": "Toggle",
-      "description": "A latching key that stays lit while pressed.",
+      "description": "A latching key that stays lit while pressed. Set cipher to decode its label when switched on.",
       "dependencies": [
         "@ui-sdk/react@0.1.0-beta.5"
       ],

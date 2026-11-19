@@ -8,7 +8,7 @@ export default function ButtonDemo() {
     <>
       <Button tone="primary">Deploy</Button>
       <Button>Abort</Button>
-      <Button tone="signal" onClick={() => wait(1400)} pendingAnnouncement="Scanning">
+      <Button tone="signal" cipher onClick={() => wait(1400)} pendingAnnouncement="Scanning">
         Scan
       </Button>
       <Button tone="flag">Accept</Button>
@@ -16,6 +16,7 @@ export default function ButtonDemo() {
         <Crosshair aria-hidden />
       </Button>
       <Button disabled>Offline</Button>
+      <Button cipher>Cipher button</Button>
     </>
   )
 }
