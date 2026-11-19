@@ -1,0 +1,360 @@
+[
+  {
+    "slug": "relay-tuner",
+    "title": "Relay tuner",
+    "group": "Instruments",
+    "description": "Sweep the FM radio band or seek the next station and watch the carrier lock.",
+    "components": [
+      "slider",
+      "readout",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "photo-proof",
+    "title": "Film proof",
+    "group": "Studio",
+    "description": "Compare three film stocks on the same landscape and check the framing with a thirds grid.",
+    "components": [
+      "segmented-control",
+      "switch",
+      "micro"
+    ]
+  },
+  {
+    "slug": "channel-inbox",
+    "title": "Channel inbox",
+    "group": "Communication",
+    "description": "Catch up on timestamped messages across three desk channels and acknowledge each thread.",
+    "components": [
+      "tabs",
+      "feed",
+      "button"
+    ]
+  },
+  {
+    "slug": "switchboard",
+    "title": "Switchboard",
+    "group": "Arcade",
+    "description": "Light the entire board. Each pad flips its neighbors as well as itself.",
+    "components": [
+      "button",
+      "progress"
+    ]
+  },
+  {
+    "slug": "fare-machine",
+    "title": "Fare machine",
+    "group": "Transit",
+    "description": "Choose a fare zone and party size, then issue a ticket with the calculated total.",
+    "components": [
+      "select",
+      "stepper",
+      "button"
+    ]
+  },
+  {
+    "slug": "pack-builder",
+    "title": "Expedition pack",
+    "group": "Planning",
+    "description": "Fit supplies into a ten-kilogram pack and swap items when space runs short.",
+    "components": [
+      "item-slot",
+      "meter"
+    ]
+  },
+  {
+    "slug": "palette-lab",
+    "title": "Palette lab",
+    "group": "Studio",
+    "description": "Compare spot inks across five tints and copy the CSS for your pick.",
+    "components": [
+      "segmented-control",
+      "code-block"
+    ]
+  },
+  {
+    "slug": "command-launcher",
+    "title": "Desk command launcher",
+    "group": "Workspace",
+    "description": "Tune a relay, mute alerts, or print a status report from a searchable command palette.",
+    "components": [
+      "command-palette",
+      "terminal",
+      "badge"
+    ]
+  },
+  {
+    "slug": "access-pass",
+    "title": "Studio pass",
+    "group": "Forms",
+    "description": "Enter a sample code to issue a barcoded day pass and see how an invalid code is handled.",
+    "components": [
+      "otp-input",
+      "micro",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "power-mixer",
+    "title": "Power mixer",
+    "group": "Instruments",
+    "description": "Divvy up generator power across three circuits and see how much capacity remains.",
+    "components": [
+      "slider",
+      "readout",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "shift-roster",
+    "title": "Shift roster",
+    "group": "Planning",
+    "description": "Browse studio crews, claim an open shift, and hand the seat back.",
+    "components": [
+      "tabs",
+      "avatar",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "clip-timeline",
+    "title": "Clip timeline",
+    "group": "Studio",
+    "description": "Trim a field recording from either end and see the length of the selected clip.",
+    "components": [
+      "slider",
+      "readout"
+    ]
+  },
+  {
+    "slug": "profile-editor",
+    "title": "Crew profile",
+    "group": "Forms",
+    "description": "Edit a crew member’s name and shift availability, then save the changes to their ID.",
+    "components": [
+      "avatar",
+      "text-field",
+      "switch",
+      "button"
+    ]
+  },
+  {
+    "slug": "file-browser",
+    "title": "Station file browser",
+    "group": "Workspace",
+    "description": "Explore the ferry desk’s folders and inspect the source for each route and shift file.",
+    "components": [
+      "tree",
+      "code-block"
+    ]
+  },
+  {
+    "slug": "broadcast-composer",
+    "title": "Broadcast composer",
+    "group": "Communication",
+    "description": "Choose a channel, edit a short bulletin, and post it to the station’s local board.",
+    "components": [
+      "select",
+      "textarea",
+      "button",
+      "badge"
+    ]
+  },
+  {
+    "slug": "glyph-match",
+    "title": "Glyph match",
+    "group": "Arcade",
+    "description": "Turn over cards and find four matching pairs in a shuffled deck.",
+    "components": [
+      "button",
+      "badge"
+    ]
+  },
+  {
+    "slug": "departure-board",
+    "title": "Departure board",
+    "group": "Transit",
+    "description": "Switch platforms and advance the clock to see the next trains roll onto the board.",
+    "components": [
+      "segmented-control",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "telemetry-inspector",
+    "title": "Telemetry inspector",
+    "group": "Instruments",
+    "description": "Inspect rooftop temperature and wind readings over three time windows.",
+    "components": [
+      "signal-graph",
+      "segmented-control",
+      "readout"
+    ]
+  },
+  {
+    "slug": "event-planner",
+    "title": "Studio booking",
+    "group": "Planning",
+    "description": "Name a session, pick an available date and time, and edit the reservation.",
+    "components": [
+      "date-picker",
+      "text-field",
+      "segmented-control",
+      "button"
+    ]
+  },
+  {
+    "slug": "type-specimen",
+    "title": "Type specimen",
+    "group": "Studio",
+    "description": "Set your own sample text, swap typefaces, and size the lettering against a ruler.",
+    "components": [
+      "text-field",
+      "slider",
+      "segmented-control",
+      "micro"
+    ]
+  },
+  {
+    "slug": "checkout-desk",
+    "title": "Print checkout",
+    "group": "Forms",
+    "description": "Choose a paper stock and edition quantity, then place a sample print order.",
+    "components": [
+      "choice-list",
+      "stepper",
+      "readout",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "task-board",
+    "title": "Shift handoff",
+    "group": "Workspace",
+    "description": "Add a task to the handoff checklist and track how much of the shift is ready.",
+    "components": [
+      "checkbox",
+      "progress",
+      "text-field",
+      "button"
+    ]
+  },
+  {
+    "slug": "notification-rules",
+    "title": "Notification routing",
+    "group": "Communication",
+    "description": "Choose where alerts go and test how routine and priority messages behave during quiet hours.",
+    "components": [
+      "checkbox",
+      "switch",
+      "select",
+      "badge"
+    ]
+  },
+  {
+    "slug": "dice-tray",
+    "title": "Dice tray",
+    "group": "Arcade",
+    "description": "Pick a die, roll a handful, and keep the last four scores.",
+    "components": [
+      "segmented-control",
+      "readout",
+      "button"
+    ]
+  },
+  {
+    "slug": "route-planner",
+    "title": "Route planner",
+    "group": "Transit",
+    "description": "Choose a destination and compare the local and express routes on a line diagram.",
+    "components": [
+      "segmented-control",
+      "switch",
+      "badge"
+    ]
+  },
+  {
+    "slug": "sector-atlas",
+    "title": "Sector atlas",
+    "group": "Instruments",
+    "description": "Follow three observatories across a globe, select a site, and switch to a flat chart.",
+    "components": [
+      "map",
+      "segmented-control"
+    ]
+  },
+  {
+    "slug": "dispatch-queue",
+    "title": "Dispatch queue",
+    "group": "Planning",
+    "description": "Inspect a pickup, send its van, and work through the delivery run in any order.",
+    "components": [
+      "item-list",
+      "progress",
+      "button"
+    ]
+  },
+  {
+    "slug": "feedback-desk",
+    "title": "Workshop feedback",
+    "group": "Forms",
+    "description": "Rate a workshop, add an optional note, and record the response.",
+    "components": [
+      "rating",
+      "textarea",
+      "button"
+    ]
+  },
+  {
+    "slug": "review-queue",
+    "title": "Review queue",
+    "group": "Workspace",
+    "description": "Read incoming change requests, approve or return each one, and undo a decision.",
+    "components": [
+      "readout",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "contact-directory",
+    "title": "Crew directory",
+    "group": "Communication",
+    "description": "Find a crew member by name or district, inspect their radio channel, and save favorites.",
+    "components": [
+      "text-field",
+      "avatar",
+      "popover",
+      "toggle"
+    ]
+  },
+  {
+    "slug": "reaction-clock",
+    "title": "Reaction clock",
+    "group": "Arcade",
+    "description": "Wait for the cue and try to beat your fastest reaction time.",
+    "components": [
+      "readout",
+      "badge",
+      "button"
+    ]
+  },
+  {
+    "slug": "freight-scale",
+    "title": "Freight scale",
+    "group": "Transit",
+    "description": "Weigh a pallet, tare the scale, and add crates to measure their net weight.",
+    "components": [
+      "stepper",
+      "readout",
+      "button"
+    ]
+  }
+]

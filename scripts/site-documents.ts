@@ -5,6 +5,7 @@ import { panels } from "../src/catalog/panels"
 import { examples } from "../src/example-data"
 import { installCommand, installCommands, installedExampleSource, repositoryUrl, siteUrl } from "../src/install"
 import { getSitePage, type SitePage } from "../src/site-pages"
+import { sinkGroups, sinkRecipes } from "../src/sink/data"
 
 type Link = {
   label: string
@@ -26,6 +27,14 @@ const blockInfo: Record<string, string[]> = blocks
 const setup = "Use a React 19 project with shadcn configured. Render the installed components inside the Cyber root, and import your global stylesheet in the app entry point."
 const shell = (source: string) => ({ language: "sh", source })
 
+function usage(name: string, path: string): Section {
+  return { title: "Usage", code: { language: "tsx", source: [
+    'import { Cyber } from "@/components/ui/cyber"',
+    `import ${name} from "${path}"`, "",
+    "export default function App() {", "  return (", "    <Cyber>", `      <${name} />`, "    </Cyber>", "  )", "}",
+  ].join("\n") } }
+}
+
 function componentLink(name: string): Link {
   const page = getSitePage(`/components/sidebar/${name}`)!
   return { label: page.heading, href: page.path, description: page.description, id: name }
@@ -37,6 +46,7 @@ function sections(page: SitePage): Section[] {
       { title: "What is CyberSpec?", text: "CyberSpec is a cyberpunk component kit for React built on UI SDK. The shadcn registry installs the source and plain CSS in your project. You can customize the accent and effects, enable interface sounds, and use the UI SDK agent bridge to interact with controls by name.", links: [
         { label: "Component catalog", href: "/components", description: `${panels.length} documented component demos, from buttons to interactive maps.` },
         { label: "Example screens", href: "/examples", description: `${examples.length} complete layouts built from the kit.` },
+        { label: "Kitchen sink", href: "/sink", description: `${sinkRecipes.length} interactive recipes with source code and installation commands.` },
         { label: "CyberSpec on GitHub", href: repositoryUrl },
       ] },
       { title: "Installation", text: setup, code: shell(installCommands), links: [
@@ -66,6 +76,29 @@ function sections(page: SitePage): Section[] {
       title: "Example screens",
       links: examples.map(example => ({ label: example.title, href: `/${example.route}`, description: example.line })),
     }]
+    case "sink": return sinkGroups.map(group => ({
+      title: group,
+      links: sinkRecipes.filter(recipe => recipe.group === group).map(recipe => ({
+        label: recipe.title, href: `/sink/${recipe.slug}`, description: recipe.description,
+      })),
+    }))
+    case "recipe": {
+      const { slug, components } = page.recipe
+      const filename = `${slug}.tsx`
+      const source = readFileSync(new URL(`../registry/cyber/recipes/${filename}`, import.meta.url), "utf8")
+      return [
+        { title: "Installation", text: setup, code: shell(installCommand(slug)) },
+        usage("Recipe", `@/components/recipes/${slug}`),
+        { title: "Source", id: "source-code", code: { language: "tsx", source: installedExampleSource(source).trimEnd() } },
+        { title: "Components in this recipe", links: components.map(componentLink) },
+        { title: "Resources", links: [
+          { label: "All kitchen sink recipes", href: "/sink" },
+          { label: "Recipe source on GitHub", href: `${repositoryUrl}/blob/main/registry/cyber/recipes/${filename}` },
+          { label: "Recipe layout stylesheet", href: `${repositoryUrl}/blob/main/registry/cyber/recipes/recipe-layout.css` },
+          { label: "Shadcn registry item", href: `/r/${slug}.json` },
+        ] },
+      ]
+    }
     case "screen": {
       const { route } = page.example
       const block = registry.items.find(item => item.name === route && item.type === "registry:block")!
@@ -76,11 +109,7 @@ function sections(page: SitePage): Section[] {
       return [
         { title: "What this screen demonstrates", text: blockInfo[route][1] },
         { title: "Installation", text: setup, code: shell(installCommand(route)) },
-        { title: "Usage", code: { language: "tsx", source: [
-          'import { Cyber } from "@/components/ui/cyber"',
-          `import ExampleScreen from "@/components/blocks/${route}/${route}"`, "",
-          "export default function App() {", "  return (", "    <Cyber>", "      <ExampleScreen />", "    </Cyber>", "  )", "}",
-        ].join("\n") } },
+        usage("ExampleScreen", `@/components/blocks/${route}/${route}`),
         { title: "Components in this screen", links: related },
         { title: "Resources", links: [
           { label: "All example screens", href: "/examples" },
@@ -135,7 +164,7 @@ export function renderPageBody(page: SitePage): string {
   ].filter(Boolean).join("\n"))
   return [
     '<main class="static-page" id="main">',
-    '<nav aria-label="Sections"><a href="/">CyberSpec</a> · <a href="/components">Components</a> · <a href="/examples">Examples</a></nav>',
+    '<nav aria-label="Sections"><a href="/">CyberSpec</a> · <a href="/components">Components</a> · <a href="/examples">Examples</a> · <a href="/sink">Kitchen sink</a></nav>',
     `<h1${headingId}>${escapeHtml(page.heading)}</h1>`,
     `<p>${escapeHtml(page.description)}</p>`,
     ...body,

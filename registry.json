@@ -3659,6 +3659,815 @@
       "categories": [
         "screen"
       ]
+    },
+    {
+      "name": "recipe-layout",
+      "type": "registry:item",
+      "title": "Recipe layout",
+      "description": "Shared layout styles for the CyberSpec Sink recipes.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/cyber.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/recipe-layout.css",
+          "type": "registry:file",
+          "target": "@components/recipes/recipe-layout.css"
+        }
+      ]
+    },
+    {
+      "name": "relay-tuner",
+      "type": "registry:component",
+      "title": "Relay tuner",
+      "description": "Sweep the FM radio band or seek the next station and watch the carrier lock.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/slider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/relay-tuner.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/relay-tuner.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "instruments"
+      ]
+    },
+    {
+      "name": "photo-proof",
+      "type": "registry:component",
+      "title": "Film proof",
+      "description": "Compare three film stocks on the same landscape and check the framing with a thirds grid.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/micro.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
+        "https://www.cyberspec.dev/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/photo-proof.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/photo-proof.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "studio"
+      ]
+    },
+    {
+      "name": "channel-inbox",
+      "type": "registry:component",
+      "title": "Channel inbox",
+      "description": "Catch up on timestamped messages across three desk channels and acknowledge each thread.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/feed.json",
+        "https://www.cyberspec.dev/r/tabs.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/channel-inbox.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/channel-inbox.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "communication"
+      ]
+    },
+    {
+      "name": "switchboard",
+      "type": "registry:component",
+      "title": "Switchboard",
+      "description": "Light the entire board. Each pad flips its neighbors as well as itself.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/progress.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/switchboard.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/switchboard.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "arcade"
+      ]
+    },
+    {
+      "name": "fare-machine",
+      "type": "registry:component",
+      "title": "Fare machine",
+      "description": "Choose a fare zone and party size, then issue a ticket with the calculated total.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/select.json",
+        "https://www.cyberspec.dev/r/stepper.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/fare-machine.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/fare-machine.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "transit"
+      ]
+    },
+    {
+      "name": "pack-builder",
+      "type": "registry:component",
+      "title": "Expedition pack",
+      "description": "Fit supplies into a ten-kilogram pack and swap items when space runs short.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/item-slot.json",
+        "https://www.cyberspec.dev/r/meter.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/pack-builder.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/pack-builder.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "planning"
+      ]
+    },
+    {
+      "name": "palette-lab",
+      "type": "registry:component",
+      "title": "Palette lab",
+      "description": "Compare spot inks across five tints and copy the CSS for your pick.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/code-block.json",
+        "https://www.cyberspec.dev/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/palette-lab.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/palette-lab.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "studio"
+      ]
+    },
+    {
+      "name": "command-launcher",
+      "type": "registry:component",
+      "title": "Desk command launcher",
+      "description": "Tune a relay, mute alerts, or print a status report from a searchable command palette.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/command-palette.json",
+        "https://www.cyberspec.dev/r/terminal.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/command-launcher.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/command-launcher.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "workspace"
+      ]
+    },
+    {
+      "name": "access-pass",
+      "type": "registry:component",
+      "title": "Studio pass",
+      "description": "Enter a sample code to issue a barcoded day pass and see how an invalid code is handled.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/micro.json",
+        "https://www.cyberspec.dev/r/otp-input.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/access-pass.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/access-pass.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "forms"
+      ]
+    },
+    {
+      "name": "power-mixer",
+      "type": "registry:component",
+      "title": "Power mixer",
+      "description": "Divvy up generator power across three circuits and see how much capacity remains.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/slider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/power-mixer.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/power-mixer.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "instruments"
+      ]
+    },
+    {
+      "name": "shift-roster",
+      "type": "registry:component",
+      "title": "Shift roster",
+      "description": "Browse studio crews, claim an open shift, and hand the seat back.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/avatar.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/tabs.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/shift-roster.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/shift-roster.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "planning"
+      ]
+    },
+    {
+      "name": "clip-timeline",
+      "type": "registry:component",
+      "title": "Clip timeline",
+      "description": "Trim a field recording from either end and see the length of the selected clip.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/slider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/clip-timeline.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/clip-timeline.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "studio"
+      ]
+    },
+    {
+      "name": "profile-editor",
+      "type": "registry:component",
+      "title": "Crew profile",
+      "description": "Edit a crew member’s name and shift availability, then save the changes to their ID.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/avatar.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/switch.json",
+        "https://www.cyberspec.dev/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/profile-editor.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/profile-editor.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "forms"
+      ]
+    },
+    {
+      "name": "file-browser",
+      "type": "registry:component",
+      "title": "Station file browser",
+      "description": "Explore the ferry desk’s folders and inspect the source for each route and shift file.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/code-block.json",
+        "https://www.cyberspec.dev/r/tree.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/file-browser.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/file-browser.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "workspace"
+      ]
+    },
+    {
+      "name": "broadcast-composer",
+      "type": "registry:component",
+      "title": "Broadcast composer",
+      "description": "Choose a channel, edit a short bulletin, and post it to the station’s local board.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/select.json",
+        "https://www.cyberspec.dev/r/textarea.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/broadcast-composer.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/broadcast-composer.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "communication"
+      ]
+    },
+    {
+      "name": "glyph-match",
+      "type": "registry:component",
+      "title": "Glyph match",
+      "description": "Turn over cards and find four matching pairs in a shuffled deck.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/glyph-match.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/glyph-match.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "arcade"
+      ]
+    },
+    {
+      "name": "departure-board",
+      "type": "registry:component",
+      "title": "Departure board",
+      "description": "Switch platforms and advance the clock to see the next trains roll onto the board.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/departure-board.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/departure-board.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "transit"
+      ]
+    },
+    {
+      "name": "telemetry-inspector",
+      "type": "registry:component",
+      "title": "Telemetry inspector",
+      "description": "Inspect rooftop temperature and wind readings over three time windows.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
+        "https://www.cyberspec.dev/r/signal-graph.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/telemetry-inspector.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/telemetry-inspector.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "instruments"
+      ]
+    },
+    {
+      "name": "event-planner",
+      "type": "registry:component",
+      "title": "Studio booking",
+      "description": "Name a session, pick an available date and time, and edit the reservation.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/date-picker.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
+        "https://www.cyberspec.dev/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/event-planner.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/event-planner.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "planning"
+      ]
+    },
+    {
+      "name": "type-specimen",
+      "type": "registry:component",
+      "title": "Type specimen",
+      "description": "Set your own sample text, swap typefaces, and size the lettering against a ruler.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/micro.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
+        "https://www.cyberspec.dev/r/slider.json",
+        "https://www.cyberspec.dev/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/type-specimen.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/type-specimen.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "studio"
+      ]
+    },
+    {
+      "name": "checkout-desk",
+      "type": "registry:component",
+      "title": "Print checkout",
+      "description": "Choose a paper stock and edition quantity, then place a sample print order.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/choice-list.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/stepper.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/checkout-desk.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/checkout-desk.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "forms"
+      ]
+    },
+    {
+      "name": "task-board",
+      "type": "registry:component",
+      "title": "Shift handoff",
+      "description": "Add a task to the handoff checklist and track how much of the shift is ready.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/checkbox.json",
+        "https://www.cyberspec.dev/r/progress.json",
+        "https://www.cyberspec.dev/r/text-field.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/task-board.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/task-board.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "workspace"
+      ]
+    },
+    {
+      "name": "notification-rules",
+      "type": "registry:component",
+      "title": "Notification routing",
+      "description": "Choose where alerts go and test how routine and priority messages behave during quiet hours.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/checkbox.json",
+        "https://www.cyberspec.dev/r/select.json",
+        "https://www.cyberspec.dev/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/notification-rules.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/notification-rules.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "communication"
+      ]
+    },
+    {
+      "name": "dice-tray",
+      "type": "registry:component",
+      "title": "Dice tray",
+      "description": "Pick a die, roll a handful, and keep the last four scores.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/dice-tray.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/dice-tray.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "arcade"
+      ]
+    },
+    {
+      "name": "route-planner",
+      "type": "registry:component",
+      "title": "Route planner",
+      "description": "Choose a destination and compare the local and express routes on a line diagram.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/segmented-control.json",
+        "https://www.cyberspec.dev/r/switch.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/route-planner.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/route-planner.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "transit"
+      ]
+    },
+    {
+      "name": "sector-atlas",
+      "type": "registry:component",
+      "title": "Sector atlas",
+      "description": "Follow three observatories across a globe, select a site, and switch to a flat chart.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/map.json",
+        "https://www.cyberspec.dev/r/segmented-control.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/sector-atlas.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/sector-atlas.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "instruments"
+      ]
+    },
+    {
+      "name": "dispatch-queue",
+      "type": "registry:component",
+      "title": "Dispatch queue",
+      "description": "Inspect a pickup, send its van, and work through the delivery run in any order.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/item-list.json",
+        "https://www.cyberspec.dev/r/progress.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/dispatch-queue.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/dispatch-queue.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "planning"
+      ]
+    },
+    {
+      "name": "feedback-desk",
+      "type": "registry:component",
+      "title": "Workshop feedback",
+      "description": "Rate a workshop, add an optional note, and record the response.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/rating.json",
+        "https://www.cyberspec.dev/r/textarea.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/feedback-desk.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/feedback-desk.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "forms"
+      ]
+    },
+    {
+      "name": "review-queue",
+      "type": "registry:component",
+      "title": "Review queue",
+      "description": "Read incoming change requests, approve or return each one, and undo a decision.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/review-queue.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/review-queue.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "workspace"
+      ]
+    },
+    {
+      "name": "contact-directory",
+      "type": "registry:component",
+      "title": "Crew directory",
+      "description": "Find a crew member by name or district, inspect their radio channel, and save favorites.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/avatar.json",
+        "https://www.cyberspec.dev/r/popover.json",
+        "https://www.cyberspec.dev/r/text-field.json",
+        "https://www.cyberspec.dev/r/toggle.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/contact-directory.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/contact-directory.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "communication"
+      ]
+    },
+    {
+      "name": "reaction-clock",
+      "type": "registry:component",
+      "title": "Reaction clock",
+      "description": "Wait for the cue and try to beat your fastest reaction time.",
+      "dependencies": [
+        "lucide-react@1.73.0"
+      ],
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/badge.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/reaction-clock.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/reaction-clock.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "arcade"
+      ]
+    },
+    {
+      "name": "freight-scale",
+      "type": "registry:component",
+      "title": "Freight scale",
+      "description": "Weigh a pallet, tare the scale, and add crates to measure their net weight.",
+      "registryDependencies": [
+        "https://www.cyberspec.dev/r/recipe-layout.json",
+        "https://www.cyberspec.dev/r/button.json",
+        "https://www.cyberspec.dev/r/readout.json",
+        "https://www.cyberspec.dev/r/stepper.json"
+      ],
+      "files": [
+        {
+          "path": "registry/cyber/recipes/freight-scale.tsx",
+          "type": "registry:component",
+          "target": "@components/recipes/freight-scale.tsx"
+        }
+      ],
+      "categories": [
+        "recipe",
+        "transit"
+      ]
     }
   ]
 }

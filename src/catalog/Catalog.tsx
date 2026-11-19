@@ -85,4 +85,4 @@ function Preview({ name }: { name: string }) {
   )
 }
 
-export { CatalogGrid, DemoStage, Preview }
+export { Boundary as DemoBoundary, CatalogGrid, DemoStage, Preview }

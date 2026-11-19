@@ -11,6 +11,7 @@ Append `.md` or `.MD` to a page path to read it as Markdown. For example, https:
 - [CyberSpec overview](https://www.cyberspec.dev/index.md)
 - [Component catalog](https://www.cyberspec.dev/components.md) and [component documentation index](https://www.cyberspec.dev/components/llms.txt)
 - [Example screens](https://www.cyberspec.dev/examples.md) and [screen documentation index](https://www.cyberspec.dev/examples/llms.txt)
+- [Sink gallery](https://www.cyberspec.dev/sink.md) and [recipe documentation index](https://www.cyberspec.dev/sink/llms.txt)
 - [Complete Markdown documentation](https://www.cyberspec.dev/llms-full.txt)
 
 ## Install
@@ -143,6 +144,41 @@ The components work with the ui-sdk agent bridge (`createAgent` from `@ui-sdk/re
 - [Grid](https://www.cyberspec.dev/r/grid.json): A district map with filters and waypoints, plus an atlas and globe of the Atlantic relay network.
 - [Jobs](https://www.cyberspec.dev/r/jobs.json): A job board: tabs, a list of jobs, objectives to tick off, and the brief.
 - [Loadout](https://www.cyberspec.dev/r/loadout.json): Gear slots, a weapon's sheet with its stats, and what's in the pack.
+
+## Sink recipes
+
+- [Relay tuner](https://www.cyberspec.dev/r/relay-tuner.json): Sweep the FM radio band or seek the next station and watch the carrier lock.
+- [Film proof](https://www.cyberspec.dev/r/photo-proof.json): Compare three film stocks on the same landscape and check the framing with a thirds grid.
+- [Channel inbox](https://www.cyberspec.dev/r/channel-inbox.json): Catch up on timestamped messages across three desk channels and acknowledge each thread.
+- [Switchboard](https://www.cyberspec.dev/r/switchboard.json): Light the entire board. Each pad flips its neighbors as well as itself.
+- [Fare machine](https://www.cyberspec.dev/r/fare-machine.json): Choose a fare zone and party size, then issue a ticket with the calculated total.
+- [Expedition pack](https://www.cyberspec.dev/r/pack-builder.json): Fit supplies into a ten-kilogram pack and swap items when space runs short.
+- [Palette lab](https://www.cyberspec.dev/r/palette-lab.json): Compare spot inks across five tints and copy the CSS for your pick.
+- [Desk command launcher](https://www.cyberspec.dev/r/command-launcher.json): Tune a relay, mute alerts, or print a status report from a searchable command palette.
+- [Studio pass](https://www.cyberspec.dev/r/access-pass.json): Enter a sample code to issue a barcoded day pass and see how an invalid code is handled.
+- [Power mixer](https://www.cyberspec.dev/r/power-mixer.json): Divvy up generator power across three circuits and see how much capacity remains.
+- [Shift roster](https://www.cyberspec.dev/r/shift-roster.json): Browse studio crews, claim an open shift, and hand the seat back.
+- [Clip timeline](https://www.cyberspec.dev/r/clip-timeline.json): Trim a field recording from either end and see the length of the selected clip.
+- [Crew profile](https://www.cyberspec.dev/r/profile-editor.json): Edit a crew member’s name and shift availability, then save the changes to their ID.
+- [Station file browser](https://www.cyberspec.dev/r/file-browser.json): Explore the ferry desk’s folders and inspect the source for each route and shift file.
+- [Broadcast composer](https://www.cyberspec.dev/r/broadcast-composer.json): Choose a channel, edit a short bulletin, and post it to the station’s local board.
+- [Glyph match](https://www.cyberspec.dev/r/glyph-match.json): Turn over cards and find four matching pairs in a shuffled deck.
+- [Departure board](https://www.cyberspec.dev/r/departure-board.json): Switch platforms and advance the clock to see the next trains roll onto the board.
+- [Telemetry inspector](https://www.cyberspec.dev/r/telemetry-inspector.json): Inspect rooftop temperature and wind readings over three time windows.
+- [Studio booking](https://www.cyberspec.dev/r/event-planner.json): Name a session, pick an available date and time, and edit the reservation.
+- [Type specimen](https://www.cyberspec.dev/r/type-specimen.json): Set your own sample text, swap typefaces, and size the lettering against a ruler.
+- [Print checkout](https://www.cyberspec.dev/r/checkout-desk.json): Choose a paper stock and edition quantity, then place a sample print order.
+- [Shift handoff](https://www.cyberspec.dev/r/task-board.json): Add a task to the handoff checklist and track how much of the shift is ready.
+- [Notification routing](https://www.cyberspec.dev/r/notification-rules.json): Choose where alerts go and test how routine and priority messages behave during quiet hours.
+- [Dice tray](https://www.cyberspec.dev/r/dice-tray.json): Pick a die, roll a handful, and keep the last four scores.
+- [Route planner](https://www.cyberspec.dev/r/route-planner.json): Choose a destination and compare the local and express routes on a line diagram.
+- [Sector atlas](https://www.cyberspec.dev/r/sector-atlas.json): Follow three observatories across a globe, select a site, and switch to a flat chart.
+- [Dispatch queue](https://www.cyberspec.dev/r/dispatch-queue.json): Inspect a pickup, send its van, and work through the delivery run in any order.
+- [Workshop feedback](https://www.cyberspec.dev/r/feedback-desk.json): Rate a workshop, add an optional note, and record the response.
+- [Review queue](https://www.cyberspec.dev/r/review-queue.json): Read incoming change requests, approve or return each one, and undo a decision.
+- [Crew directory](https://www.cyberspec.dev/r/contact-directory.json): Find a crew member by name or district, inspect their radio channel, and save favorites.
+- [Reaction clock](https://www.cyberspec.dev/r/reaction-clock.json): Wait for the cue and try to beat your fastest reaction time.
+- [Freight scale](https://www.cyberspec.dev/r/freight-scale.json): Weigh a pallet, tare the scale, and add crates to measure their net weight.
 
 ## Examples
 

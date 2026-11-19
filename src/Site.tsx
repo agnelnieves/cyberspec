@@ -37,12 +37,15 @@ import "./landing-entry.css"
 // loaded when its page opens.
 const blocks = import.meta.glob<{ default: React.ComponentType }>("/registry/cyber/blocks/*/*.tsx")
 const blockOf = (name: string) => blocks[`/registry/cyber/blocks/${name}/${name}.tsx`]
+const SinkGallery = React.lazy(() => import("./sink/Sink").then(module => ({default: module.SinkGallery})))
+const SinkDetail = React.lazy(() => import("./sink/Sink").then(module => ({default: module.SinkDetail})))
 const SidebarCatalog = React.lazy(() => import("./catalog/SidebarCatalog"))
 
 // The bar's sections. The example screens live under Examples rather than
 // each taking a place in the bar.
 const sections = [
   { route: "components", title: "Components", line: "Every part of the kit, one panel each." },
+  { route: "sink", title: "Kitchen sink", line: "Interactive examples built with CyberSpec." },
   { route: "examples", title: "Examples", line: "The kit composed into whole screens. Each one works: open it and use it." },
 ]
 
@@ -186,6 +189,12 @@ function Page({ route }: { route: string }) {
   if (route === "components" || isSidebarRoute(route)) return <CatalogPage route={route} />
   if (route.startsWith("preview/")) return <Preview name={route.slice("preview/".length)} />
   if (!route) return <Landing />
+  if (route === "sink" || route.startsWith("sink/")) {
+    const page = getSitePage(`/${route}`)
+    return <React.Suspense fallback={<p role="status" data-site-loading>Loading examples…</p>}>
+      {page?.kind === "recipe" ? <SinkDetail key={route} recipe={page.recipe} /> : <SinkGallery />}
+    </React.Suspense>
+  }
   if (route === "examples") return <Examples />
   return <Screen name={route} />
 }
@@ -363,15 +372,16 @@ function Site({ route }: { route: string }) {
   const exampleIndex = examples.findIndex((example) => example.route === route)
   const example = examples[exampleIndex]
   const section = sections.find((entry) => entry.route === (sidebar ? "components" : route))
-  const pageRoute = preview || section || example ? route : ""
+  const recipe = page?.kind === "recipe"
+  const pageRoute = preview || section || example || recipe ? route : ""
   const root = React.useRef<HTMLDivElement>(null)
   const previousPage = React.useRef(pageRoute)
   React.useLayoutEffect(() => {
     // A pager link can survive the route change at the bottom of the page.
-    if (previousPage.current !== pageRoute && !location.hash && (example || pageRoute === "examples"))
+    if (previousPage.current !== pageRoute && !location.hash && (example || pageRoute === "examples" || recipe || pageRoute === "sink"))
       root.current?.querySelector<HTMLElement>("main")?.focus({ preventScroll: true })
     previousPage.current = pageRoute
-  }, [example, pageRoute])
+  }, [example, pageRoute, recipe])
   const level = React.useSyncExternalStore(onFxChange, fxLevel)
   const prefersReducedMotion = React.useSyncExternalStore(onFxChange, () => matchMedia("(prefers-reduced-motion: reduce)").matches)
   const reduced = level !== "full" || prefersReducedMotion
@@ -395,7 +405,7 @@ function Site({ route }: { route: string }) {
   const preferences = useSitePreferences(music)
   const chosen = preferences.chosen
   const header = <SiteHeader preferences={preferences} music={music} booting={showBoot}
-    currentSection={example ? "examples" : section?.route} isSubpage={Boolean(example) || sidebar} />
+    currentSection={recipe ? "sink" : example ? "examples" : section?.route} isSubpage={Boolean(example) || sidebar || recipe} />
   return (
     <Cyber ref={root} data-crt="" data-site
       theme={chosen.id === "monochrome" ? chosen.id : undefined}
@@ -414,7 +424,9 @@ function Site({ route }: { route: string }) {
           {(example || section?.route === "examples") && (
             <header data-kit="page-head">
               <h1>{example?.title ?? section?.title}</h1>
-              {example && <a href="/examples" data-example-index-link=""><LayoutGrid aria-hidden /> Examples</a>}
+              <a href={example ? "/examples" : "/sink"} data-example-index-link="">
+                <LayoutGrid aria-hidden /> {example ? "Examples" : "Kitchen sink"}
+              </a>
               <p>{example?.line ?? section?.line}</p>
             </header>
           )}

@@ -53,7 +53,8 @@ write("index.html", '<!doctype html><html><body><div id="root"></div><script typ
 write("src/index.css", "/* Plain CSS consumer: no Tailwind installed. */\n")
 run("install", ["install"])
 
-const names = ["slider-demo", "menu-demo", "combobox-demo", "dialog-demo", "calendar-demo", "map-demo", "loadout", "daemon"]
+const recipes = JSON.parse(readFileSync(join(root, "registry/cyber/recipes/manifest.json"), "utf8"))
+const names = ["slider-demo", "menu-demo", "combobox-demo", "dialog-demo", "calendar-demo", "map-demo", "loadout", "daemon", ...recipes.map((recipe) => recipe.slug)]
 let addresses
 if (publicUrl) {
   run("registry", ["x", "--bun", "shadcn@latest", "registry", "add", `@cyberspec-ui=${publicUrl}/r/{name}.json`])
@@ -80,14 +81,16 @@ import CalendarDemo from "@/components/examples/calendar-demo"
 import MapDemo from "@/components/examples/map-demo"
 import Loadout from "@/components/blocks/loadout/loadout"
 import Daemon from "@/components/blocks/daemon/daemon"
+${recipes.map(({ slug }, index) => `import Recipe${index} from "@/components/recipes/${slug}"`).join("\n")}
 `
-const children = "<Cyber><SliderDemo/><MenuDemo/><ComboboxDemo/><DialogDemo/><CalendarDemo/><MapDemo/><Loadout/><Daemon/></Cyber>"
+const children = `<Cyber><SliderDemo/><MenuDemo/><ComboboxDemo/><DialogDemo/><CalendarDemo/><MapDemo/><Loadout/><Daemon/>${recipes.map((_, index) => `<Recipe${index}/>`).join("")}</Cyber>`
 write("src/main.tsx", `import { createRoot } from "react-dom/client"\n${imports}import "./index.css"\ncreateRoot(document.getElementById("root")!).render(${children})\n`)
 const installed = JSON.parse(readFileSync(join(fixture, "package.json"), "utf8"))
 for (const name of ["@ui-sdk/core", "@ui-sdk/react"]) assert.equal(installed.dependencies[name], sourcePackage.dependencies[name], `${name}: exact SDK version`)
 assert(existsSync(join(fixture, "src/lib/sound-samples.ts")), "Embedded audio installs with the foundation")
 assert(existsSync(join(fixture, "src/lib/cyberspec/LICENSE")), "MIT license installs with the foundation")
 assert(existsSync(join(fixture, "src/lib/cyberspec/THIRD_PARTY_NOTICES.md")), "Recording and dependency notices install with the foundation")
+assert(existsSync(join(fixture, "src/components/recipes/recipe-layout.css")), "Shared stylesheet installs beside the recipes")
 run("typecheck-vite", ["run", "typecheck"])
 run("build-vite", ["run", "build"])
 
@@ -97,7 +100,7 @@ const installedConfig = JSON.parse(readFileSync(join(fixture, "components.json")
 installedConfig.rsc = true
 write("components.json", installedConfig)
 run("add-next", ["x", "--bun", "shadcn@latest", "add", ...addresses, "--yes", "--overwrite"])
-for (const path of ["src/components/ui/cyber.tsx", "src/components/ui/slider.tsx", "src/components/examples/slider-demo.tsx", "src/components/blocks/loadout/loadout.tsx"]) {
+for (const path of ["src/components/ui/cyber.tsx", "src/components/ui/slider.tsx", "src/components/examples/slider-demo.tsx", "src/components/blocks/loadout/loadout.tsx", ...recipes.map(({ slug }) => `src/components/recipes/${slug}.tsx`)]) {
   assert(/^\s*["']use client["']/.test(readFileSync(join(fixture, path), "utf8")), `${path}: client boundary survives installation`)
 }
 run("install-next", ["add", "next@16.4.6"])

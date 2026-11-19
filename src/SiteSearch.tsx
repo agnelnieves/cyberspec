@@ -1,8 +1,9 @@
 import { useRef, useState } from "react"
-import { Blocks, CalendarDays, ListMusic, Monitor, PanelLeft, Search } from "lucide-react"
+import { Blocks, CalendarDays, LayoutGrid, ListMusic, Monitor, PanelLeft, Search } from "lucide-react"
 import { CommandPalette, type PaletteCommand, type PaletteGroup } from "@/registry/cyber/ui/command-palette"
 import { panels } from "./catalog/panels"
-import { examples } from "./Examples"
+import { examples } from "./example-data"
+import { sinkRecipes } from "./sink/data"
 import { componentDocUrl, isCatalogSidebarOpen, isSidebarRoute, navigate, sidebarRoute } from "./navigation"
 import { useOverlayViewport } from "./useOverlayViewport"
 import "./site-search.css"
@@ -14,6 +15,7 @@ const pages: PaletteGroup = {
   commands: [
     { value: "/components", label: "All components", keywords: ["catalog", "library"], icon: <Blocks aria-hidden /> },
     { value: `/${sidebarRoute}`, label: "Component sidebar", keywords: ["catalog", "sidebar view", "browse components"], icon: <PanelLeft aria-hidden /> },
+    { value: "/sink", label: "Kitchen sink", keywords: ["gallery", "interactive examples", "recipes"], icon: <LayoutGrid aria-hidden /> },
     { value: "/examples", label: "All examples", keywords: ["screens", "blocks"], icon: <Monitor aria-hidden /> },
     { value: "/", label: "Home", keywords: ["landing page", "overview", "homepage"], icon: <Monitor aria-hidden /> },
     { value: "/#relay-schedule", label: "Radio schedule", keywords: ["relay schedule", "calendar", "broadcasts", "daily lineup", "feed"], icon: <CalendarDays aria-hidden /> },
@@ -28,6 +30,15 @@ const examplePages: PaletteGroup = {
     label: example.title,
     keywords: ["example", "screen", example.route, example.line, ...example.shows, ...(example.tag ? [example.tag] : [])],
     icon: <Monitor aria-hidden />,
+  })),
+}
+
+const recipePages: PaletteGroup = {
+  label: "Kitchen sink",
+  commands: sinkRecipes.map(recipe => ({
+    value: `/sink/${recipe.slug}`, label: recipe.title,
+    keywords: ["kitchen sink", "recipe", recipe.group, recipe.description, ...recipe.components],
+    icon: <LayoutGrid aria-hidden />,
   })),
 }
 
@@ -65,7 +76,7 @@ function SiteSearch({ settings, shortcut }: { settings: SearchSetting[]; shortcu
         empty="No matching components, examples, or commands."
         code="CYBERSPEC // SEARCH"
         rankResults
-        commands={[pages, commands, examplePages, componentPages]}
+        commands={[pages, commands, examplePages, componentPages, recipePages]}
         onAction={(value) => {
           const route = location.pathname.replace(/^\/+|\/+$/g, "")
           if (value.startsWith("/preview/") && (route === "components" || isSidebarRoute(route)))

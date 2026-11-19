@@ -17,6 +17,7 @@ function structuredData(page: SitePage) {
   const trail = [{ name: "CyberSpec", item: siteUrl + "/" }]
   if (page.kind === "component" || page.kind === "preview") trail.push({ name: "Components", item: siteUrl + "/components" })
   if (page.kind === "screen") trail.push({ name: "Examples", item: siteUrl + "/examples" })
+  if (page.kind === "recipe") trail.push({ name: "Kitchen sink", item: siteUrl + "/sink" })
   if (page.kind !== "home") trail.push({ name: page.heading, item: url })
 
   const breadcrumbs = trail.length > 1 ? {
@@ -25,7 +26,7 @@ function structuredData(page: SitePage) {
     itemListElement: trail.map((entry, i) => ({ "@type": "ListItem", position: i + 1, ...entry })),
   } : undefined
   const webPage = {
-    "@type": page.kind === "components" || page.kind === "examples" ? "CollectionPage" : "WebPage",
+    "@type": ["components", "examples", "sink"].includes(page.kind) ? "CollectionPage" : "WebPage",
     "@id": url + "#webpage",
     url,
     name: page.title,

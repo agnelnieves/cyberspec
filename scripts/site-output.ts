@@ -19,6 +19,7 @@ const discoveryFiles: Record<string, () => string> = {
   },
   "/components/llms.txt": () => sectionIndex("components", canonicalPages.filter(page => page.kind === "component")),
   "/examples/llms.txt": () => sectionIndex("example screens", canonicalPages.filter(page => page.kind === "screen")),
+  "/sink/llms.txt": () => sectionIndex("kitchen sink", canonicalPages.filter(page => page.kind === "recipe")),
   "/llms-full.txt": () => canonicalPages.map(renderMarkdown).join("\n---\n\n"),
 }
 

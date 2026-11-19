@@ -242,6 +242,7 @@ meta tags unless it is explicitly selected later.
 | `/components` | Install commands and every component, one panel each. Component and group anchors link directly to their catalog entries. |
 | `/components/sidebar/<name>` | A component's documentation, installation command, source example, and interactive demo. |
 | `/examples` | The example screens below, one card each. The bar links here instead of to each screen. |
+| [`/sink`](https://www.cyberspec.dev/sink) | Live, installable recipes that combine components into working interfaces. |
 | `/loadout` | Gear slots, a weapon's sheet and what's in the pack. |
 | `/augments` | Five attributes on a lattice, and points to spend on them. |
 | `/jobs` | The job board: what's open, what's tracked, and the brief. |
@@ -269,6 +270,7 @@ The [sitemap](https://www.cyberspec.dev/sitemap.xml) lists canonical HTML pages.
   - `lib/`: the FX level, sounds, haptics, text effects, input modality and
     the agent signal.
   - `examples/`: the usage example for each catalog panel.
+  - `recipes/`: the Sink gallery's installable examples, manifest, and shared layout styles.
   - `blocks/`: the screens, each in the shared `Screen` frame.
   - `meta.json`: titles and descriptions for the registry.
   - `blocks/daemon/` also holds the agent bridge (`bridge.ts`), the

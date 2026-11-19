@@ -1,0 +1,15 @@
+@layer cyber.blocks {
+  [data-skin="cyber"] {
+    & .sink-stack { display: grid; gap: 12px; min-width: 0; width: 100%; }
+    & .sink-row, & .sink-between { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    & .sink-between { justify-content: space-between; }
+    & .sink-list { display: grid; gap: 0; padding: 0; list-style: none; min-width: 0; }
+    & .sink-item {
+      display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between;
+      padding-block: 8px; border-bottom: 1px solid var(--cy-line-deco); min-width: 0;
+    }
+    & .sink-label { color: var(--cy-ink-mute); font: 600 .82rem/1.3 var(--cy-font); text-transform: uppercase; letter-spacing: var(--cy-track); }
+    & .sink-note { color: var(--cy-ink-mute); font: 500 .95rem/1.4 var(--cy-font); overflow-wrap: anywhere; }
+    & .sink-metric { color: var(--cy-signal); font: 500 clamp(1.4rem, 3vw, 2.2rem)/1.1 var(--cy-mono); }
+  }
+}

@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { preview } from "vite"
-import { siteUrl } from "../src/install"
+import { installedExampleSource, siteUrl } from "../src/install"
 import { sitePages } from "../src/site-pages"
 
 function decodeHtml(value: string) {
@@ -37,11 +37,13 @@ try {
   const robots = await (await resource("/robots.txt", /text\/plain/i)).text()
   assert(robots.includes(`Sitemap: ${siteUrl}/sitemap.xml`), "robots.txt sitemap")
   const guide = await (await resource("/llms.txt", /text\/(?:plain|markdown)/i)).text()
-  for (const link of ["/index.md", "/components.md", "/examples.md", "/components/llms.txt", "/examples/llms.txt", "/llms-full.txt"]) {
+  for (const link of ["/index.md", "/components.md", "/examples.md", "/sink.md", "/components/llms.txt", "/examples/llms.txt", "/sink/llms.txt", "/llms-full.txt"]) {
     assert(guide.includes(link), `Missing ${link} in llms.txt`)
   }
   const components = await (await resource("/components/llms.txt", /text\/(?:plain|markdown)/i)).text()
   const examples = await (await resource("/examples/llms.txt", /text\/(?:plain|markdown)/i)).text()
+  const recipes = await (await resource("/sink/llms.txt", /text\/(?:plain|markdown)/i)).text()
+  const gallery = await (await resource("/sink.md", /text\/markdown/i)).text()
   const full = await (await resource("/llms-full.txt", /text\/(?:plain|markdown)/i)).text()
 
   for (const page of sitePages) {
@@ -63,6 +65,10 @@ try {
     if (page.path === page.canonicalPath) {
       if (page.kind === "component") assert(components.includes(page.markdownPath), page.markdownPath)
       if (page.kind === "screen") assert(examples.includes(page.markdownPath), page.markdownPath)
+      if (page.kind === "recipe") {
+        assert(recipes.includes(page.markdownPath), `Missing ${page.path} in recipe index`)
+        assert(gallery.includes(`(${siteUrl}${page.markdownPath})`), `Missing ${page.path} in gallery`)
+      }
       assert(full.includes(page.description), `Missing ${page.path} description in llms-full.txt`)
     }
 
@@ -70,6 +76,15 @@ try {
     const markdown = await resource(page.markdownPath, /^text\/markdown\b/i)
     assert.equal(await markdown.text(), disk, page.markdownPath)
     assert(disk.startsWith(`# ${page.heading}\n\n${page.description}\n`), page.markdownPath)
+    if (page.kind === "recipe") {
+      const { slug } = page.recipe
+      const item = await (await resource(`/r/${slug}.json`, /application\/json/i)).json()
+      assert.equal(item.name, slug, page.path)
+      const file = item.files.find((file: { target: string }) => file.target === `@components/recipes/${slug}.tsx`)
+      assert(file, `Missing installable recipe source for ${page.path}`)
+      assert(disk.includes(`shadcn@latest add ${siteUrl}/r/${slug}.json`), page.markdownPath)
+      assert(disk.includes(installedExampleSource(file.content).trimEnd()), page.markdownPath)
+    }
     assert(markdown.headers.get("link")?.includes(`<${canonical}>; rel="canonical"`), page.markdownPath)
     const uppercase = page.markdownPath.replace(/\.md$/, ".MD")
     assert.equal(await (await resource(uppercase, /^text\/markdown\b/i)).text(), disk, uppercase)
@@ -82,7 +97,7 @@ try {
   for (const [path, filename] of [["/.MD", "index.md"], ["/components/sidebar/button/.mD", "components/sidebar/button.md"]]) {
     assert.equal(await (await resource(path, /^text\/markdown\b/i)).text(), await readFile(join("dist", filename), "utf8"), path)
   }
-  for (const path of ["/unlisted-page", "/components/sidebar/unlisted-page", "/components/sidebar/unlisted-page.md", "/preview/unlisted-page.MD"]) {
+  for (const path of ["/unlisted-page", "/components/sidebar/unlisted-page", "/components/sidebar/unlisted-page.md", "/preview/unlisted-page.MD", "/sink/unlisted-recipe", "/sink/unlisted-recipe.md"]) {
     assert.equal((await get(path)).status, 404, path)
   }
   await resource("/favicon.svg", /image\/svg/i)

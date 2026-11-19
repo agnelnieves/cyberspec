@@ -12,6 +12,7 @@
 //   item depends on it.
 // - one item per component in registry/cyber/ui, with its own stylesheet
 // - <component>-demo: one usage example per component, as the catalog shows it
+// - one item per Sink recipe, plus their shared layout stylesheet
 // - one block per screen in registry/cyber/blocks
 //
 // Dependencies are read from each file's imports: npm packages (pinned to the
@@ -180,8 +181,31 @@ for (const dir of list(`${reg}/blocks`, (d) => !d.startsWith("."))) {
   items.push(item(dir, "registry:block", info?.[0] ?? titled(dir), info?.[1] ?? `The ${dir} screen.`, files, { after: ["cyber"], categories: ["screen"] }))
 }
 
+// Sink recipes keep a relative stylesheet import in consumer projects.
+// A separate registry item gives that file one owner across installations.
+const recipeDir = `${reg}/recipes`
+const recipes = JSON.parse(read(`${recipeDir}/manifest.json`))
+items.push(item("recipe-layout", "registry:item", "Recipe layout", "Shared layout styles for the CyberSpec Sink recipes.",
+  [file(`${recipeDir}/recipe-layout.css`, "registry:file")], { after: ["cyber"] }))
+
+const recipeFiles = new Set(list(recipeDir, (name) => name.endsWith(".tsx")))
+for (const { slug, title, group, description, components } of recipes) {
+  if (!recipeFiles.delete(`${slug}.tsx`)) throw new Error(`Missing or duplicate recipe: ${slug}`)
+  const recipe = item(slug, "registry:component", title, description, [file(`${recipeDir}/${slug}.tsx`, "registry:component")], {
+    after: ["recipe-layout"],
+    categories: ["recipe", group.toLowerCase()],
+  })
+  const deps = new Set(recipe.registryDependencies)
+  for (const component of components) {
+    if (!deps.has(itemUrl(component))) throw new Error(`${slug}: listed component ${component} is missing from its imports`)
+  }
+  items.push(recipe)
+}
+if (recipeFiles.size) throw new Error(`Missing recipe metadata: ${[...recipeFiles].join(", ")}`)
+
 // Every dependency has to be an item.
 const names = new Set(items.map((i) => i.name))
+if (names.size !== items.length) throw new Error("Registry item names must be unique")
 for (const it of items)
   for (const url of it.registryDependencies ?? []) {
     const name = url.slice(`${base}/r/`.length, -".json".length)
@@ -230,6 +254,7 @@ Append \`.md\` or \`.MD\` to a page path to read it as Markdown. For example, ${
 - [CyberSpec overview](${base}/index.md)
 - [Component catalog](${base}/components.md) and [component documentation index](${base}/components/llms.txt)
 - [Example screens](${base}/examples.md) and [screen documentation index](${base}/examples/llms.txt)
+- [Sink gallery](${base}/sink.md) and [recipe documentation index](${base}/sink/llms.txt)
 - [Complete Markdown documentation](${base}/llms-full.txt)
 
 ## Install
@@ -286,6 +311,10 @@ ${byType("registry:ui").map(line).join("\n")}
 ## Screens
 
 ${byType("registry:block").map(line).join("\n")}
+
+## Sink recipes
+
+${byType("registry:component", "recipe").map(line).join("\n")}
 
 ## Examples
 
