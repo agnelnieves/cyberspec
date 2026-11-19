@@ -65,7 +65,7 @@ function Screen({ name }: { name: string }) {
       </p>
     )
   return (
-    <React.Suspense fallback={<p data-kit="hint" data-site-empty>LINKING…</p>}>
+    <React.Suspense fallback={<p data-kit="hint" data-site-empty data-site-loading>LINKING…</p>}>
       <Block />
     </React.Suspense>
   )
@@ -173,7 +173,7 @@ function CatalogPage({ route }: { route: string }) {
       </div>
       <div className="catalog-grid-content">
         {detail ? (
-          <React.Suspense fallback={<p role="status">Loading component…</p>}>
+          <React.Suspense fallback={<p role="status" data-site-loading>Loading component…</p>}>
             <SidebarCatalog spec={spec} sidebarOpen={sidebarOpen} />
           </React.Suspense>
         ) : <CatalogContent />}

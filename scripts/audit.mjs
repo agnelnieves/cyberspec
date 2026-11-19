@@ -29,7 +29,7 @@ async function findServer() {
   throw new Error("no cyberspec dev server found; set CYBERSPEC_URL")
 }
 
-async function auditCatalogFrame(page) {
+async function auditCatalogFrame(page, telegram = false) {
   const client = await page.createCDPSession()
   let failures = 0
   for (const [width, height, hasTouch, insets] of [
@@ -41,13 +41,14 @@ async function auditCatalogFrame(page) {
     await page.setViewport({ width, height, deviceScaleFactor: 1, isMobile: true, hasTouch, isLandscape: width > height })
     await client.send("Emulation.setSafeAreaInsetsOverride", { insets })
     await page.waitForSelector(".site-outline")
-    const errors = await page.evaluate(async (safe) => {
+    const errors = await page.evaluate(async (safe, embedded) => {
       const content = document.querySelector("[data-site-scroll]")
-      const root = document.scrollingElement
+      const root = embedded ? document.querySelector("[data-site-scrollport]") : document.scrollingElement
+      if (!root) return ["missing Telegram scrollport"]
       const errors = []
       for (const fraction of [0, 0.5, 0.98]) {
         const target = Math.round((root.scrollHeight - root.clientHeight) * fraction)
-        window.scrollTo({ top: target, behavior: "instant" })
+        root.scrollTo({ top: target, behavior: "instant" })
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
         const frame = document.querySelector(".site-housing").getBoundingClientRect()
         const outline = document.querySelector(".site-outline").getBoundingClientRect()
@@ -59,21 +60,29 @@ async function auditCatalogFrame(page) {
           frame.left - safe.left, innerWidth - frame.right - safe.right].some(delta => Math.abs(delta) > 1)) {
           errors.push("frame does not follow safe-area insets")
         }
-        if (root.scrollHeight <= root.clientHeight || Math.abs(scrollY - target) > 2 || content.scrollTop !== 0)
-          errors.push(`document did not scroll to ${target}px`)
+        if (root.scrollHeight <= root.clientHeight || Math.abs(root.scrollTop - target) > 2 || content.scrollTop !== 0)
+          errors.push(`page did not scroll to ${target}px`)
+        if (embedded && (window.scrollY !== 0 || document.scrollingElement.scrollHeight > document.scrollingElement.clientHeight + 1))
+          errors.push("document can scroll behind Telegram's toolbar")
         if (hitsContent(outline.top - 3) || hitsContent(outline.bottom + 3))
-          errors.push(`content escapes the outline at scrollY ${scrollY}`)
+          errors.push(`content escapes the outline at ${root.scrollTop}px`)
         if (!hitsContent(outline.top + 3) || !hitsContent(outline.bottom - 3))
-          errors.push(`gap inside the outline at scrollY ${scrollY}`)
+          errors.push(`gap inside the outline at ${root.scrollTop}px`)
       }
       return [...new Set(errors)]
-    }, insets)
-    console.log(`  frame  ${width}×${height} ${hasTouch ? "touch" : "pointer"}: ${errors.join(", ") || "content stays inside the outline"}`)
+    }, insets, telegram)
+    console.log(`  frame  ${telegram ? "Telegram" : "browser"} ${width}×${height} ${hasTouch ? "touch" : "pointer"}: ${errors.join(", ") || "content stays inside the outline"}`)
     failures += errors.length
   }
   await client.detach()
   return failures
 }
+
+function installTelegramBridge() {
+  window.TelegramWebviewProxy = { postEvent() {} }
+  window.webkit = { messageHandlers: { performAction: { postMessage() {} } } }
+}
+
 const chrome =
   process.env.CHROME_PATH ||
   ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", "/usr/bin/google-chrome", "/usr/bin/chromium"].find((path) => existsSync(path))
@@ -179,6 +188,9 @@ try {
         await page.waitForSelector('[role="dialog"][data-open]', { hidden: true })
       }
       failures += await auditCatalogFrame(page)
+      await page.evaluateOnNewDocument(installTelegramBridge)
+      await page.reload()
+      failures += await auditCatalogFrame(page, true)
     }
     if (route === "/") {
       const finger = await page.touchscreen.touchStart(180, 580)
@@ -187,6 +199,22 @@ try {
       await finger.end()
       await page.waitForFunction(() => window.scrollY > 50, { timeout: 3000 })
       console.log("  touch  swipe scrolled the document")
+
+      // Recreate the reported transition between the timeline and Agents in
+      // Telegram. A swipe here must leave the host's document stationary.
+      await page.evaluateOnNewDocument(installTelegramBridge)
+      await page.goto("about:blank")
+      await page.goto(`${base}/#agents`)
+      const frame = await page.waitForSelector("[data-site-scrollport]")
+      await page.waitForFunction(() => document.activeElement?.id === "agents")
+      const before = await frame.evaluate(el => el.scrollTop)
+      const back = await page.touchscreen.touchStart(100, 300)
+      await back.move(100, 400)
+      await back.move(100, 520)
+      await back.end()
+      await page.waitForFunction(y => window.scrollY === 0 && document.querySelector("[data-site-scrollport]").scrollTop < y - 50,
+        { timeout: 3000 }, before)
+      console.log("  touch  Telegram swipe scrolled the frame back toward the timeline")
     }
     await page.close()
 

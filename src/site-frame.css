@@ -147,6 +147,50 @@
     padding-block-end: calc(var(--site-edge) + 32px + env(safe-area-inset-bottom, 0px));
   }
 
+  /* Telegram leaves its native document scroll view unclipped below the URL
+     bar. Give the page a real scrollport with the same bounds as the bezel. */
+  @media screen {
+    :root:has(.site-sheet[data-site-scrollport]) {
+      overflow: clip;
+      scroll-padding: 0;
+
+      & body { min-height: 0; }
+      & [data-site] { position: fixed; inset: 0; min-height: 0; }
+    }
+    .site-sheet[data-site-scrollport] {
+      position: fixed;
+      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      width: auto;
+      padding: 0;
+      border: var(--site-edge) solid var(--cy-void);
+      overflow: hidden auto;
+      overscroll-behavior-y: contain;
+    }
+    :root:has(:modal, [data-scroll-guard]) .site-sheet[data-site-scrollport] {
+      overflow-y: hidden;
+    }
+    .site-sheet[data-site-scrollport] [data-site-scroll] {
+      min-height: 100%;
+      margin: 0;
+      animation: none;
+    }
+    .site-sheet[data-site-scrollport] [data-site-scroll] > main:is([data-site-page="components"], [data-site-page="component-sidebar"]) {
+      --site-page-top: calc(var(--site-bar-height) + 12px);
+    }
+    .site-sheet[data-site-scrollport] .catalog-overview {
+      --catalog-sticky-top: var(--site-page-top);
+    }
+    .site-sheet[data-site-scrollport] .catalog-sidebar-panel > .component-index {
+      --index-available-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 2 * var(--site-edge) - var(--index-top) - 8px);
+    }
+    .site-sheet[data-site-scrollport] .article-links {
+      top: calc(var(--site-header-clear) + 12px - var(--site-edge));
+    }
+    .site-sheet[data-site-scrollport] [data-site-footer] {
+      padding-block-end: 32px;
+    }
+  }
+
   .landing-hero {
     position: relative;
     isolation: isolate;

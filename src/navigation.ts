@@ -1,5 +1,5 @@
 import { panels } from "./catalog/panels"
-import { cancelPageMomentum, scrollToPageAnchor } from "./usePageScroll"
+import { cancelPageMomentum, getPageScroller, scrollToPageAnchor } from "./usePageScroll"
 
 const navigated = "cyberspec:navigate"
 const sidebarRoute = "components/sidebar"
@@ -40,20 +40,42 @@ function canonicalizeLocation() {
   if (url.href !== location.href) history.replaceState(history.state, "", url)
 }
 
+// Keep the inner scrollport's position per history entry, including separate
+// visits to the same URL. The normal document keeps browser scroll restoration.
+const framePositions = new Map<string, number>()
+let activeFrameEntry: string | undefined
+let nextFrameEntry = 0
+function rememberFramePosition() {
+  if (activeFrameEntry) framePositions.set(activeFrameEntry, getPageScroller().scrollTop)
+}
+
+function enterFrameEntry() {
+  if (getPageScroller() === document.scrollingElement) return
+  let entry = history.state?.cyberspecFrameEntry
+  if (typeof entry !== "string") {
+    entry = `${performance.timeOrigin}-${++nextFrameEntry}`
+    history.replaceState({ ...history.state, cyberspecFrameEntry: entry }, "")
+  }
+  activeFrameEntry = entry
+  history.scrollRestoration = "manual"
+  return framePositions.get(entry)
+}
+
 function navigate(href: string, { scroll = true } = {}) {
   const url = canonicalUrl(href)
   const samePage = url.pathname === location.pathname
   cancelPageMomentum()
   if (url.href !== location.href) {
+    rememberFramePosition()
     history.pushState(null, "", url)
     dispatchEvent(new Event(navigated))
   }
   if (!scroll) return
-  if (!url.hash) window.scrollTo(0, 0)
+  if (!url.hash) getPageScroller().scrollTo(0, 0)
   else if (samePage) {
     const target = document.getElementById(fragmentId(url.hash))
     if (target) scrollToPageAnchor(target, true)
   }
 }
 
-export { canonicalizeLocation, componentDocUrl, fragmentId, isCatalogSidebarOpen, isSidebarRoute, navigate, navigated, sidebarRoute }
+export { canonicalizeLocation, componentDocUrl, enterFrameEntry, fragmentId, isCatalogSidebarOpen, isSidebarRoute, navigate, navigated, rememberFramePosition, sidebarRoute }

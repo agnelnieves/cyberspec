@@ -4,6 +4,7 @@ import { DialogTrigger } from "@ui-sdk/react/dialog"
 import { TextField } from "@/registry/cyber/ui/text-field"
 import { ScrollArea } from "@/registry/cyber/ui/scroll-area"
 import { componentDocUrl, navigate } from "../navigation"
+import { getPageScroller, getPageScrollTarget } from "../usePageScroll"
 import { MobileMenuDialog } from "../MobileMenuDialog"
 import { panels, type PanelSpec } from "./panels"
 import "./component-index.css"
@@ -87,13 +88,14 @@ export function MobileComponentIndex({ spec }: { spec?: PanelSpec }) {
     setScrollHidden(false)
     if (open) return
 
-    const root = document.documentElement
-    const pageY = () => Math.max(0, Math.min(window.scrollY, root.scrollHeight - root.clientHeight))
+    const scroller = getPageScroller()
+    const scrollTarget = getPageScrollTarget()
+    const pageY = () => Math.max(0, Math.min(scroller.scrollTop, scroller.scrollHeight - scroller.clientHeight))
     let pivot = pageY()
     let hidden = false
     function onScroll() {
       const y = pageY()
-      if (root.style.overflowY === "hidden") {
+      if (document.documentElement.style.overflowY === "hidden") {
         pivot = y
         return
       }
@@ -105,8 +107,8 @@ export function MobileComponentIndex({ spec }: { spec?: PanelSpec }) {
       pivot = y
       setScrollHidden(hidden)
     }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    scrollTarget.addEventListener("scroll", onScroll, { passive: true })
+    return () => scrollTarget.removeEventListener("scroll", onScroll)
   }, [open, spec])
 
   function select(event: MouseEvent<HTMLAnchorElement>) {

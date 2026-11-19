@@ -42,9 +42,17 @@ function FrameOutline() {
 }
 
 function SiteFrame({ header, children }: { header: ReactNode; children: ReactNode }) {
+  // Telegram injects both sides of this bridge at document start for ordinary
+  // web links. Its iOS browser lets the root scroll view paint outside its bounds.
+  const host = window as Window & {
+    TelegramWebviewProxy?: { postEvent?: unknown }
+    webkit?: { messageHandlers?: { performAction?: { postMessage?: unknown } } }
+  }
+  const telegram = typeof host.TelegramWebviewProxy?.postEvent === "function"
+    && typeof host.webkit?.messageHandlers?.performAction?.postMessage === "function"
   return (
     <>
-      <div className="site-sheet">
+      <div className="site-sheet" data-site-scrollport={telegram ? "" : undefined}>
         <div className="site-housing">
           {header}
           <div className="site-bezel" aria-hidden="true">

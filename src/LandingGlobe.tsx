@@ -2,6 +2,7 @@ import { memo, useEffect, useId, useRef } from "react"
 import { project } from "@/registry/cyber/lib/map/camera"
 import { mapLandPath } from "@/registry/cyber/lib/map/geography"
 import { createGlobeProjection, globeVector, type GlobeProjection, type GlobeVector } from "@/registry/cyber/lib/map/orthographic"
+import { getPageScroller, getPageScrollTarget } from "./usePageScroll"
 import "./landing-globe.css"
 
 const size = 760
@@ -128,6 +129,8 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   const tag = pin.querySelector<SVGGElement>(".landing-globe-tag")!
   const gridElement = svg.querySelector(".landing-globe-grid")!
   const reduced = matchMedia("(prefers-reduced-motion: reduce)")
+  const scroller = getPageScroller()
+  const scrollTarget = getPageScrollTarget()
   let longitude = startLongitude
   let frame = 0, lastTime: number | null = null
   let visible = false, drawn = false
@@ -138,7 +141,7 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   // The same position drives the retreat and the turn of the actual geography.
   // Idle rotation has its own longitude so reversing a swipe unwinds the scroll turn.
   function scrub() {
-    const progress = Math.max(0, Math.min(1, (window.scrollY - heroTop) / heroHeight))
+    const progress = Math.max(0, Math.min(1, (scroller.scrollTop - heroTop) / heroHeight))
     if (progress === exitProgress) return
     exitProgress = progress
     orbit.style.setProperty("--earth-exit", String(progress))
@@ -190,7 +193,8 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
 
   function resize() {
     const rect = hero.getBoundingClientRect()
-    heroTop = rect.top + window.scrollY
+    const viewportTop = scrollTarget === window ? 0 : scroller.getBoundingClientRect().top + scroller.clientTop
+    heroTop = rect.top + scroller.scrollTop - viewportTop
     heroHeight = Math.max(rect.height, 1)
     scrub()
     if (!visible || document.hidden) return
@@ -240,14 +244,14 @@ function animateGlobe(svg: SVGSVGElement, surface: Surface) {
   const theme = new MutationObserver(sync)
   if (skin) theme.observe(skin, { attributes: true, attributeFilter: ["style", "data-theme", "data-fx", "data-entrance"] })
   reduced.addEventListener("change", sync)
-  window.addEventListener("scroll", scrub, { passive: true })
+  scrollTarget.addEventListener("scroll", scrub, { passive: true })
   document.addEventListener("visibilitychange", sync)
   return () => {
     cancelAnimationFrame(frame)
     viewport.disconnect()
     observedSize.disconnect()
     theme.disconnect()
-    window.removeEventListener("scroll", scrub)
+    scrollTarget.removeEventListener("scroll", scrub)
     orbit.style.removeProperty("--earth-exit")
     reduced.removeEventListener("change", sync)
     document.removeEventListener("visibilitychange", sync)

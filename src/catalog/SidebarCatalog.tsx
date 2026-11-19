@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { componentDocUrl, fragmentId, sidebarRoute } from "../navigation"
-import { scrollToPageAnchor } from "../usePageScroll"
+import { getPageScroller, getPageScrollTarget, scrollToPageAnchor } from "../usePageScroll"
 import { ComponentArticle } from "./ComponentArticle"
 import { panels, type PanelSpec } from "./panels"
 import "./sidebar-catalog.css"
@@ -11,27 +11,30 @@ function ArticleLinks() {
   useEffect(() => {
     const installation = document.getElementById("installation")
     if (!installation) return
+    const scroller = getPageScroller()
+    const scrollTarget = getPageScrollTarget()
     let installationY = 0
     const sync = () => {
-      setActive(window.scrollY > 0 && window.scrollY >= installationY - 2 ? "installation" : "example")
+      setActive(scroller.scrollTop > 0 && scroller.scrollTop >= installationY - 2 ? "installation" : "example")
     }
     const measure = () => {
       const inset = parseFloat(getComputedStyle(installation).scrollMarginTop) || 0
-      const end = document.documentElement.scrollHeight - window.innerHeight
+      const viewportTop = scrollTarget === window ? 0 : scroller.getBoundingClientRect().top + scroller.clientTop
+      const end = scroller.scrollHeight - (scrollTarget === window ? window.innerHeight : scroller.clientHeight)
       // Short articles can reach the end before the heading reaches the header.
-      installationY = Math.min(end, window.scrollY + installation.getBoundingClientRect().top - inset)
+      installationY = Math.min(end, scroller.scrollTop + installation.getBoundingClientRect().top - viewportTop - inset)
       sync()
     }
     measure()
     const observer = new ResizeObserver(measure)
-    observer.observe(document.body)
+    observer.observe(scrollTarget === window ? document.body : scroller)
     observer.observe(installation.parentElement!)
     window.addEventListener("resize", measure)
-    window.addEventListener("scroll", sync, { passive: true })
+    scrollTarget.addEventListener("scroll", sync, { passive: true })
     return () => {
       observer.disconnect()
       window.removeEventListener("resize", measure)
-      window.removeEventListener("scroll", sync)
+      scrollTarget.removeEventListener("scroll", sync)
     }
   }, [])
 

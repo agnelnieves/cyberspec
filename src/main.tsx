@@ -16,11 +16,12 @@ import "@/registry/cyber/blocks/daemon/bridge"
 import { Site } from "./Site"
 import { getSitePage } from "./site-pages"
 import { syncPageHead } from "./site-metadata"
-import { canonicalizeLocation, fragmentId, isSidebarRoute, navigate, navigated } from "./navigation"
-import { cancelPageMomentum, scrollToPageAnchor } from "./usePageScroll"
+import { canonicalizeLocation, enterFrameEntry, fragmentId, isSidebarRoute, navigate, navigated, rememberFramePosition } from "./navigation"
+import { cancelPageMomentum, getPageScroller, scrollToPageAnchor } from "./usePageScroll"
 
 const subscribe = (notify: () => void) => {
-  const onHistory = () => {
+  const onHistory = (event: Event) => {
+    if (event.type === "popstate") rememberFramePosition()
     cancelPageMomentum()
     canonicalizeLocation()
     notify()
@@ -35,6 +36,23 @@ const subscribe = (notify: () => void) => {
   }
 }
 const currentHref = () => location.href
+
+// Lazy examples and component articles briefly render a loading paragraph.
+// Apply scroll positions once the destination has its actual height and anchors.
+function whenRouteIsReady(position: () => void) {
+  const pending = document.querySelector("main [data-site-loading]")
+  if (!pending) {
+    position()
+    return
+  }
+  const observer = new MutationObserver(() => {
+    if (pending.isConnected) return
+    observer.disconnect()
+    position()
+  })
+  observer.observe(pending.parentElement!, { childList: true })
+  return () => observer.disconnect()
+}
 
 // Same-site links navigate in place: the page changes without a reload.
 // Links opening elsewhere (a new tab, a modifier key, a download, a file)
@@ -63,9 +81,25 @@ function App() {
     // The router handles in-page links. Initial and cross-page deep links
     // need their destination content to have mounted before positioning.
     if (!location.hash || isSidebarRoute(route)) return
-    const target = document.getElementById(fragmentId(location.hash))
-    if (target) scrollToPageAnchor(target, false)
+    return whenRouteIsReady(() => {
+      const target = document.getElementById(fragmentId(location.hash))
+      if (target) scrollToPageAnchor(target, false)
+    })
   }, [route])
+  useLayoutEffect(() => {
+    const previousPosition = enterFrameEntry()
+    if (previousPosition === undefined) return
+    // A lazy article can focus its deep link in its own mount effect. Restore
+    // the position the reader actually left after the route finishes mounting.
+    let frame = 0
+    const cancelWait = whenRouteIsReady(() => {
+      frame = requestAnimationFrame(() => getPageScroller().scrollTo(0, previousPosition))
+    })
+    return () => {
+      cancelWait?.()
+      cancelAnimationFrame(frame)
+    }
+  }, [href])
   return (
     <>
       <Site route={route} />
